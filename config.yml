@@ -3,6 +3,14 @@ default:
   dsn_staging                                         :   "cdw_cache_staging"
   dsn_centricity                                      :   "cdw_outpost"
   dsn_idx                                             :   "cdw_waystation_idx"
+  schema_name                                         :   "{project_name}"
+
+  tables_to_scribe:
+    -
+      name: person
+      sql: ""
+      columns_include: ""
+      #columns_exclude: ""
 
   #sweep and specify
   fs_input_review_required_centricity_diagnosis       :   "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data-public/sweep-and-specify-centricity/input/review-required/diagnosis"
