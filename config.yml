@@ -8,9 +8,15 @@ default:
   tables_to_scribe:
     -
       name: person
-      sql: ""
+      sql: "SELECT * FROM {project_name}.person"
       columns_include: ""
       #columns_exclude: ""
+      path_output: "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data/derived/person.csv"
+    -
+      name: appointment
+      sql: ""
+      columns_include: "*"
+      path_output: "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data/derived/appointment.csv"
 
   #sweep and specify
   fs_input_review_required_centricity_diagnosis       :   "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data-public/sweep-and-specify-centricity/input/review-required/diagnosis"
