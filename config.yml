@@ -12,16 +12,19 @@ default:
       columns_include: ""
       #columns_exclude: ""
       path_output: "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data/derived/person.csv"
+      #path_output: "data-public/derived/person.csv"
     -
       name: obs
       sql: ""
       columns_include: "mrn_flowcast, obs_date, obs_term, obs_value"
       path_output: "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data/derived/obs.csv"
+      #path_output: "data-public/derived/obs.csv"
     -
       name: medicate
       columns_include: "*"
       #columns_exclude: "start_date, stop_date"
       path_output: "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data/derived/medicate.csv"
+      #path_output: "data-public/derived/medicate.csv"
 
  # #sweep and specify
  # fs_input_review_required_centricity_diagnosis       :   "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data-public/sweep-and-specify-centricity/input/review-required/diagnosis"

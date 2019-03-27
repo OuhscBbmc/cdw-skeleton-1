@@ -8,6 +8,7 @@ rm(list=ls(all=TRUE)) #Clear the memory of variables from previous run. This is 
 
 # ---- load-packages -----------------------------------------------------------
 library(magrittr, quietly=TRUE)
+library(rlang, quietly=TRUE)
 requireNamespace("DBI")
 requireNamespace("odbc")
 requireNamespace("dplyr")
@@ -77,22 +78,29 @@ DBI::dbDisconnect(cnn); rm(cnn)
 
 # ---- tweak-data --------------------------------------------------------------
 
-ds_table$check_message <- ds_table$d %>%
+ds_table$message_check <- ds_table$d %>%
   purrr::map_chr(., ~checkmate::check_data_frame(., min.rows = 1))
+ds_table$row_count <- ds_table$d %>%
+  purrr::map_int(nrow)
+ds_table$col_count <- ds_table$d %>%
+  purrr::map_int(ncol)
+ds_table$table_size <- ds_table$d %>%
+  purrr::map_chr(~format(object.size(.), units="KiB"))
 
 ds_table <-
   ds_table %>%
   dplyr::mutate(
     # check_message =  purrr::map_chr(.data$d, ~checkmate::check_data_frame(.data$d, min.rows = 5)),
-    pass  = (check_message == "TRUE"),
-    check_message = dplyr::if_else(check_message == "TRUE", "Pass", check_message)
+    pass                = (message_check == "TRUE"),
+    message_check       = dplyr::if_else(message_check == "TRUE", "Pass", message_check),
+    message_dimensions  = paste("Table dim (c x r):", .data$col_count,  "x", .data$row_count, "-", .data$table_size)
   )
 
 # ---- inspect -----------------------------------------------------------------
 ds_table %>%
-  dplyr::select(sql, check_message) %>%
+  dplyr::select(sql, message_check, message_dimensions) %>%
   dplyr::transmute(
-    message_augmented = paste("\n--------", sql, check_message, sep="\n")
+    message_augmented = paste("\n--------", sql, message_check, message_dimensions, sep="\n")
   ) %>%
   # dplyr::pull()
   # ds_table$check %>%
@@ -103,78 +111,15 @@ if( !purrr::every(ds_table$pass, isTRUE) ) {
 }
 
 
-cat(
-  "Unique counties    : ", scales::comma(dplyr::n_distinct(ds_county_month$county_id)), "\n",
-  "Unique months      : ", scales::comma(dplyr::n_distinct(ds_county_month$month    )), "\n",
-  "Month range        : ", strftime(range(ds_county_month$month), "%Y-%m-%d  "), "\n",
-  sep=""
-)
-ds_county_month %>%
-  dplyr::count(county_id) %>%
-  dplyr::mutate(n = scales::comma(n)) %>%
-  tidyr::spread(county_id, n)
-
-ds_county_month %>%
-  # dplyr::filter(visit_all_completed_count > 0L) %>%
-  # purrr::map(., ~mean(is.na(.)) ) %>%
-  purrr::map(., ~mean(is.na(.) | as.character(.)=="Unknown")) %>%
-  purrr::map(., ~round(., 3)) %>%
-  tibble::as_tibble() %>%
-  t()
-
 # ---- verify-values -----------------------------------------------------------
 # OuhscMunge::verify_value_headstart(ds_county)
-checkmate::assert_integer(  ds_county$county_id , any.missing=F , lower=1, upper=77   , unique=T)
-checkmate::assert_character(ds_county$county    , any.missing=F , pattern="^.{3,12}$" , unique=T)
-checkmate::assert_numeric(  ds_county$fte       , any.missing=F , lower=0, upper=22   )
-checkmate::assert_numeric(  ds_county$cog_1       , any.missing=T , lower=4, upper=6    )
-checkmate::assert_numeric(  ds_county$cog_2       , any.missing=T , lower=5, upper=7    )
-checkmate::assert_numeric(  ds_county$cog_3       , any.missing=T , lower=6, upper=9    )
-checkmate::assert_numeric(  ds_county$phys_1      , any.missing=T , lower=2, upper=4    )
-checkmate::assert_numeric(  ds_county$phys_2      , any.missing=T , lower=3, upper=5    )
-checkmate::assert_numeric(  ds_county$phys_3      , any.missing=T , lower=1, upper=2    )
-
-
-checkmate::assert_integer(  ds_county_month$county_id                   , any.missing=F , lower=1, upper=77                                        )
-checkmate::assert_character(ds_county_month$county                      , any.missing=F , pattern="^.{3,12}$"                                      )
-checkmate::assert_date(     ds_county_month$month                       , any.missing=F , lower=as.Date("2012-06-15"), upper=as.Date("2015-09-15") )
-checkmate::assert_numeric(  ds_county_month$fte                         , any.missing=F , lower=0, upper=27                                        )
-checkmate::assert_logical(  ds_county_month$fte_approximated            , any.missing=F                                                            )
-checkmate::assert_logical(  ds_county_month$month_missing               , any.missing=F                                                            )
-checkmate::assert_numeric(  ds_county_month$fte_rolling_median_11_month , any.missing=T , lower=0, upper=24                                        )
-
-county_month_combo   <- paste(ds_county_month$county_id, ds_county_month$month)
-checkmate::assert_character(county_month_combo, pattern  ="^\\d{1,2} \\d{4}-\\d{2}-\\d{2}$"            , any.missing=F, unique=T)
 
 # ---- specify-columns-to-upload -----------------------------------------------
-# dput(colnames(ds_county_month)) # Print colnames for line below.
-columns_to_write_county_month <- c(
-  "county_id", "county", "month", "fte", "fte_approximated",
-  "month_missing", "fte_rolling_median_11_month"
-)
-ds_slim_county_month <-
-  ds_county_month %>%
-  # dplyr::slice(1:100) %>%
-  dplyr::select(!!columns_to_write_county_month)
-ds_slim_county_month
-
-rm(columns_to_write_county_month)
-
-# dput(colnames(ds_county)) # Print colnames for line below.
-columns_to_write_county <- c(
-  "county_id", "county", "fte",
-  "cog_1_count",
-  "cog_1", "cog_2", "cog_3",
-  "phys_1", "phys_2", "phys_3"
-)
-ds_slim_county <-
-  ds_county %>%
-  # dplyr::slice(1:100) %>%
-  dplyr::select(!!columns_to_write_county)
-ds_slim_county
-
-rm(columns_to_write_county)
 
 # ---- save-to-disk ------------------------------------------------------------
-readr::write_rds(ds_slim_county        , config$path_te_county           , compress="gz")
-readr::write_rds(ds_slim_county_month  , config$path_te_county_month     , compress="gz")
+ds_table %>%
+  dplyr::select(d, path_output) %>%
+  purrr::pwalk(.f=~readr::write_csv(x = .x, path=.y))
+
+
+  # purrr::walk2(.x=.data$d, .data$path_output, .f=~readr::write_csv(x = .x, path=.y))
