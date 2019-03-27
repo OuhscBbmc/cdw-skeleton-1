@@ -8,7 +8,7 @@ default:
   tables_to_scribe:
     -
       name: person
-      sql: "SELECT * FROM {schema_name}.person"
+      sql: "SELECT * FROM {project_name}.person"
       columns_include: ""
       #columns_exclude: ""
       path_output: "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data/derived/person.csv"
@@ -89,3 +89,5 @@ default:
  # gt_sql_queries_to_csv                               :   "manipulation/sql-queries-to-csv-report/sql-to-generate-csv"
  # gt_sql_csv_report_generated                         :   "manipulation/sql-queries-to-csv-report/sql-csv-report-generated"
  # fs_csv_report                                       :   "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/csv-report"
+
+  path_database                                        : "data-public/raw/emr-mock.sqlite"

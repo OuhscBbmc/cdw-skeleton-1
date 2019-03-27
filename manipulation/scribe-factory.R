@@ -21,9 +21,10 @@ requireNamespace("OuhscMunge") # devtools::install_github(repo="OuhscBbmc/OuhscM
 config                         <- config::get()#file="./repo/config.yml")
 path_db                        <- config$path_database
 
-
+# is_test                        <- (config$schema_name == "{project_name}")
 if( config$schema_name == "{project_name}" ) {
-  config$schema_name  <- list("project_name" = "project_test") %>%
+  # `main` is the default schema in the (test) SQLite database
+  config$schema_name  <- list("project_name" = "main") %>%
     glue::glue_data(config$schema_name) %>%
     as.character()
 }
@@ -37,56 +38,71 @@ if( config$schema_name == "{project_name}" ) {
 ds_table <-
   config$tables %>%
   purrr::map_df(tibble::as_tibble) %>%
-  # dplyr::slice(3) %>%
   dplyr::mutate(
-    schema_name     = config$schema_name,
-    # schema_name     = "project_test",
+    project_name     = config$schema_name
   ) %>%
   dplyr::rowwise() %>%
   dplyr::mutate(
     # sql             = gsub("\\{project_name\\}", .data$schema_name, sql)
-    sql             = as.character(glue::glue_data(list("schema_name" = .data$schema_name), .data$sql))
+    sql             = as.character(glue::glue_data(list("project_name" = .data$project_name), .data$sql))
   ) %>%
   dplyr::ungroup() %>%
   dplyr::mutate(
-    sql_constructed = as.character(glue::glue_data(., "SELECT {columns_include} FROM {schema_name}.{name}")),
+    sql_constructed = as.character(glue::glue_data(., "SELECT {columns_include} FROM {project_name}.{name}")),
     sql             = dplyr::na_if(sql, ""),
     sql             = dplyr::na_if(sql, "NA"),
     sql             = dplyr::coalesce(.data$sql, .data$sql_constructed)
+
+    # sql             = dplyr::if_else(is_test, gsub("\\{project_name\\}.", "", sql))
   ) %>%
   dplyr::select(sql,  path_output)
 
+checkmate::assert_character(ds_table$sql          , min.chars=10, any.missing=F, unique=T)
+checkmate::assert_character(ds_table$path_output  , min.chars=10, any.missing=F, unique=T)
 
 
 # ---- load-data ---------------------------------------------------------------
 # ds_lu_program   <- retrieve_program()
 cnn <- DBI::dbConnect(drv=RSQLite::SQLite(), dbname=path_db)
 # DBI::dbListTables(cnn)
-ds_county           <- DBI::dbGetQuery(cnn, sql_county)
-ds_county_month     <- DBI::dbGetQuery(cnn, sql_county_month)
-DBI::dbDisconnect(cnn); rm(cnn, sql_county_month, sql_county)
+ds_table$d <- ds_table$sql %>%
+  purrr::map(., function(s) DBI::dbGetQuery(conn=cnn, statement = s))
+# d           <- DBI::dbGetQuery(cnn, ds_table$sql[1])
+DBI::dbDisconnect(cnn); rm(cnn)
 
-checkmate::assert_data_frame(ds_county           , nrows = 77)
-checkmate::assert_data_frame(ds_county_month     , min.rows = 2 *77)
+
+# ds_table$d[[1]] %>%
+#   purrr::map(~checkmate::assert_data_frame(., min.rows = 1))
+
 
 # ---- tweak-data --------------------------------------------------------------
-dim(ds_county)
-ds_county <-
-  ds_county %>%
-  tibble::as_tibble()
 
-dim(ds_county_month)
-ds_county_month <-
-  ds_county_month %>%
-  tibble::as_tibble() %>%
+ds_table$check_message <- ds_table$d %>%
+  purrr::map_chr(., ~checkmate::check_data_frame(., min.rows = 1))
+
+ds_table <-
+  ds_table %>%
   dplyr::mutate(
-    month                 = as.Date(month),
-    fte_approximated      = as.logical(fte_approximated),
-    month_missing         = as.logical(month_missing)
+    # check_message =  purrr::map_chr(.data$d, ~checkmate::check_data_frame(.data$d, min.rows = 5)),
+    pass  = (check_message == "TRUE"),
+    check_message = dplyr::if_else(check_message == "TRUE", "Pass", check_message)
   )
-dim(ds_county_month)
 
 # ---- inspect -----------------------------------------------------------------
+ds_table %>%
+  dplyr::select(sql, check_message) %>%
+  dplyr::transmute(
+    message_augmented = paste("\n--------", sql, check_message, sep="\n")
+  ) %>%
+  # dplyr::pull()
+  # ds_table$check %>%
+    purrr::walk(~message(.))
+
+if( !purrr::every(ds_table$pass, isTRUE) ) {
+  stop(sum(!ds_table$pass), " out of ", nrow(ds_table), " tables failed.")
+}
+
+
 cat(
   "Unique counties    : ", scales::comma(dplyr::n_distinct(ds_county_month$county_id)), "\n",
   "Unique months      : ", scales::comma(dplyr::n_distinct(ds_county_month$month    )), "\n",
