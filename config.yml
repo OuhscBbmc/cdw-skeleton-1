@@ -3,7 +3,7 @@ default:
   dsn_staging                                         :   "cdw_cache_staging"
   # dsn_centricity                                      :   "cdw_outpost"
   # dsn_idx                                             :   "cdw_waystation_idx"
-  # schema_name                                         :   "{project_name}"
+  schema_name                                         :   "{project_name}"
 
   tables_to_scribe:
     -
@@ -13,10 +13,15 @@ default:
       #columns_exclude: ""
       path_output: "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data/derived/person.csv"
     -
-      name: appointment
+      name: obs
       sql: ""
+      columns_include: "mrn_flowcast, obs_date, obs_term, obs_value"
+      path_output: "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data/derived/obs.csv"
+    -
+      name: medicate
       columns_include: "*"
-      path_output: "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data/derived/appointment.csv"
+      #columns_exclude: "start_date, stop_date"
+      path_output: "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data/derived/medicate.csv"
 
  # #sweep and specify
  # fs_input_review_required_centricity_diagnosis       :   "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data-public/sweep-and-specify-centricity/input/review-required/diagnosis"

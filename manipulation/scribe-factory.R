@@ -21,24 +21,18 @@ requireNamespace("OuhscMunge") # devtools::install_github(repo="OuhscBbmc/OuhscM
 config                         <- config::get()#file="./repo/config.yml")
 path_db                        <- config$path_database
 
+# config$tables %>%
+#   purrr::map_chr("path_output")
 
-sql_county_month <-
-  "
-    SELECT
-      t.county_id
-      ,luc.county_name      AS county
-      ,t.month
-      ,t.fte
-      ,t.fte_approximated
-      ,t.month_missing
-      ,t.fte_rolling_median_11_month
-    FROM te_month AS t
-      LEFT JOIN county AS luc ON t.county_id = luc.county_id
-    ORDER BY t.county_id, t.month
-  "
+config$tables %>%
+  purrr::map_df(tibble::as_tibble) %>%
+  dplyr::mutate(
+    schema_name     = config$schema_name,
+    sql_constructed = glue::glue_data(., "SELECT {columns_include} FROM {schema_name}.{name}")
+  ) %>%
+  dplyr::select(sql, sql_constructed)
 
-config$tables
-
+mtcars %>% glue::glue_data("{rownames(.)} has {hp} hp")
 
 
 # ---- load-data ---------------------------------------------------------------
