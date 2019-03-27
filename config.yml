@@ -8,7 +8,7 @@ default:
   tables_to_scribe:
     -
       name: person
-      sql: "SELECT * FROM {project_name}.person"
+      sql: "SELECT * FROM {schema_name}.person"
       columns_include: ""
       #columns_exclude: ""
       path_output: "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data/derived/person.csv"

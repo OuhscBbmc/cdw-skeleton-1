@@ -21,18 +21,41 @@ requireNamespace("OuhscMunge") # devtools::install_github(repo="OuhscBbmc/OuhscM
 config                         <- config::get()#file="./repo/config.yml")
 path_db                        <- config$path_database
 
+
+if( config$schema_name == "{project_name}" ) {
+  config$schema_name  <- list("project_name" = "project_test") %>%
+    glue::glue_data(config$schema_name) %>%
+    as.character()
+}
+
+# glue::glue_data(list("schema_name" = config$schema_name), config$tables_to_scribe[[1]]$sql)
+#
+# class(config$tables_to_scribe[[1]]$sql)
 # config$tables %>%
 #   purrr::map_chr("path_output")
 
-config$tables %>%
+ds_table <-
+  config$tables %>%
   purrr::map_df(tibble::as_tibble) %>%
+  # dplyr::slice(3) %>%
   dplyr::mutate(
     schema_name     = config$schema_name,
-    sql_constructed = glue::glue_data(., "SELECT {columns_include} FROM {schema_name}.{name}")
+    # schema_name     = "project_test",
   ) %>%
-  dplyr::select(sql, sql_constructed)
+  dplyr::rowwise() %>%
+  dplyr::mutate(
+    # sql             = gsub("\\{project_name\\}", .data$schema_name, sql)
+    sql             = as.character(glue::glue_data(list("schema_name" = .data$schema_name), .data$sql))
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(
+    sql_constructed = as.character(glue::glue_data(., "SELECT {columns_include} FROM {schema_name}.{name}")),
+    sql             = dplyr::na_if(sql, ""),
+    sql             = dplyr::na_if(sql, "NA"),
+    sql             = dplyr::coalesce(.data$sql, .data$sql_constructed)
+  ) %>%
+  dplyr::select(sql,  path_output)
 
-mtcars %>% glue::glue_data("{rownames(.)} has {hp} hp")
 
 
 # ---- load-data ---------------------------------------------------------------
