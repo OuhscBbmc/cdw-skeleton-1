@@ -22,13 +22,34 @@ requireNamespace("OuhscMunge") # devtools::install_github(repo="OuhscBbmc/OuhscM
 config                         <- config::get()#file="./repo/config.yml")
 path_db                        <- config$path_database
 
+# config %>%
+#   purrr::map(~gsub("\\{project_name\\}", config$project_name, .))
+#   # purrr::map(~glue::glue_data(list(project_name = config$project_name), .))
+# config$tables %>%
+#   dput()
+
+
+config$tables
+config <- config %>%
+  rapply(object=., function(s) gsub("\\{project_name\\}", config$project_name, s), how="replace")
+#   purrr::modify_depth(., 2, ~gsub("\\{project_name\\}", config$project_name, .), .ragged=T) #%>%
+  # str()
+config$tables
 # is_test                        <- (config$schema_name == "{project_name}")
-if( config$schema_name == "{project_name}" ) {
+if( config$schema_name == "cdw-skeleton-1" ) { #{project_name}
   # `main` is the default schema in the (test) SQLite database
-  config$schema_name  <- list("project_name" = "main") %>%
-    glue::glue_data(config$schema_name) %>%
-    as.character()
+  config$schema_name  <- "main"
+  # config$schema_name  <- list("project_name" = "main") %>%
+  #   glue::glue_data(config$schema_name) %>%
+  #   as.character()
+
+} else {
+  config$schema_name <- config$project_name
 }
+
+config <- config %>%
+  rapply(object=., function(s) gsub("\\{schema_name\\}", config$schema_name, s), how="replace")
+
 
 # glue::glue_data(list("schema_name" = config$schema_name), config$tables_to_scribe[[1]]$sql)
 #
@@ -52,11 +73,14 @@ ds_table <-
     sql_constructed = as.character(glue::glue_data(., "SELECT {columns_include} FROM {project_name}.{name}")),
     sql             = dplyr::na_if(sql, ""),
     sql             = dplyr::na_if(sql, "NA"),
-    sql             = dplyr::coalesce(.data$sql, .data$sql_constructed)
+    sql             = dplyr::coalesce(.data$sql, .data$sql_constructed),
 
     # sql             = dplyr::if_else(is_test, gsub("\\{project_name\\}.", "", sql))
+    path_output     = strftime(Sys.Date(), path_output)
   ) %>%
-  dplyr::select(sql,  path_output)
+  dplyr::select(sql, path_output)
+
+ds_table$path_output
 
 checkmate::assert_character(ds_table$sql          , min.chars=10, any.missing=F, unique=T)
 checkmate::assert_character(ds_table$path_output  , min.chars=10, any.missing=F, unique=T)
@@ -117,9 +141,11 @@ if( !purrr::every(ds_table$pass, isTRUE) ) {
 # ---- specify-columns-to-upload -----------------------------------------------
 
 # ---- save-to-disk ------------------------------------------------------------
+ds_table$path_output %>%
+  dirname() %>%
+  unique() %>%
+  purrr::walk(., ~dir.create(., recursive = F))
+
 ds_table %>%
   dplyr::select(d, path_output) %>%
   purrr::pwalk(.f=~readr::write_csv(x = .x, path=.y))
-
-
-  # purrr::walk2(.x=.data$d, .data$path_output, .f=~readr::write_csv(x = .x, path=.y))
