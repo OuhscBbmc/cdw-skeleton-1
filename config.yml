@@ -5,6 +5,7 @@ default:
   # dsn_centricity                                      :   "cdw_outpost"
   # dsn_idx                                             :   "cdw_waystation_idx"
   schema_name                                         :   "{project_name}"
+  path_directory_output                               : "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data/derived/%Y-%m-%d"
 
   tables_to_scribe:
     -
@@ -12,19 +13,19 @@ default:
       sql: "SELECT * FROM {schema_name}.person"
       columns_include: ""
       #columns_exclude: ""
-      path_output: "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data/derived/%Y-%m-%d/person.csv"
+      path_output: "{path_directory_output}/person.csv"
       #path_output: "data-public/derived/%Y-%m-%d/person.csv"
     -
       name: obs
       sql: ""
       columns_include: "mrn_flowcast, obs_date, obs_term, obs_value"
-      path_output: "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data/derived/%Y-%m-%d/obs.csv"
+      path_output: "{path_directory_output}/obs.csv"
       #path_output: "data-public/derived/%Y-%m-%d/obs.csv"
     -
       name: medicate
       columns_include: "*"
       #columns_exclude: "start_date, stop_date"
-      path_output: "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data/derived/%Y-%m-%d/medicate.csv"
+      path_output: "{path_directory_output}/medicate.csv"
       #path_output: "data-public/derived/%Y-%m-%d/medicate.csv"
 
  # #sweep and specify

@@ -1,12 +1,22 @@
+
+
+
+
+This report was automatically generated with the R package **knitr**
+(version 1.22).
+
+
+```r
 # knitr::stitch_rmd(script="manipulation/scribe-factory.R", output="stitched-output/manipulation/scribe-factory.md")
 rm(list=ls(all=TRUE)) #Clear the memory of variables from previous run. This is not called by knitr, because it's above the first chunk.
+```
 
-
-# ---- load-sources ------------------------------------------------------------
+```r
 # source("manipulation/osdh/ellis/common-ellis.R")
 # base::source(file="dal/osdh/arch/benchmark-client-program-arch.R") #Load retrieve_benchmark_client_program
+```
 
-# ---- load-packages -----------------------------------------------------------
+```r
 library(magrittr, quietly=TRUE)
 library(rlang, quietly=TRUE)
 requireNamespace("DBI")
@@ -16,8 +26,9 @@ requireNamespace("testit")
 requireNamespace("lubridate")
 requireNamespace("RcppRoll")
 requireNamespace("OuhscMunge") # devtools::install_github(repo="OuhscBbmc/OuhscMunge")
+```
 
-# ---- declare-globals ---------------------------------------------------------
+```r
 # Constant values that won't change.
 config                         <- config::get()#file="./repo/config.yml")
 path_db                        <- config$path_database
@@ -30,11 +41,97 @@ path_db                        <- config$path_database
 
 
 config$tables
+```
+
+```
+## [[1]]
+## [[1]]$name
+## [1] "person"
+## 
+## [[1]]$sql
+## [1] "SELECT * FROM {schema_name}.person"
+## 
+## [[1]]$columns_include
+## [1] ""
+## 
+## [[1]]$path_output
+## [1] "{path_directory_output}/person.csv"
+## 
+## 
+## [[2]]
+## [[2]]$name
+## [1] "obs"
+## 
+## [[2]]$sql
+## [1] ""
+## 
+## [[2]]$columns_include
+## [1] "mrn_flowcast, obs_date, obs_term, obs_value"
+## 
+## [[2]]$path_output
+## [1] "{path_directory_output}/obs.csv"
+## 
+## 
+## [[3]]
+## [[3]]$name
+## [1] "medicate"
+## 
+## [[3]]$columns_include
+## [1] "*"
+## 
+## [[3]]$path_output
+## [1] "{path_directory_output}/medicate.csv"
+```
+
+```r
 config <- config %>%
   rapply(object=., function(s) gsub("\\{project_name\\}", config$project_name, s), how="replace")
 #   purrr::modify_depth(., 2, ~gsub("\\{project_name\\}", config$project_name, .), .ragged=T) #%>%
   # str()
 config$tables
+```
+
+```
+## [[1]]
+## [[1]]$name
+## [1] "person"
+## 
+## [[1]]$sql
+## [1] "SELECT * FROM {schema_name}.person"
+## 
+## [[1]]$columns_include
+## [1] ""
+## 
+## [[1]]$path_output
+## [1] "{path_directory_output}/person.csv"
+## 
+## 
+## [[2]]
+## [[2]]$name
+## [1] "obs"
+## 
+## [[2]]$sql
+## [1] ""
+## 
+## [[2]]$columns_include
+## [1] "mrn_flowcast, obs_date, obs_term, obs_value"
+## 
+## [[2]]$path_output
+## [1] "{path_directory_output}/obs.csv"
+## 
+## 
+## [[3]]
+## [[3]]$name
+## [1] "medicate"
+## 
+## [[3]]$columns_include
+## [1] "*"
+## 
+## [[3]]$path_output
+## [1] "{path_directory_output}/medicate.csv"
+```
+
+```r
 # is_test                        <- (config$schema_name == "{project_name}")
 if( config$schema_name == "cdw-skeleton-1" ) { #{project_name}
   # `main` is the default schema in the (test) SQLite database
@@ -83,12 +180,19 @@ ds_table <-
   dplyr::select(sql, path_output)
 
 ds_table$path_output
+```
 
+```
+## [1] "data-public/derived/person.csv"   "data-public/derived/obs.csv"     
+## [3] "data-public/derived/medicate.csv"
+```
+
+```r
 checkmate::assert_character(ds_table$sql          , min.chars=10, any.missing=F, unique=T)
 checkmate::assert_character(ds_table$path_output  , min.chars=10, any.missing=F, unique=T)
+```
 
-
-# ---- load-data ---------------------------------------------------------------
+```r
 # ds_lu_program   <- retrieve_program()
 cnn <- DBI::dbConnect(drv=RSQLite::SQLite(), dbname=path_db)
 # DBI::dbListTables(cnn)
@@ -100,10 +204,9 @@ DBI::dbDisconnect(cnn); rm(cnn)
 
 # ds_table$d[[1]] %>%
 #   purrr::map(~checkmate::assert_data_frame(., min.rows = 1))
+```
 
-
-# ---- tweak-data --------------------------------------------------------------
-
+```r
 ds_table$message_check <- ds_table$d %>%
   purrr::map_chr(., ~checkmate::check_data_frame(., min.rows = 1))
 ds_table$row_count <- ds_table$d %>%
@@ -121,8 +224,9 @@ ds_table <-
     message_check       = dplyr::if_else(message_check == "TRUE", "Pass", message_check),
     message_dimensions  = paste("Table dim (c x r):", .data$col_count,  "x", .data$row_count, "-", .data$table_size)
   )
+```
 
-# ---- inspect -----------------------------------------------------------------
+```r
 ds_table %>%
   dplyr::select(sql, message_check, message_dimensions) %>%
   dplyr::transmute(
@@ -131,18 +235,36 @@ ds_table %>%
   # dplyr::pull()
   # ds_table$check %>%
     purrr::walk(~message(.))
+```
 
+```
+## 
+## --------
+## SELECT * FROM main.person
+## Pass
+## Table dim (c x r): 4 x 6 - 2.3 KiB
+## --------
+## SELECT mrn_flowcast, obs_date, obs_term, obs_value FROM main.obs
+## Pass
+## Table dim (c x r): 4 x 4 - 1.8 KiB
+## --------
+## SELECT * FROM main.medicate
+## Pass
+## Table dim (c x r): 5 x 2 - 1.8 KiB
+```
+
+```r
 if( !purrr::every(ds_table$pass, isTRUE) ) {
   stop(sum(!ds_table$pass), " out of ", nrow(ds_table), " tables failed.")
 }
+```
 
-
-# ---- verify-values -----------------------------------------------------------
+```r
 # OuhscMunge::verify_value_headstart(ds_county)
+```
 
-# ---- specify-columns-to-upload -----------------------------------------------
 
-# ---- save-to-disk ------------------------------------------------------------
+```r
 directories <- ds_table$path_output %>%
   dirname() %>%
   unique() %>%
@@ -155,3 +277,62 @@ directories %>%
 ds_table %>%
   dplyr::select(d, path_output) %>%
   purrr::pwalk(.f=~readr::write_csv(x = .x, path=.y))
+```
+
+The R session information (including the OS info, R version and all
+packages used):
+
+
+```r
+sessionInfo()
+```
+
+```
+## R version 3.5.3 (2019-03-11)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 18.04.2 LTS
+## 
+## Matrix products: default
+## BLAS: /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1
+## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1
+## 
+## locale:
+##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+##  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+##  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] rlang_0.3.1  magrittr_1.5
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_1.0.0            pillar_1.3.1          compiler_3.5.3       
+##  [4] tools_3.5.3           odbc_1.1.6            digest_0.6.18        
+##  [7] packrat_0.5.0         bit_1.1-14            evaluate_0.13        
+## [10] lubridate_1.7.4       RSQLite_2.1.1         memoise_1.1.0        
+## [13] tibble_2.0.1          checkmate_1.9.1       pkgconfig_2.0.2      
+## [16] DBI_1.0.0             cli_1.0.1             rstudioapi_0.9.0     
+## [19] yaml_2.2.0            RcppRoll_0.3.0        xfun_0.5             
+## [22] knitr_1.22            dplyr_0.8.0.1         stringr_1.4.0        
+## [25] hms_0.4.2.9001        bit64_0.9-7           tidyselect_0.2.5     
+## [28] glue_1.3.0            OuhscMunge_0.1.9.9010 R6_2.4.0             
+## [31] fansi_0.4.0           readr_1.3.1           tidyr_0.8.3          
+## [34] purrr_0.3.1           blob_1.1.1            backports_1.1.3      
+## [37] scales_1.0.0.9000     assertthat_0.2.0      testit_0.9.1         
+## [40] colorspace_1.4-0      config_0.3            utf8_1.1.4           
+## [43] stringi_1.3.1         munsell_0.5.0         crayon_1.3.4
+```
+
+```r
+Sys.time()
+```
+
+```
+## [1] "2019-03-28 00:49:36 CDT"
+```
+
