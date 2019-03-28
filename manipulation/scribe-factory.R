@@ -1,10 +1,7 @@
 # knitr::stitch_rmd(script="manipulation/scribe-factory.R", output="stitched-output/manipulation/scribe-factory.md")
 rm(list=ls(all=TRUE)) #Clear the memory of variables from previous run. This is not called by knitr, because it's above the first chunk.
 
-
 # ---- load-sources ------------------------------------------------------------
-# source("manipulation/osdh/ellis/common-ellis.R")
-# base::source(file="dal/osdh/arch/benchmark-client-program-arch.R") #Load retrieve_benchmark_client_program
 
 # ---- load-packages -----------------------------------------------------------
 library(magrittr, quietly=TRUE)
@@ -13,8 +10,7 @@ requireNamespace("DBI")
 requireNamespace("odbc")
 requireNamespace("dplyr")
 requireNamespace("testit")
-requireNamespace("lubridate")
-requireNamespace("RcppRoll")
+requireNamespace("checkmate")
 requireNamespace("OuhscMunge") # devtools::install_github(repo="OuhscBbmc/OuhscMunge")
 
 # ---- declare-globals ---------------------------------------------------------
@@ -24,40 +20,25 @@ path_db                        <- config$path_database
 
 # config %>%
 #   purrr::map(~gsub("\\{project_name\\}", config$project_name, .))
-#   # purrr::map(~glue::glue_data(list(project_name = config$project_name), .))
-# config$tables %>%
-#   dput()
 
-
-config$tables
-config <- config %>%
-  rapply(object=., function(s) gsub("\\{project_name\\}", config$project_name, s), how="replace")
-#   purrr::modify_depth(., 2, ~gsub("\\{project_name\\}", config$project_name, .), .ragged=T) #%>%
-  # str()
-config$tables
-# is_test                        <- (config$schema_name == "{project_name}")
-if( config$schema_name == "cdw-skeleton-1" ) { #{project_name}
+if( config$project_name == "cdw-skeleton-1" ) {
+  is_test             <- TRUE
   # `main` is the default schema in the (test) SQLite database
   config$schema_name  <- "main"
   config$path_directory_output    <- "data-public/derived"
   # config$schema_name  <- list("project_name" = "main") %>%
   #   glue::glue_data(config$schema_name) %>%
   #   as.character()
-
 } else {
+  is_test             <- FALSE
   config$schema_name <- config$project_name
 }
 
-config <- config %>%
+config <- config  %>%
+  rapply(object=., function(s) gsub("\\{project_name\\}", config$project_name, s), how="replace") %>%
   rapply(object=., function(s) gsub("\\{schema_name\\}", config$schema_name, s), how="replace") %>%
   rapply(object=., function(s) gsub("\\{path_directory_output\\}", config$path_directory_output, s), how="replace")
 
-
-# glue::glue_data(list("schema_name" = config$schema_name), config$tables_to_scribe[[1]]$sql)
-#
-# class(config$tables_to_scribe[[1]]$sql)
-# config$tables %>%
-#   purrr::map_chr("path_output")
 
 ds_table <-
   config$tables %>%
@@ -77,29 +58,25 @@ ds_table <-
     sql             = dplyr::na_if(sql, "NA"),
     sql             = dplyr::coalesce(.data$sql, .data$sql_constructed),
 
-    # sql             = dplyr::if_else(is_test, gsub("\\{project_name\\}.", "", sql))
     path_output     = strftime(Sys.Date(), path_output)
   ) %>%
   dplyr::select(sql, path_output)
-
-ds_table$path_output
 
 checkmate::assert_character(ds_table$sql          , min.chars=10, any.missing=F, unique=T)
 checkmate::assert_character(ds_table$path_output  , min.chars=10, any.missing=F, unique=T)
 
 
 # ---- load-data ---------------------------------------------------------------
-# ds_lu_program   <- retrieve_program()
-cnn <- DBI::dbConnect(drv=RSQLite::SQLite(), dbname=path_db)
+cnn <- if( is_test ) {
+  DBI::dbConnect(drv=RSQLite::SQLite(), dbname=path_db)
+} else {
+  DBI::dbConnect(odbc::odbc(), config$dsn_staging)
+}
 # DBI::dbListTables(cnn)
 ds_table$d <- ds_table$sql %>%
   purrr::map(., function(s) DBI::dbGetQuery(conn=cnn, statement = s))
 # d           <- DBI::dbGetQuery(cnn, ds_table$sql[1])
 DBI::dbDisconnect(cnn); rm(cnn)
-
-
-# ds_table$d[[1]] %>%
-#   purrr::map(~checkmate::assert_data_frame(., min.rows = 1))
 
 
 # ---- tweak-data --------------------------------------------------------------
@@ -124,13 +101,25 @@ ds_table <-
 
 # ---- inspect -----------------------------------------------------------------
 ds_table %>%
+  dplyr::select(message_check, sql, path_output, message_dimensions) %>%
+  dplyr::mutate(
+    path_output         = gsub("/", "/<br/>", path_output),
+    sql                 = gsub("^SELECT\\b", "SELECT<br/>  ", sql),
+    sql                 = gsub("\\bFROM\\b", "<br/>FROM", sql),
+    message_dimensions  = sub("Table dim \\(c x r\\): ", "", message_dimensions)
+
+  ) %>%
+  knitr::kable(
+    col.names = gsub("_", "<br/>", colnames(.)),
+    format    = "markdown"
+  )
+
+ds_table %>%
   dplyr::select(sql, message_check, message_dimensions) %>%
   dplyr::transmute(
     message_augmented = paste("\n--------", sql, message_check, message_dimensions, sep="\n")
   ) %>%
-  # dplyr::pull()
-  # ds_table$check %>%
-    purrr::walk(~message(.))
+  purrr::walk(~message(.))
 
 if( !purrr::every(ds_table$pass, isTRUE) ) {
   stop(sum(!ds_table$pass), " out of ", nrow(ds_table), " tables failed.")
@@ -155,3 +144,7 @@ directories %>%
 ds_table %>%
   dplyr::select(d, path_output) %>%
   purrr::pwalk(.f=~readr::write_csv(x = .x, path=.y))
+
+ds_table %>%
+  dplyr::select(pass, path_output, sql, message_check, message_dimensions) %>%
+  readr::write_csv(config$path_output_summary)

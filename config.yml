@@ -6,6 +6,7 @@ default:
   # dsn_idx                                             :   "cdw_waystation_idx"
   schema_name                                         :   "{project_name}"
   path_directory_output                               : "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data/derived/%Y-%m-%d"
+  path_output_summary                                 : "{path_directory_output}/_summary.csv"
 
   tables_to_scribe:
     -

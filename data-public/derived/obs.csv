@@ -1,0 +1,5 @@
+mrn_flowcast,obs_date,obs_term,obs_value
+1,2014-01-01,height,70
+2,2015-04-02,height,65
+2,2015-04-02,weight,200
+1,2014-01-01,weight,170
