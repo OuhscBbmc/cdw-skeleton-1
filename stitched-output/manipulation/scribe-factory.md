@@ -25,26 +25,24 @@ requireNamespace("OuhscMunge") # devtools::install_github(repo="OuhscBbmc/OuhscM
 
 ```r
 # Constant values that won't change.
-config                         <- config::get()#file="./repo/config.yml")
-path_db                        <- config$path_database
+config                         <- config::get()
 
 # config %>%
 #   purrr::map(~gsub("\\{project_name\\}", config$project_name, .))
 
 if( config$project_name == "cdw-skeleton-1" ) {
-  is_test             <- TRUE
-  # `main` is the default schema in the (test) SQLite database
-  config$schema_name  <- "main"
+  is_test                         <- TRUE
+  config$schema_name              <- "main"               # `main` is the default schema in the (test) SQLite database
   config$path_directory_output    <- "data-public/derived"
   # config$schema_name  <- list("project_name" = "main") %>%
   #   glue::glue_data(config$schema_name) %>%
   #   as.character()
 } else {
   is_test             <- FALSE
-  config$schema_name <- config$project_name
+  config$schema_name  <- config$project_name
 }
 
-config <- config  %>%
+config <- config %>%
   rapply(object=., function(s) gsub("\\{project_name\\}", config$project_name, s), how="replace") %>%
   rapply(object=., function(s) gsub("\\{schema_name\\}", config$schema_name, s), how="replace") %>%
   rapply(object=., function(s) gsub("\\{path_directory_output\\}", config$path_directory_output, s), how="replace")
@@ -78,7 +76,7 @@ checkmate::assert_character(ds_table$path_output  , min.chars=10, any.missing=F,
 
 ```r
 cnn <- if( is_test ) {
-  DBI::dbConnect(drv=RSQLite::SQLite(), dbname=path_db)
+  DBI::dbConnect(drv=RSQLite::SQLite(), dbname=config$path_database)
 } else {
   DBI::dbConnect(odbc::odbc(), config$dsn_staging)
 }
@@ -101,12 +99,17 @@ ds_table$table_size <- ds_table$d %>%
 
 ds_table <-
   ds_table %>%
+  # dplyr::rowwise() %>%
+  # dplyr::mutate(
+  #   check_message     =  purrr::pmap_chr(.data$d, function(dd) checkmate::check_data_frame(dd, min.rows = 5))
+  # ) %>%
+  # dplyr::ungroup() %>%
   dplyr::mutate(
-    # check_message =  purrr::map_chr(.data$d, ~checkmate::check_data_frame(.data$d, min.rows = 5)),
     pass                = (message_check == "TRUE"),
     message_check       = dplyr::if_else(message_check == "TRUE", "Pass", message_check),
     message_dimensions  = paste("Table dim (c x r):", .data$col_count,  "x", .data$row_count, "-", .data$table_size)
   )
+# ds_table$check_message
 ```
 
 ```r
@@ -117,7 +120,6 @@ ds_table %>%
     sql                 = gsub("^SELECT\\b", "SELECT<br/>  ", sql),
     sql                 = gsub("\\bFROM\\b", "<br/>FROM", sql),
     message_dimensions  = sub("Table dim \\(c x r\\): ", "", message_dimensions)
-
   ) %>%
   knitr::kable(
     col.names = gsub("_", "<br/>", colnames(.)),
@@ -162,6 +164,14 @@ ds_table %>%
 if( !purrr::every(ds_table$pass, isTRUE) ) {
   stop(sum(!ds_table$pass), " out of ", nrow(ds_table), " tables failed.")
 }
+```
+
+```r
+message("TODO: write an automated text file every time that provides context to the researcher about what the files are.")
+```
+
+```
+## TODO: write an automated text file every time that provides context to the researcher about what the files are.
 ```
 
 ```r
@@ -220,19 +230,20 @@ sessionInfo()
 ## [1] rlang_0.3.1  magrittr_1.5
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_1.0.0            knitr_1.22            hms_0.4.2.9001       
-##  [4] odbc_1.1.6            tidyselect_0.2.5      bit_1.1-14           
-##  [7] testit_0.9.1          R6_2.4.0              highr_0.7            
-## [10] stringr_1.4.0         blob_1.1.1            dplyr_0.8.0.1        
-## [13] tools_3.5.3           packrat_0.5.0         checkmate_1.9.1      
-## [16] xfun_0.5              config_0.3            DBI_1.0.0            
-## [19] digest_0.6.18         yaml_2.2.0            bit64_0.9-7          
-## [22] assertthat_0.2.0      tibble_2.0.1          crayon_1.3.4         
-## [25] readr_1.3.1           purrr_0.3.1           memoise_1.1.0        
-## [28] RSQLite_2.1.1         OuhscMunge_0.1.9.9010 glue_1.3.0           
-## [31] evaluate_0.13         stringi_1.3.1         compiler_3.5.3       
-## [34] pillar_1.3.1          backports_1.1.3       markdown_0.9         
-## [37] pkgconfig_2.0.2
+##  [1] Rcpp_1.0.0            pillar_1.3.1          compiler_3.5.3       
+##  [4] highr_0.7             tools_3.5.3           odbc_1.1.6           
+##  [7] digest_0.6.18         packrat_0.5.0         bit_1.1-14           
+## [10] evaluate_0.13         RSQLite_2.1.1         memoise_1.1.0        
+## [13] tibble_2.0.1          checkmate_1.9.1       pkgconfig_2.0.2      
+## [16] cli_1.0.1             DBI_1.0.0             yaml_2.2.0           
+## [19] xfun_0.5              dplyr_0.8.0.1         stringr_1.4.0        
+## [22] knitr_1.22            hms_0.4.2.9001        bit64_0.9-7          
+## [25] tidyselect_0.2.5      glue_1.3.0            OuhscMunge_0.1.9.9010
+## [28] R6_2.4.0              fansi_0.4.0           purrr_0.3.1          
+## [31] readr_1.3.1           blob_1.1.1            backports_1.1.3      
+## [34] assertthat_0.2.0      testit_0.9.1          config_0.3           
+## [37] utf8_1.1.4            stringi_1.3.1         markdown_0.9         
+## [40] crayon_1.3.4
 ```
 
 ```r
@@ -240,6 +251,6 @@ Sys.time()
 ```
 
 ```
-## [1] "2019-03-28 01:37:47 CDT"
+## [1] "2019-03-28 09:07:27 CDT"
 ```
 

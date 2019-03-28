@@ -15,26 +15,24 @@ requireNamespace("OuhscMunge") # devtools::install_github(repo="OuhscBbmc/OuhscM
 
 # ---- declare-globals ---------------------------------------------------------
 # Constant values that won't change.
-config                         <- config::get()#file="./repo/config.yml")
-path_db                        <- config$path_database
+config                         <- config::get()
 
 # config %>%
 #   purrr::map(~gsub("\\{project_name\\}", config$project_name, .))
 
 if( config$project_name == "cdw-skeleton-1" ) {
-  is_test             <- TRUE
-  # `main` is the default schema in the (test) SQLite database
-  config$schema_name  <- "main"
+  is_test                         <- TRUE
+  config$schema_name              <- "main"               # `main` is the default schema in the (test) SQLite database
   config$path_directory_output    <- "data-public/derived"
   # config$schema_name  <- list("project_name" = "main") %>%
   #   glue::glue_data(config$schema_name) %>%
   #   as.character()
 } else {
   is_test             <- FALSE
-  config$schema_name <- config$project_name
+  config$schema_name  <- config$project_name
 }
 
-config <- config  %>%
+config <- config %>%
   rapply(object=., function(s) gsub("\\{project_name\\}", config$project_name, s), how="replace") %>%
   rapply(object=., function(s) gsub("\\{schema_name\\}", config$schema_name, s), how="replace") %>%
   rapply(object=., function(s) gsub("\\{path_directory_output\\}", config$path_directory_output, s), how="replace")
@@ -68,7 +66,7 @@ checkmate::assert_character(ds_table$path_output  , min.chars=10, any.missing=F,
 
 # ---- load-data ---------------------------------------------------------------
 cnn <- if( is_test ) {
-  DBI::dbConnect(drv=RSQLite::SQLite(), dbname=path_db)
+  DBI::dbConnect(drv=RSQLite::SQLite(), dbname=config$path_database)
 } else {
   DBI::dbConnect(odbc::odbc(), config$dsn_staging)
 }
@@ -78,9 +76,7 @@ ds_table$d <- ds_table$sql %>%
 # d           <- DBI::dbGetQuery(cnn, ds_table$sql[1])
 DBI::dbDisconnect(cnn); rm(cnn)
 
-
 # ---- tweak-data --------------------------------------------------------------
-
 ds_table$message_check <- ds_table$d %>%
   purrr::map_chr(., ~checkmate::check_data_frame(., min.rows = 1))
 ds_table$row_count <- ds_table$d %>%
@@ -92,12 +88,17 @@ ds_table$table_size <- ds_table$d %>%
 
 ds_table <-
   ds_table %>%
+  # dplyr::rowwise() %>%
+  # dplyr::mutate(
+  #   check_message     =  purrr::pmap_chr(.data$d, function(dd) checkmate::check_data_frame(dd, min.rows = 5))
+  # ) %>%
+  # dplyr::ungroup() %>%
   dplyr::mutate(
-    # check_message =  purrr::map_chr(.data$d, ~checkmate::check_data_frame(.data$d, min.rows = 5)),
     pass                = (message_check == "TRUE"),
     message_check       = dplyr::if_else(message_check == "TRUE", "Pass", message_check),
     message_dimensions  = paste("Table dim (c x r):", .data$col_count,  "x", .data$row_count, "-", .data$table_size)
   )
+# ds_table$check_message
 
 # ---- inspect -----------------------------------------------------------------
 ds_table %>%
@@ -107,7 +108,6 @@ ds_table %>%
     sql                 = gsub("^SELECT\\b", "SELECT<br/>  ", sql),
     sql                 = gsub("\\bFROM\\b", "<br/>FROM", sql),
     message_dimensions  = sub("Table dim \\(c x r\\): ", "", message_dimensions)
-
   ) %>%
   knitr::kable(
     col.names = gsub("_", "<br/>", colnames(.)),
@@ -124,6 +124,10 @@ ds_table %>%
 if( !purrr::every(ds_table$pass, isTRUE) ) {
   stop(sum(!ds_table$pass), " out of ", nrow(ds_table), " tables failed.")
 }
+
+
+# ---- message -----------------------------------------------------------------
+message("TODO: write an automated text file every time that provides context to the researcher about what the files are.")
 
 
 # ---- verify-values -----------------------------------------------------------
