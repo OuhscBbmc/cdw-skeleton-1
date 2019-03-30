@@ -1,0 +1,9 @@
+Data Extracts from the BBMC CDW
+Project: `cdw-skeleton-1`
+============================
+
+3 datasets were derived from the CDW and saved as separate csvs.
+The collection of datasets is described in the file `_summary.csv`
+which can be opened in Excel, Notepad++, or any program that can read plain text.
+
+The datasets were saved by Will Beasley at 2019-03-30 11:33:29.

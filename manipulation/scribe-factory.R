@@ -128,6 +128,25 @@ if( !purrr::every(ds_table$pass, isTRUE) ) {
 
 # ---- message -----------------------------------------------------------------
 message("TODO: write an automated text file every time that provides context to the researcher about what the files are.")
+description_template <- paste0(
+  "Data Extracts from the BBMC CDW\n",
+  "Project: `%s`\n",
+  "============================\n\n",
+  "%i datasets were derived from the CDW and saved as separate csvs.\n",
+  "The collection of datasets is described in the file `%s`\n",
+  "which can be opened in Excel, Notepad++, or any program that can read plain text.\n\n",
+  "The datasets were saved by %s at %s.\n"
+)
+
+description <- sprintf(
+  description_template,
+  config$project_name,
+  nrow(ds_table),
+  basename(config$path_output_summary),
+  whoami::fullname(),
+  # whoami::email_address(),
+  Sys.time()
+)
 
 
 # ---- verify-values -----------------------------------------------------------
@@ -136,6 +155,7 @@ message("TODO: write an automated text file every time that provides context to 
 # ---- specify-columns-to-upload -----------------------------------------------
 
 # ---- save-to-disk ------------------------------------------------------------
+# Create directories (typically just one directory).
 directories <- ds_table$path_output %>%
   dirname() %>%
   unique() %>%
@@ -143,12 +163,18 @@ directories <- ds_table$path_output %>%
 
 directories %>%
   purrr::discard(dir.exists) %>%
-  purrr::walk(., ~dir.create(., recursive = F))
+  purrr::walk(., ~dir.create(., recursive = T))
 
+# Save the real datasets.
 ds_table %>%
   dplyr::select(d, path_output) %>%
   purrr::pwalk(.f=~readr::write_csv(x = .x, path=.y))
 
+# Save the CSV summarizing the datasets.
 ds_table %>%
   dplyr::select(pass, path_output, sql, message_check, message_dimensions) %>%
   readr::write_csv(config$path_output_summary)
+
+# Save the description file.
+description %>%
+  readr::write_file(config$path_output_description)

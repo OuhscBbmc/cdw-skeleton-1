@@ -175,11 +175,34 @@ message("TODO: write an automated text file every time that provides context to 
 ```
 
 ```r
+description_template <- paste0(
+  "Data Extracts from the BBMC CDW\n",
+  "Project: `%s`\n",
+  "============================\n\n",
+  "%i datasets were derived from the CDW and saved as separate csvs.\n",
+  "The collection of datasets is described in the file `%s`\n",
+  "which can be opened in Excel, Notepad++, or any program that can read plain text.\n\n",
+  "The datasets were saved by %s at %s.\n"
+)
+
+description <- sprintf(
+  description_template,
+  config$project_name,
+  nrow(ds_table),
+  basename(config$path_output_summary),
+  whoami::fullname(),
+  # whoami::email_address(),
+  Sys.time()
+)
+```
+
+```r
 # OuhscMunge::verify_value_headstart(ds_county)
 ```
 
 
 ```r
+# Create directories (typically just one directory).
 directories <- ds_table$path_output %>%
   dirname() %>%
   unique() %>%
@@ -187,15 +210,21 @@ directories <- ds_table$path_output %>%
 
 directories %>%
   purrr::discard(dir.exists) %>%
-  purrr::walk(., ~dir.create(., recursive = F))
+  purrr::walk(., ~dir.create(., recursive = T))
 
+# Save the real datasets.
 ds_table %>%
   dplyr::select(d, path_output) %>%
   purrr::pwalk(.f=~readr::write_csv(x = .x, path=.y))
 
+# Save the CSV summarizing the datasets.
 ds_table %>%
   dplyr::select(pass, path_output, sql, message_check, message_dimensions) %>%
   readr::write_csv(config$path_output_summary)
+
+# Save the description file.
+description %>%
+  readr::write_file(config$path_output_description)
 ```
 
 The R session information (including the OS info, R version and all
@@ -233,17 +262,18 @@ sessionInfo()
 ##  [1] Rcpp_1.0.0            pillar_1.3.1          compiler_3.5.3       
 ##  [4] highr_0.7             tools_3.5.3           odbc_1.1.6           
 ##  [7] digest_0.6.18         packrat_0.5.0         bit_1.1-14           
-## [10] evaluate_0.13         RSQLite_2.1.1         memoise_1.1.0        
-## [13] tibble_2.0.1          checkmate_1.9.1       pkgconfig_2.0.2      
-## [16] cli_1.0.1             DBI_1.0.0             yaml_2.2.0           
-## [19] xfun_0.5              dplyr_0.8.0.1         stringr_1.4.0        
-## [22] knitr_1.22            hms_0.4.2.9001        bit64_0.9-7          
-## [25] tidyselect_0.2.5      glue_1.3.0            OuhscMunge_0.1.9.9010
-## [28] R6_2.4.0              fansi_0.4.0           purrr_0.3.1          
-## [31] readr_1.3.1           blob_1.1.1            backports_1.1.3      
-## [34] assertthat_0.2.0      testit_0.9.1          config_0.3           
-## [37] utf8_1.1.4            stringi_1.3.1         markdown_0.9         
-## [40] crayon_1.3.4
+## [10] jsonlite_1.6          evaluate_0.13         RSQLite_2.1.1        
+## [13] memoise_1.1.0         tibble_2.0.1          checkmate_1.9.1      
+## [16] pkgconfig_2.0.2       whoami_1.2.0          cli_1.0.1            
+## [19] DBI_1.0.0             curl_3.3              yaml_2.2.0           
+## [22] xfun_0.5              httr_1.4.0            dplyr_0.8.0.1        
+## [25] stringr_1.4.0         knitr_1.22            hms_0.4.2.9001       
+## [28] bit64_0.9-7           tidyselect_0.2.5      glue_1.3.0           
+## [31] OuhscMunge_0.1.9.9010 R6_2.4.0              fansi_0.4.0          
+## [34] purrr_0.3.1           readr_1.3.1           blob_1.1.1           
+## [37] ps_1.3.0              backports_1.1.3       assertthat_0.2.0     
+## [40] testit_0.9.1          config_0.3            utf8_1.1.4           
+## [43] stringi_1.3.1         markdown_0.9          crayon_1.3.4
 ```
 
 ```r
@@ -251,6 +281,6 @@ Sys.time()
 ```
 
 ```
-## [1] "2019-03-28 09:07:27 CDT"
+## [1] "2019-03-30 11:33:29 CDT"
 ```
 
