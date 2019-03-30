@@ -167,6 +167,12 @@ if( !purrr::every(ds_table$pass, isTRUE) ) {
 ```
 
 ```r
+ds_table_slim <-
+  ds_table %>%
+  dplyr::select(pass, path_output, sql, message_check, message_dimensions)
+```
+
+```r
 message("TODO: write an automated text file every time that provides context to the researcher about what the files are.")
 ```
 
@@ -176,13 +182,14 @@ message("TODO: write an automated text file every time that provides context to 
 
 ```r
 description_template <- paste0(
-  "Data Extracts from the BBMC CDW\n",
   "Project: `%s`\n",
   "============================\n\n",
+  "Data Extracts from the BBMC CDW\n\n",
   "%i datasets were derived from the CDW and saved as separate csvs.\n",
   "The collection of datasets is described in the file `%s`\n",
   "which can be opened in Excel, Notepad++, or any program that can read plain text.\n\n",
-  "The datasets were saved by %s at %s.\n"
+  "The datasets were saved by %s at %s.\n\n",
+  "%s\n\n"
 )
 
 description <- sprintf(
@@ -192,7 +199,8 @@ description <- sprintf(
   basename(config$path_output_summary),
   whoami::fullname(),
   # whoami::email_address(),
-  Sys.time()
+  Sys.time(),
+  paste(knitr::kable(ds_table_slim), collapse="\n")
 )
 ```
 
@@ -218,13 +226,23 @@ ds_table %>%
   purrr::pwalk(.f=~readr::write_csv(x = .x, path=.y))
 
 # Save the CSV summarizing the datasets.
-ds_table %>%
-  dplyr::select(pass, path_output, sql, message_check, message_dimensions) %>%
+ds_table_slim %>%
   readr::write_csv(config$path_output_summary)
 
 # Save the description file.
 description %>%
   readr::write_file(config$path_output_description)
+
+rmarkdown::render(config$path_output_description)
+```
+
+```
+## /usr/lib/rstudio/bin/pandoc/pandoc +RTS -K512m -RTS _description.utf8.md --to html4 --from markdown+autolink_bare_uris+ascii_identifiers+tex_math_single_backslash+smart --output _description.html --email-obfuscation none --self-contained --standalone --section-divs --template /home/wibeasley/R/x86_64-pc-linux-gnu-library/3.5/rmarkdown/rmd/h/default.html --no-highlight --variable highlightjs=1 --variable 'theme:bootstrap' --include-in-header /tmp/Rtmp1VDLxe/rmarkdown-str59717f73483d.html --mathjax --variable 'mathjax-url:https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML' --metadata pagetitle=_description.utf8.md
+```
+
+```
+## 
+## Output created: _description.html
 ```
 
 The R session information (including the OS info, R version and all
@@ -270,10 +288,11 @@ sessionInfo()
 ## [25] stringr_1.4.0         knitr_1.22            hms_0.4.2.9001       
 ## [28] bit64_0.9-7           tidyselect_0.2.5      glue_1.3.0           
 ## [31] OuhscMunge_0.1.9.9010 R6_2.4.0              fansi_0.4.0          
-## [34] purrr_0.3.1           readr_1.3.1           blob_1.1.1           
-## [37] ps_1.3.0              backports_1.1.3       assertthat_0.2.0     
-## [40] testit_0.9.1          config_0.3            utf8_1.1.4           
-## [43] stringi_1.3.1         markdown_0.9          crayon_1.3.4
+## [34] rmarkdown_1.11        purrr_0.3.1           readr_1.3.1          
+## [37] blob_1.1.1            htmltools_0.3.6       ps_1.3.0             
+## [40] backports_1.1.3       assertthat_0.2.0      testit_0.9.1         
+## [43] config_0.3            utf8_1.1.4            stringi_1.3.1        
+## [46] markdown_0.9          crayon_1.3.4
 ```
 
 ```r
@@ -281,6 +300,6 @@ Sys.time()
 ```
 
 ```
-## [1] "2019-03-30 11:33:29 CDT"
+## [1] "2019-03-30 11:45:51 CDT"
 ```
 

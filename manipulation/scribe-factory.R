@@ -126,16 +126,24 @@ if( !purrr::every(ds_table$pass, isTRUE) ) {
 }
 
 
+# ---- slim-table --------------------------------------------------------------
+ds_table_slim <-
+  ds_table %>%
+  dplyr::select(pass, path_output, sql, message_check, message_dimensions)
+
+
+
 # ---- message -----------------------------------------------------------------
 message("TODO: write an automated text file every time that provides context to the researcher about what the files are.")
 description_template <- paste0(
-  "Data Extracts from the BBMC CDW\n",
   "Project: `%s`\n",
   "============================\n\n",
+  "Data Extracts from the BBMC CDW\n\n",
   "%i datasets were derived from the CDW and saved as separate csvs.\n",
   "The collection of datasets is described in the file `%s`\n",
   "which can be opened in Excel, Notepad++, or any program that can read plain text.\n\n",
-  "The datasets were saved by %s at %s.\n"
+  "The datasets were saved by %s at %s.\n\n",
+  "%s\n\n"
 )
 
 description <- sprintf(
@@ -145,7 +153,8 @@ description <- sprintf(
   basename(config$path_output_summary),
   whoami::fullname(),
   # whoami::email_address(),
-  Sys.time()
+  Sys.time(),
+  paste(knitr::kable(ds_table_slim), collapse="\n")
 )
 
 
@@ -171,10 +180,11 @@ ds_table %>%
   purrr::pwalk(.f=~readr::write_csv(x = .x, path=.y))
 
 # Save the CSV summarizing the datasets.
-ds_table %>%
-  dplyr::select(pass, path_output, sql, message_check, message_dimensions) %>%
+ds_table_slim %>%
   readr::write_csv(config$path_output_summary)
 
 # Save the description file.
 description %>%
   readr::write_file(config$path_output_description)
+
+rmarkdown::render(config$path_output_description)

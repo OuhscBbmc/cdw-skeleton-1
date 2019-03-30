@@ -1,9 +1,17 @@
-Data Extracts from the BBMC CDW
 Project: `cdw-skeleton-1`
 ============================
+
+Data Extracts from the BBMC CDW
 
 3 datasets were derived from the CDW and saved as separate csvs.
 The collection of datasets is described in the file `_summary.csv`
 which can be opened in Excel, Notepad++, or any program that can read plain text.
 
-The datasets were saved by Will Beasley at 2019-03-30 11:33:29.
+The datasets were saved by Will Beasley at 2019-03-30 11:45:51.
+
+|pass |path_output                      |sql                                                              |message_check |message_dimensions                 |
+|:----|:--------------------------------|:----------------------------------------------------------------|:-------------|:----------------------------------|
+|TRUE |data-public/derived/person.csv   |SELECT * FROM main.person                                        |Pass          |Table dim (c x r): 4 x 6 - 2.3 KiB |
+|TRUE |data-public/derived/obs.csv      |SELECT mrn_flowcast, obs_date, obs_term, obs_value FROM main.obs |Pass          |Table dim (c x r): 4 x 4 - 1.8 KiB |
+|TRUE |data-public/derived/medicate.csv |SELECT * FROM main.medicate                                      |Pass          |Table dim (c x r): 5 x 2 - 1.8 KiB |
+
