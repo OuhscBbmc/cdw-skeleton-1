@@ -254,9 +254,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type="text/css">
 .main-container {
@@ -287,8 +285,6 @@ summary {
 </style>
 
 
-
-<div class="container-fluid main-container">
 
 <!-- tabsets -->
 
@@ -363,6 +359,15 @@ $(document).ready(function () {
 
 
 
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
 
 <div class="fluid-row" id="header">
 
@@ -376,48 +381,34 @@ $(document).ready(function () {
 <h1>Project: <code>cdw-skeleton-1</code></h1>
 <p>Data Extracts from the BBMC CDW</p>
 <p>3 datasets were derived from the CDW and saved as separate csvs. The collection of datasets is described in the file <code>_summary.csv</code> which can be opened in Excel, Notepad++, or any program that can read plain text.</p>
-<p>The datasets were saved by Will Beasley at 2019-03-30 11:45:51.</p>
-<table style="width:100%;">
-<colgroup>
-<col width="3%"></col>
-<col width="21%"></col>
-<col width="42%"></col>
-<col width="9%"></col>
-<col width="23%"></col>
-</colgroup>
+<p>The datasets were saved by Will Beasley at 2019-03-31 23:47:37.</p>
+<table>
 <thead>
 <tr class="header">
 <th align="left">pass</th>
 <th align="left">path_output</th>
-<th align="left">sql</th>
-<th align="left">message_check</th>
-<th align="left">message_dimensions</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">TRUE</td>
 <td align="left">data-public/derived/person.csv</td>
-<td align="left">SELECT * FROM main.person</td>
-<td align="left">Pass</td>
-<td align="left">Table dim (c x r): 4 x 6 - 2.3 KiB</td>
 </tr>
 <tr class="even">
 <td align="left">TRUE</td>
 <td align="left">data-public/derived/obs.csv</td>
-<td align="left">SELECT mrn_flowcast, obs_date, obs_term, obs_value FROM main.obs</td>
-<td align="left">Pass</td>
-<td align="left">Table dim (c x r): 4 x 4 - 1.8 KiB</td>
 </tr>
 <tr class="odd">
 <td align="left">TRUE</td>
 <td align="left">data-public/derived/medicate.csv</td>
-<td align="left">SELECT * FROM main.medicate</td>
-<td align="left">Pass</td>
-<td align="left">Table dim (c x r): 5 x 2 - 1.8 KiB</td>
 </tr>
 </tbody>
 </table>
+<ul>
+<li><br /><b>path_output</b>: data-public/derived/person.csv <br /><b>row_unit</b>: each row represents a distinct patient. <br /><b>dimensions</b>: ‘Table dim (c x r): 4 x 6 - 2.3 KiB’ <br /><b>check</b>: Pass <br /><b>sql</b>: <code><br />SELECT<br /> * <br />FROM main.person</code></li>
+<li><br /><b>path_output</b>: data-public/derived/obs.csv <br /><b>row_unit</b>: each row represents a distinct measurement <br /><b>dimensions</b>: ‘Table dim (c x r): 4 x 4 - 1.8 KiB’ <br /><b>check</b>: Pass <br /><b>sql</b>: <code><br />SELECT<br /> mrn_flowcast, obs_date, obs_term, obs_value <br />FROM main.obs</code></li>
+<li><br /><b>path_output</b>: data-public/derived/medicate.csv <br /><b>row_unit</b>: each row represents a distinct prescription <br /><b>dimensions</b>: ‘Table dim (c x r): 5 x 2 - 1.8 KiB’ <br /><b>check</b>: Pass <br /><b>sql</b>: <code><br />SELECT<br /> * <br />FROM main.medicate</code></li>
+</ul>
 </div>
 
 

@@ -56,13 +56,19 @@ ds_table <-
     sql             = dplyr::na_if(sql, "NA"),
     sql             = dplyr::coalesce(.data$sql, .data$sql_constructed),
 
+
+    sql_pretty      = gsub("^SELECT\\b"   , "<br/>SELECT<br/>"    , sql),
+    sql_pretty      = gsub("\\bFROM\\b"   , "<br/>FROM"           , sql_pretty),
+    sql_pretty      = gsub("\\bWHERE\\b"  , "<br/>WHERE"          , sql_pretty),
+    sql_pretty      = paste0("<code>", sql_pretty, "</code>"),
+
     path_output     = strftime(Sys.Date(), path_output)
   ) %>%
-  dplyr::select(sql, path_output)
+  dplyr::select(sql, path_output, row_unit, sql_pretty)
 
 checkmate::assert_character(ds_table$sql          , min.chars=10, any.missing=F, unique=T)
+checkmate::assert_character(ds_table$sql_pretty   , min.chars=10, any.missing=F, unique=T)
 checkmate::assert_character(ds_table$path_output  , min.chars=10, any.missing=F, unique=T)
-
 
 # ---- load-data ---------------------------------------------------------------
 cnn <- if( is_test ) {
@@ -96,7 +102,7 @@ ds_table <-
   dplyr::mutate(
     pass                = (message_check == "TRUE"),
     message_check       = dplyr::if_else(message_check == "TRUE", "Pass", message_check),
-    message_dimensions  = paste("Table dim (c x r):", .data$col_count,  "x", .data$row_count, "-", .data$table_size)
+    message_dimensions  = paste("Table dim (c x r):", .data$col_count,  "x", .data$row_count, " -", .data$table_size)
   )
 # ds_table$check_message
 
@@ -107,6 +113,7 @@ ds_table %>%
     path_output         = gsub("/", "/<br/>", path_output),
     sql                 = gsub("^SELECT\\b", "SELECT<br/>  ", sql),
     sql                 = gsub("\\bFROM\\b", "<br/>FROM", sql),
+    sql                 = paste0("<br/>", sql, "<br/>"),
     message_dimensions  = sub("Table dim \\(c x r\\): ", "", message_dimensions)
   ) %>%
   knitr::kable(
@@ -126,15 +133,31 @@ if( !purrr::every(ds_table$pass, isTRUE) ) {
 }
 
 
+# ---- details -----------------------------------------------------------------
+
+table_detail <-
+  ds_table %>%
+  dplyr::select(
+    path_output,
+    row_unit,
+    dimensions    = message_dimensions,
+    check         = message_check,
+    sql           = sql_pretty
+  ) %>%
+  purrr::transpose() %>%
+  # purrr::map_df(tibble::as_tibble) %>%
+  yaml::as.yaml() %>%
+  gsub("\\b(path_output|row_unit|dimensions|check|sql)\\b", "<br/><b>\\1</b>", .)
+
+# table_detail %>%
+#   cat()
+
 # ---- slim-table --------------------------------------------------------------
 ds_table_slim <-
   ds_table %>%
   dplyr::select(pass, path_output, sql, message_check, message_dimensions)
 
-
-
 # ---- message -----------------------------------------------------------------
-message("TODO: write an automated text file every time that provides context to the researcher about what the files are.")
 description_template <- paste0(
   "Project: `%s`\n",
   "============================\n\n",
@@ -143,6 +166,7 @@ description_template <- paste0(
   "The collection of datasets is described in the file `%s`\n",
   "which can be opened in Excel, Notepad++, or any program that can read plain text.\n\n",
   "The datasets were saved by %s at %s.\n\n",
+  "%s\n\n",
   "%s\n\n"
 )
 
@@ -154,7 +178,11 @@ description <- sprintf(
   whoami::fullname(),
   # whoami::email_address(),
   Sys.time(),
-  paste(knitr::kable(ds_table_slim), collapse="\n")
+  ds_table_slim %>%
+    dplyr::select(pass, path_output) %>%
+    knitr::kable() %>%
+    paste(collapse="\n"),
+  table_detail
 )
 
 

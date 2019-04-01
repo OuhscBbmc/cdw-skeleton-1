@@ -4,7 +4,7 @@ default:
   dsn_staging                                         :   "cdw_cache_staging"
   # dsn_centricity                                      :   "cdw_outpost"
   # dsn_idx                                             :   "cdw_waystation_idx"
-  schema_name                                         :   "{project_name}"
+  schema_name                                         : "{project_name}"
   path_directory_output                               : "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data/derived/%Y-%m-%d"
   path_output_summary                                 : "{path_directory_output}/_summary.csv"
   path_output_description                             : "{path_directory_output}/_description.txt"
@@ -17,18 +17,21 @@ default:
       #columns_exclude: ""
       path_output: "{path_directory_output}/person.csv"
       #path_output: "data-public/derived/%Y-%m-%d/person.csv"
+      row_unit: each row represents a distinct patient.
     -
       name: obs
       sql: ""
       columns_include: "mrn_flowcast, obs_date, obs_term, obs_value"
       path_output: "{path_directory_output}/obs.csv"
       #path_output: "data-public/derived/%Y-%m-%d/obs.csv"
+      row_unit: each row represents a distinct measurement
     -
       name: medicate
       columns_include: "*"
       #columns_exclude: "start_date, stop_date"
       path_output: "{path_directory_output}/medicate.csv"
       #path_output: "data-public/derived/%Y-%m-%d/medicate.csv"
+      row_unit: each row represents a distinct prescription
 
  # #sweep and specify
  # fs_input_review_required_centricity_diagnosis       :   "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/data-public/sweep-and-specify-centricity/input/review-required/diagnosis"
