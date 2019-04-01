@@ -57,10 +57,10 @@ ds_table <-
     sql             = dplyr::coalesce(.data$sql, .data$sql_constructed),
 
 
-    sql_pretty      = gsub("^SELECT\\b"   , "<br/>SELECT<br/>"    , sql),
+    sql_pretty      = gsub("^SELECT\\b"   , "<br/>SELECT<br/>  "    , sql),
     sql_pretty      = gsub("\\bFROM\\b"   , "<br/>FROM"           , sql_pretty),
     sql_pretty      = gsub("\\bWHERE\\b"  , "<br/>WHERE"          , sql_pretty),
-    sql_pretty      = paste0("<code>", sql_pretty, "</code>"),
+    sql_pretty      = paste0("<pre><code>", sql_pretty, "</code></pre>"),
 
     path_output     = strftime(Sys.Date(), path_output)
   ) %>%
