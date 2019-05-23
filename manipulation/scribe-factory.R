@@ -102,7 +102,7 @@ ds_table <-
   dplyr::mutate(
     pass                = (message_check == "TRUE"),
     message_check       = dplyr::if_else(message_check == "TRUE", "Pass", message_check),
-    message_dimensions  = paste("Table dim (c x r):", .data$col_count,  "x", .data$row_count, " -", .data$table_size)
+    message_dimensions  = paste("Table dim (col x row):", .data$col_count,  "x", .data$row_count, " -", .data$table_size)
   )
 # ds_table$check_message
 

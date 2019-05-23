@@ -1,4 +1,4 @@
 pass,path_output,sql,message_check,message_dimensions
-TRUE,data-public/derived/person.csv,SELECT * FROM main.person,Pass,Table dim (c x r): 4 x 6  - 2.3 KiB
-TRUE,data-public/derived/obs.csv,"SELECT mrn_flowcast, obs_date, obs_term, obs_value FROM main.obs",Pass,Table dim (c x r): 4 x 4  - 1.8 KiB
-TRUE,data-public/derived/medicate.csv,SELECT * FROM main.medicate,Pass,Table dim (c x r): 5 x 2  - 1.8 KiB
+TRUE,data-public/derived/person.csv,SELECT * FROM main.person,Pass,Table dim (col x row): 4 x 6  - 2.3 KiB
+TRUE,data-public/derived/obs.csv,"SELECT mrn_flowcast, obs_date, obs_term, obs_value FROM main.obs",Pass,Table dim (col x row): 4 x 4  - 1.8 KiB
+TRUE,data-public/derived/medicate.csv,SELECT * FROM main.medicate,Pass,Table dim (col x row): 5 x 2  - 1.8 KiB
