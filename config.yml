@@ -6,8 +6,8 @@ default:
   # dsn_centricity                                      : "cdw_outpost"
   # dsn_gecb                                            : "cdw_waystation_idx"
 
-  # directory_file_server                               : "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}"
-  # directory_output                                    : "{directory_file_server}/data/derived/%Y-%m-%d"
+  directory_file_server                               : "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}"
+  directory_output                                    : "{directory_file_server}/data/derived/%Y-%m-%d"
   # path_output_summary                                 : "{directory_file_server}/data/derived/%Y-%m-%d/_summary.csv"
   # path_output_description                             : "{directory_file_server}/data/derived/%Y-%m-%d/_description.md"
 
