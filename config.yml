@@ -13,6 +13,19 @@ default:
   # directory_meditech_triage                           : "//pedsis/peds/data/BBMC/ou-medicine"
 
   # path_metadata_dx_ss                                 : "data-public/metadata/dx-ss.csv"
+  
+  # time_zone_local               :  "America/Chicago"          # Force time calculations to be local, in case remotely run.
+  
+  # ---- Validation Ranges & Patterns ----
+  # range_record_id               : !expr c(1L, 999999L)
+  # range_dob                     : !expr c(as.Date("2010-01-01"), Sys.Date() + lubridate::days(1))
+  # range_date_entry              : !expr c(as.Date("2019-01-01"), Sys.Date())
+  # range_datetime_entry          : !expr c(as.POSIXct("2019-01-01", tz="America/Chicago"), Sys.time())
+  # max_age                       : 25
+  # pattern_mrn_centricity        : "^\\d{16}$"                 # The 64-bit int is more easily validated as a character.
+  # pattern_mrn_flowcast          : "^(?:EG)?\\d{6,8}$"
+  # pattern_mrn_meditech          : "^E\\d{9}$"
+  # pattern_account_meditech      : "^E\\d{11}$"
 
   # tables_to_scribe:
   #   -
