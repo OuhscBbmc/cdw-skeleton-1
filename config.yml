@@ -5,6 +5,7 @@ default:
   dsn_staging                                         : "cdw_cache_staging"
   # dsn_centricity                                      : "cdw_outpost"
   # dsn_gecb                                            : "cdw_waystation_idx"
+  # dsn_security                                        : "BbmcSecurity"
 
   directory_file_server                               : "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}"
   directory_output                                    : "{directory_file_server}/data/derived/%Y-%m-%d"
