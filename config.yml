@@ -22,6 +22,7 @@ default:
   # range_dob                     : !expr c(as.Date("2010-01-01"), Sys.Date() + lubridate::days(1))
   # range_date_entry              : !expr c(as.Date("2019-01-01"), Sys.Date())
   # range_datetime_entry          : !expr c(as.POSIXct("2019-01-01", tz="America/Chicago"), Sys.time())
+  # range_hdid                    : !expr c(-1L, 999999908L)
   # max_age                       : 25
   # pattern_mrn_centricity        : "^\\d{16}$"                 # The 64-bit int is more easily validated as a character.
   # pattern_mrn_flowcast          : "^(?:\\d{6,8}|E\\d{9})$"    # There are 22 values with junky meditech mrns.
