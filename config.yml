@@ -13,7 +13,7 @@ default:
   # path_output_description                             : "{directory_file_server}/data/derived/%Y-%m-%d/_description.md"
   # directory_meditech_triage                           : "//pedsis/peds/data/BBMC/ou-medicine"
 
-  # path_metadata_dx_ss                                 : "data-public/metadata/dx-ss.csv"
+  # path_metadata_ss_dx                                 : "data-public/metadata/ss-dx.csv"
   
   # time_zone_local               :  "America/Chicago"          # Force time calculations to be local, in case remotely run.
   
