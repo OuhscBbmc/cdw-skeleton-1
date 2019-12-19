@@ -34,9 +34,9 @@ default:
   # pattern_account_meditech      : "^E\\d{11}$"
   # pattern_pt_name_full          : "^.{2,50}$"
   
-  # pattern_account_icd           : "^[A-TV-Z][0-9][0-9AB]\.?[0-9A-TV-Z]{0,4}|\d{3}\.?\d{0,2}|E\d{3}\.?\d?|V\d{2}\.?\d{0,2}$" # From https://www.johndcook.com/blog/2019/05/05/regex_icd_codes/
-  # pattern_account_icd10         : "^[A-TV-Z][0-9][0-9AB]\.?[0-9A-TV-Z]{0,4}$"
-  # pattern_account_icd09         : "^\d{3}\.?\d{0,2}|E\d{3}\.?\d?|V\d{2}\.?\d{0,2}$"
+  # pattern_account_icd           : "^[A-TV-Z][0-9][0-9AB]\.?[0-9A-TV-Z]{0,4}|\d{3}\.?\d{0,2}|E\d{3}\.?\d?|V\d{2}\.?\d{0,2}$" # Set database column to `varchar(8)` From https://www.johndcook.com/blog/2019/05/05/regex_icd_codes/
+  # pattern_account_icd10         : "^[A-TV-Z][0-9][0-9AB]\.?[0-9A-TV-Z]{0,4}$"                # Set database column to `varchar(8)`
+  # pattern_account_icd09         : "^\d{3}\.?\d{0,2}|E\d{3}\.?\d?|V\d{2}\.?\d{0,2}$"          # Set database column to `varchar(8)`
   
   # tables_to_scribe:
   #   -
