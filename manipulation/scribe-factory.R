@@ -32,10 +32,10 @@ if( config$project_name == "cdw-skeleton-1" ) {
   config$schema_name  <- config$project_name
 }
 
-config <- config %>%
-  rapply(object=., function(s) gsub("\\{project_name\\}", config$project_name, s), how="replace") %>%
-  rapply(object=., function(s) gsub("\\{schema_name\\}", config$schema_name, s), how="replace") %>%
-  rapply(object=., function(s) gsub("\\{path_directory_output\\}", config$path_directory_output, s), how="replace")
+# config <- config %>%
+#   rapply(object=., function(s) gsub("\\{project_name\\}", config$project_name, s), how="replace") %>%
+#   rapply(object=., function(s) gsub("\\{schema_name\\}", config$schema_name, s), how="replace") %>%
+#   rapply(object=., function(s) gsub("\\{path_directory_output\\}", config$path_directory_output, s), how="replace")
 
 
 ds_table <-
