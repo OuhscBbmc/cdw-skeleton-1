@@ -28,6 +28,7 @@ default:
   # range_datetime_entry          : !expr c(as.POSIXct("2019-01-01", tz="America/Chicago"), Sys.time())
   # range_hdid                    : !expr c(-1L, 999999908L)
   # max_age                       : 25
+  # pattern_zipcode               : "^(?<zipcode>\\d{5})(?<zipcode_extension>-\\d{4})?$"
   # pattern_mrn_centricity        : "^\\d{16}$"                 # The 64-bit int is more easily validated as a character.
   # pattern_mrn_flowcast          : "^(?:\\d{6,8}|E\\d{9})$"    # There are 22 values with junky meditech mrns.
   # pattern_mrn_meditech          : "^E\\d{9}$"
