@@ -29,6 +29,8 @@ default:
   # range_date_entry              : !expr c(as.Date("2019-01-01"), Sys.Date())
   # range_datetime_entry          : !expr c(as.POSIXct("2019-01-01", tz="America/Chicago"), Sys.time())
   # range_hdid                    : !expr c(-1L, 999999908L)
+  # range_bp_systolic             : !expr c(30L, 200L)
+  # range_bp_diastolic            : !expr c(30L, 200L)
   # max_age                       : 25
   # pattern_zipcode               : "^(?<zipcode>\\d{5})(?<zipcode_extension>-\\d{4})?$"
   # pattern_mrn_centricity        : "^\\d{16}$"                 # The 64-bit int is more easily validated as a character.
@@ -36,6 +38,8 @@ default:
   # pattern_mrn_meditech          : "^E\\d{9}$"
   # pattern_account_meditech      : "^E\\d{11}$"
   # pattern_pt_name_full          : "^.{2,50}$"
+  # pattern_race                  : "^.{5,50}$"
+  # pattern_ethnicity             : "^.{7,25}$"
 
   # pattern_icd                   : "^[A-TV-Z][0-9][0-9AB]\\.?[0-9A-TV-Z]{0,4}|\\d{3}\\.?\\d{0,2}|E\\d{3}\\.?\\d?|V\\d{2}\\.?\\d{0,2}$" # Set database column to `varchar(8)` From https://www.johndcook.com/blog/2019/05/05/regex_icd_codes/
   # pattern_icd10                 : "^[A-TV-Z][0-9][0-9AB]\\.?[0-9A-TV-Z]{0,4}$"                # Set database column to `varchar(8)`
