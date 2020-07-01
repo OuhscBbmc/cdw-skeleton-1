@@ -12,9 +12,9 @@ default:
   # redcap_instance                                     : "bbmc"
   
   directory_file_server                               : "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}"
-  directory_output                                    : "{directory_file_server}/data/derived/%Y-%m-%d"
-  # path_output_summary                                 : "{directory_file_server}/data/derived/%Y-%m-%d/_summary.csv"
-  # path_output_description                             : "{directory_file_server}/data/derived/%Y-%m-%d/_description.md"
+  directory_output                                    : "{directory_file_server}/data-private/derived/%Y-%m-%d"
+  # path_output_summary                                 : "{directory_file_server}/data-private/derived/%Y-%m-%d/_summary.csv"
+  # path_output_description                             : "{directory_file_server}/data-private/derived/%Y-%m-%d/_description.md"
   # directory_meditech_triage                           : "//pedsis/peds/data/BBMC/ou-medicine"
 
   # path_log_flow                                       : !expr strftime(Sys.time(), "data-unshared/log/%Y/%Y-%m/flow-%Y-%m-%d--%H-%M-%S.log")
@@ -33,12 +33,12 @@ default:
   # range_hdid                    : !expr c(-1L, 999999908L)
   # range_bp_systolic             : !expr c(30L, 200L)
   # range_bp_diastolic            : !expr c(30L, 200L)
-  # max_age                       : 25
+  # max_age                       : 99
   # pattern_zipcode               : "^(?<zipcode>\\d{5})(?<zipcode_extension>-\\d{4})?$"
   # pattern_mrn_centricity        : "^\\d{16}$"                 # The 64-bit int is more easily validated as a character.
-  # pattern_mrn_flowcast          : "^(?:\\d{6,8}|E\\d{9})$"    # There are 22 values with junky meditech mrns.
-  # pattern_mrn_meditech          : "^E\\d{9}$"
-  # pattern_account_meditech      : "^E\\d{11}$"
+  # pattern_mrn_flowcast          : "^\\d{6,7}$"                # There are 22 values with junky meditech mrns."^(?:\\d{6,8}|E\\d{9})$"
+  # pattern_mrn_meditech          : "^(?:E|W)\\d{9}$"           # OKC patients start with 'E'; edmond patients start with 'W'
+  # pattern_account_meditech      : "^(?:E|W)\\d{11}$"
   # pattern_pt_name_full          : "^.{2,50}$"
   # pattern_race                  : "^.{5,50}$"
   # pattern_ethnicity             : "^.{7,25}$"
@@ -49,12 +49,12 @@ default:
 
   # tables_to_scribe:
   #   -
-  #     name: person
-  #     sql: "SELECT * FROM {schema_name}.person"
+  #     name: patient
+  #     sql: "SELECT * FROM {schema_name}.patient"
   #     columns_include: ""
   #     #columns_exclude: ""
-  #     path_output: "{directory_output}/person.csv"
-  #     #path_output: "data-public/derived/%Y-%m-%d/person.csv"
+  #     path_output: "{directory_output}/patient.csv"
+  #     #path_output: "data-public/derived/%Y-%m-%d/patient.csv"
   #     row_unit: each row represents a distinct patient.
   #   -
   #     name: obs
