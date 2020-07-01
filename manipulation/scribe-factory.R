@@ -62,7 +62,7 @@ ds_table <-
     sql_pretty      = gsub("\\bWHERE\\b"  , "<br/>WHERE"          , sql_pretty),
     sql_pretty      = paste0("<pre><code>", sql_pretty, "</code></pre>"),
 
-    path_output     = strftime(Sys.Date(), path_output)
+    path_output     = strftime(Sys.Date(), path_output),
   ) %>%
   dplyr::select(sql, path_output, row_unit, sql_pretty)
 
@@ -209,10 +209,16 @@ ds_table %>%
 
 # Save the CSV summarizing the datasets.
 ds_table_slim %>%
-  readr::write_csv(config$path_output_summary)
+  readr::write_csv(
+    strftime(Sys.Date(), config$path_output_summary)
+  )
 
 # Save the description file.
 description %>%
-  readr::write_file(config$path_output_description)
+  readr::write_file(
+    strftime(Sys.Date(), config$path_output_description)
+  )
 
-rmarkdown::render(config$path_output_description)
+# config$path_output_description %>%
+#   strftime(Sys.Date(), .) %>%
+#   rmarkdown::render()
