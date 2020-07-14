@@ -55,21 +55,21 @@ default:
   #     columns_include: ""
   #     #columns_exclude: ""
   #     path_output: "{directory_output}/patient.csv"
-  #     #path_output: "data-public/derived/%Y-%m-%d/patient.csv"
+  #     #path_output: "data-private/derived/%Y-%m-%d/patient.csv"
   #     row_unit: each row represents a distinct patient.
   #   -
   #     name: obs
   #     sql: ""
   #     columns_include: "mrn_flowcast, obs_date, obs_term, obs_value"
   #     path_output: "{directory_output}/obs.csv"
-  #     #path_output: "data-public/derived/%Y-%m-%d/obs.csv"
+  #     #path_output: "data-private/derived/%Y-%m-%d/obs.csv"
   #     row_unit: each row represents a distinct measurement
   #   -
   #     name: medicate
   #     columns_include: "*"
   #     #columns_exclude: "start_date, stop_date"
   #     path_output: "{directory_output}/medicate.csv"
-  #     #path_output: "data-public/derived/%Y-%m-%d/medicate.csv"
+  #     #path_output: "data-private/derived/%Y-%m-%d/medicate.csv"
   #     row_unit: each row represents a distinct prescription
 
   # sweep and specify
