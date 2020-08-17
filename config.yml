@@ -56,8 +56,14 @@ default:
   #     columns_include: ""
   #     #columns_exclude: ""
   #     path_output: "{directory_output}/patient.csv"
-  #     #path_output: "data-private/derived/%Y-%m-%d/patient.csv"
+  #     #path_output: "data-private/derived/%Y-%m-%d/pt.csv"
   #     row_unit: each row represents a distinct patient.
+  #   -
+  #     name: patient_upcoming
+  #     path_sql: "manipulation/scribe/pt-upcoming.sql"
+  #     path_output: "{directory_output}/patient.csv"
+  #     #path_output: "data-private/derived/%Y-%m-%d/pt-upcoming.csv"
+  #     row_unit: each row represents a distinct patient with any future appt.
   #   -
   #     name: obs
   #     sql: ""
