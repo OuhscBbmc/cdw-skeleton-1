@@ -38,6 +38,15 @@ if( config$project_name == "cdw-skeleton-1" ) {
 #   rapply(object=., function(s) gsub("\\{path_directory_output\\}", config$path_directory_output, s), how="replace")
 
 
+# readr::read_file("manipulation/scribe/pt-upcoming.sql")
+read_file_sql <- function (path) {
+  if (!is.na(path)) {
+    readr::read_file(path)
+  } else {
+    NA_character_
+  }
+}
+
 ds_table <-
   config$tables %>%
   purrr::map_df(tibble::as_tibble) %>%
@@ -51,18 +60,18 @@ ds_table <-
   ) %>%
   dplyr::ungroup() %>%
   dplyr::mutate(
+    sql_file        = purrr::map_chr(.data$path_sql, read_file_sql),
     sql_constructed = as.character(glue::glue_data(., "SELECT {columns_include} FROM {project_name}.{name}")),
     sql             = dplyr::na_if(sql, ""),
     sql             = dplyr::na_if(sql, "NA"),
-    sql             = dplyr::coalesce(.data$sql, .data$sql_constructed),
-
+    sql             = dplyr::coalesce(.data$sql, .data$sql_file, .data$sql_constructed),
 
     sql_pretty      = gsub("^SELECT\\b"   , "<br/>SELECT<br/>  "    , sql),
     sql_pretty      = gsub("\\bFROM\\b"   , "<br/>FROM"           , sql_pretty),
     sql_pretty      = gsub("\\bWHERE\\b"  , "<br/>WHERE"          , sql_pretty),
     sql_pretty      = paste0("<pre><code>", sql_pretty, "</code></pre>"),
 
-    path_output     = strftime(Sys.Date(), path_output),
+    path_output     = strftime(Sys.Date(), path_output)
   ) %>%
   dplyr::select(sql, path_output, row_unit, sql_pretty)
 
@@ -219,6 +228,4 @@ description %>%
     strftime(Sys.Date(), config$path_output_description)
   )
 
-# config$path_output_description %>%
-#   strftime(Sys.Date(), .) %>%
-#   rmarkdown::render()
+# rmarkdown::render(config$path_output_description)
