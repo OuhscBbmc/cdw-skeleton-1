@@ -140,9 +140,7 @@ if( !purrr::every(ds_table$pass, isTRUE) ) {
   stop(sum(!ds_table$pass), " out of ", nrow(ds_table), " tables failed.")
 }
 
-
 # ---- details -----------------------------------------------------------------
-
 table_detail <-
   ds_table %>%
   dplyr::select(
@@ -192,7 +190,6 @@ description <- sprintf(
     paste(collapse = "\n"),
   table_detail
 )
-
 
 # ---- verify-values -----------------------------------------------------------
 # OuhscMunge::verify_value_headstart(ds_county)
