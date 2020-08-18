@@ -12,9 +12,9 @@ default:
   # redcap_instance                                     : "bbmc"
   
   directory_file_server                               : "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}"
-  directory_output                                    : "{directory_file_server}/data-private/derived/%Y-%m-%d"
-  # path_output_summary                                 : "{directory_file_server}/data-private/derived/%Y-%m-%d/_summary.csv"
-  # path_output_description                             : "{directory_file_server}/data-private/derived/%Y-%m-%d/_description.md"
+  directory_output                                    : !expr strftime(Sys.time(), "{directory_file_server}/data-private/derived/%Y-%m-%d")
+  # path_output_summary                                 : !expr strftime(Sys.time(), "{directory_file_server}/data-private/derived/%Y-%m-%d/_summary.csv")
+  # path_output_description                             : !expr strftime(Sys.time(), "{directory_file_server}/data-private/derived/%Y-%m-%d/_description.md")
   # directory_meditech_triage                           : "//pedsis/peds/data/BBMC/ou-medicine"
 
   # path_log_flow                                       : !expr strftime(Sys.time(), "data-unshared/log/%Y/%Y-%m/flow-%Y-%m-%d--%H-%M-%S.log")
@@ -54,7 +54,6 @@ default:
   #     name: patient
   #     sql: "SELECT * FROM {schema_name}.patient"
   #     columns_include: ""
-  #     #columns_exclude: ""
   #     path_output: "{directory_output}/patient.csv"
   #     #path_output: "data-private/derived/%Y-%m-%d/pt.csv"
   #     row_unit: each row represents a distinct patient.

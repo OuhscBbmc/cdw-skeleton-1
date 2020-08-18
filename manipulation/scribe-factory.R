@@ -1,21 +1,19 @@
 # knitr::stitch_rmd(script="manipulation/scribe-factory.R", output="stitched-output/manipulation/scribe-factory.md")
-rm(list=ls(all=TRUE)) #Clear the memory of variables from previous run. This is not called by knitr, because it's above the first chunk.
+rm(list = ls(all.names = TRUE)) # Clear the memory of variables from previous run. This is not called by knitr, because it's above the first chunk.
 
 # ---- load-sources ------------------------------------------------------------
 
 # ---- load-packages -----------------------------------------------------------
-library(magrittr, quietly=TRUE)
-library(rlang, quietly=TRUE)
-requireNamespace("DBI")
-requireNamespace("odbc")
+import::from("magrittr", "%>%")
+requireNamespace("rlang")
 requireNamespace("dplyr")
-requireNamespace("testit")
+requireNamespace("odbc")
 requireNamespace("checkmate")
 requireNamespace("OuhscMunge") # devtools::install_github(repo="OuhscBbmc/OuhscMunge")
 
 # ---- declare-globals ---------------------------------------------------------
 # Constant values that won't change.
-config                         <- config::get()
+config                          <- config::get()
 
 # config %>%
 #   purrr::map(~gsub("\\{project_name\\}", config$project_name, .))
@@ -32,13 +30,6 @@ if( config$project_name == "cdw-skeleton-1" ) {
   config$schema_name  <- config$project_name
 }
 
-# config <- config %>%
-#   rapply(object=., function(s) gsub("\\{project_name\\}", config$project_name, s), how="replace") %>%
-#   rapply(object=., function(s) gsub("\\{schema_name\\}", config$schema_name, s), how="replace") %>%
-#   rapply(object=., function(s) gsub("\\{path_directory_output\\}", config$path_directory_output, s), how="replace")
-
-
-# readr::read_file("manipulation/scribe/pt-upcoming.sql")
 read_file_sql <- function (path) {
   if (!is.na(path)) {
     readr::read_file(path)
@@ -46,12 +37,20 @@ read_file_sql <- function (path) {
     NA_character_
   }
 }
+required_columns <- c(
+  sql = NA_character_,
+  columns_include = NA_character_
+)
 
 ds_table <-
   config$tables %>%
   purrr::map_df(tibble::as_tibble) %>%
   dplyr::mutate(
     project_name     = config$schema_name
+  ) %>%
+  tibble::add_column( # https://stackoverflow.com/questions/45857787/adding-column-if-it-does-not-exist
+    .data = .,
+    !!!required_columns[setdiff(names(required_columns), colnames(.))]
   ) %>%
   dplyr::rowwise() %>%
   dplyr::mutate(
@@ -190,7 +189,7 @@ description <- sprintf(
   ds_table_slim %>%
     dplyr::select(pass, path_output) %>%
     knitr::kable() %>%
-    paste(collapse="\n"),
+    paste(collapse = "\n"),
   table_detail
 )
 
@@ -202,7 +201,13 @@ description <- sprintf(
 
 # ---- save-to-disk ------------------------------------------------------------
 # Create directories (typically just one directory).
-directories <- ds_table$path_output %>%
+directories <-
+  ds_table$path_output %>%
+  c(
+    .,                                # All the paths for the exported/scribed datasets
+    config$path_output_summary,       # The summary file
+    config$path_output_description    # The description file
+  ) %>%
   dirname() %>%
   unique() %>%
   sort()
@@ -218,14 +223,10 @@ ds_table %>%
 
 # Save the CSV summarizing the datasets.
 ds_table_slim %>%
-  readr::write_csv(
-    strftime(Sys.Date(), config$path_output_summary)
-  )
+  readr::write_csv(config$path_output_summary)
 
 # Save the description file.
 description %>%
-  readr::write_file(
-    strftime(Sys.Date(), config$path_output_description)
-  )
+  readr::write_file(config$path_output_description)
 
 # rmarkdown::render(config$path_output_description)
