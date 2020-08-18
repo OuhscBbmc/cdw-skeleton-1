@@ -43,7 +43,7 @@ required_columns <- c(
 )
 
 ds_table <-
-  config$tables %>%
+  config$tables_to_scribe %>%
   purrr::map_df(tibble::as_tibble) %>%
   dplyr::mutate(
     project_name     = config$schema_name
