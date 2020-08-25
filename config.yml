@@ -3,9 +3,9 @@ default:
   project_name                                        : "{project_name}"
   schema_name                                         : "{schema_name}"
   dsn_staging                                         : "cdw_cache_staging"
-  # dsn_centricity                                      : "cdw_outpost"
+  # dsn_outpost                                         : "cdw_outpost"
   # dsn_omop                                            : "cdw_omop_1"
-  # dsn_gecb                                            : "cdw_waystation_idx"
+  # dsn_waystation_gecb                                 : "cdw_waystation_idx"
   # dsn_transaction                                     : "cdw_transaction"
   # dsn_security                                        : "BbmcSecurity"
   # redcap_pid                                          : 1
