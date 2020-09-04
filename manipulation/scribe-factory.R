@@ -42,6 +42,9 @@ required_columns <- c(
   columns_include = NA_character_
 )
 
+if (is.null(config$tables_to_scribe))
+  stop("The `tables_to_scribe` entry is not found in the config file.")
+
 ds_table <-
   config$tables_to_scribe %>%
   purrr::map_df(tibble::as_tibble) %>%
