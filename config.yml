@@ -47,8 +47,8 @@ default:
   # pattern_ethnicity             : "^.{7,25}$"
 
   # pattern_icd                   : "^[A-Z][0-9][0-9AB]\\.?[0-9A-Z]{0,4}|\\d{3}\\.?\\d{0,2}|E\\d{3}\\.?\\d?|V\\d{2}\\.?\\d{0,2}$" # Set database column to `varchar(8)` From https://www.johndcook.com/blog/2019/05/05/regex_icd_codes/
-  # pattern_icd10                 : "^[A-Z][0-9][0-9AB]\\.?[0-9A-Z]{0,4}$"                # Set database column to `varchar(8)`
-  # pattern_icd09                 : "^\\d{3}\\.?\\d{0,2}|E\\d{3}\\.?\\d?|V\\d{2}\\.?\\d{0,2}$"          # Set database column to `varchar(8)`
+  # pattern_icd10                 : "^[A-Z][0-9][0-9AB]\\.?[0-9A-Z]{0,4}$"                        # Set database column to `varchar(8)`
+  # pattern_icd09                 : "^\\d{3}\\.?\\d{0,2}|E\\d{3}\\.?\\d?|V\\d{2}\\.?\\d{0,2}$"    # Set database column to `varchar(6)`
   # pattern_loinc                 : "^\\d{3,5}-\\d$"
   
   # tables_to_scribe:
