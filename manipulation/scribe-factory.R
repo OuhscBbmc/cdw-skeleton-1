@@ -27,7 +27,7 @@ if( config$project_name == "cdw-skeleton-1" ) {
   #   as.character()
 } else {
   is_test             <- FALSE
-  config$schema_name  <- config$project_name
+  # config$schema_name  <- config$project_name
 }
 
 read_file_sql <- function (path) {
@@ -38,7 +38,8 @@ read_file_sql <- function (path) {
   }
 }
 required_columns <- c(
-  sql = NA_character_,
+  sql             = NA_character_,
+  path_sql        = NA_character_,
   columns_include = NA_character_
 )
 
