@@ -69,7 +69,7 @@ ds_table <-
     sql             = dplyr::na_if(sql, "NA"),
     sql             = dplyr::coalesce(.data$sql, .data$sql_file, .data$sql_constructed),
 
-    sql_pretty      = gsub("^SELECT\\b"   , "<br/>SELECT<br/>  "    , sql),
+    sql_pretty      = gsub("^SELECT\\b"   , "SELECT<br/>  "       , sql),
     sql_pretty      = gsub("\\bFROM\\b"   , "<br/>FROM"           , sql_pretty),
     sql_pretty      = gsub("\\bWHERE\\b"  , "<br/>WHERE"          , sql_pretty),
     sql_pretty      = paste0("<pre><code>", sql_pretty, "</code></pre>"),
@@ -154,6 +154,9 @@ table_detail <-
     check         = message_check,
     sql           = sql_pretty
   ) %>%
+  dplyr::mutate(
+    path_output   = paste0("<code>", path_output, "</code>")
+  ) %>%
   purrr::transpose() %>%
   # purrr::map_df(tibble::as_tibble) %>%
   yaml::as.yaml() %>%
@@ -169,6 +172,7 @@ ds_table_slim <-
 
 # ---- message -----------------------------------------------------------------
 description_template <- paste0(
+  "---\ntitle: %s Extracts\n\n---\n\n",
   "Project: `%s`\n",
   "============================\n\n",
   "Data Extracts from the BBMC CDW\n\n",
@@ -182,6 +186,7 @@ description_template <- paste0(
 
 description <- sprintf(
   description_template,
+  config$project_name,
   config$project_name,
   nrow(ds_table),
   basename(config$path_output_summary),
@@ -230,4 +235,26 @@ ds_table_slim %>%
 description %>%
   readr::write_file(config$path_output_description)
 
-# rmarkdown::render(config$path_output_description)
+# Render markdown summary as html
+#    Takes extra steps to avoid using network drive.  https://community.rstudio.com/t/fail-to-generate-file-in-rmarkdwon-openbinaryfile-does-not-exist-no-such-file-or-directory/34913/3
+path_temp_md    <- fs::file_temp(ext = "md")
+path_temp_html  <- fs::file_temp(ext = "html")
+
+fs::file_copy(
+  path        = config$path_output_description,
+  new_path    = path_temp_md,
+  overwrite   = TRUE
+)
+
+rmarkdown::render(
+  input       = path_temp_md,
+  output_file = path_temp_html
+)
+fs::file_delete(path_temp_md)
+
+fs::file_copy(
+  path      = path_temp_html,
+  new_path  = fs::path_ext_set(config$path_output_description, "html"),
+  overwrite = TRUE
+)
+fs::file_delete(path_temp_html)
