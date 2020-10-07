@@ -63,6 +63,8 @@ ds_table <-
   ) %>%
   dplyr::ungroup() %>%
   dplyr::mutate(
+    file_name       = fs::path_file(path_output),
+    # file_name       = paste0("**", fs::path_file(path_output), "**"),
     sql_file        = purrr::map_chr(.data$path_sql, read_file_sql),
     sql_constructed = as.character(glue::glue_data(., "SELECT {columns_include} FROM {project_name}.{name}")),
     sql             = dplyr::na_if(sql, ""),
@@ -74,9 +76,9 @@ ds_table <-
     sql_pretty      = gsub("\\bWHERE\\b"  , "<br/>WHERE"          , sql_pretty),
     sql_pretty      = paste0("<pre><code>", sql_pretty, "</code></pre>"),
 
-    path_output     = strftime(Sys.Date(), path_output)
+    path_output     = strftime(Sys.Date(), path_output),
   ) %>%
-  dplyr::select(sql, path_output, row_unit, sql_pretty)
+  dplyr::select(file_name, sql, path_output, row_unit, sql_pretty)
 
 checkmate::assert_character(ds_table$sql          , min.chars=10, any.missing=F, unique=T)
 checkmate::assert_character(ds_table$sql_pretty   , min.chars=10, any.missing=F, unique=T)
@@ -103,6 +105,10 @@ ds_table$col_count <- ds_table$d %>%
   purrr::map_int(ncol)
 ds_table$table_size <- ds_table$d %>%
   purrr::map_chr(~format(object.size(.), units="KiB"))
+ds_table$column_names <- ds_table$d %>%
+  purrr::map(~paste(colnames(.), collapse = ", "))
+
+# paste(colnames(ds_table$d[[2]]), collapse = ", ")
 
 ds_table <-
   ds_table %>%
@@ -148,11 +154,13 @@ if( !purrr::every(ds_table$pass, isTRUE) ) {
 table_detail <-
   ds_table %>%
   dplyr::select(
-    path_output,
+    file_name,
     row_unit,
+    path_output,
     dimensions    = message_dimensions,
     check         = message_check,
-    sql           = sql_pretty
+    column_names,
+    sql           = sql_pretty,
   ) %>%
   dplyr::mutate(
     path_output   = paste0("<code>", path_output, "</code>")
@@ -160,7 +168,8 @@ table_detail <-
   purrr::transpose() %>%
   # purrr::map_df(tibble::as_tibble) %>%
   yaml::as.yaml() %>%
-  gsub("\\b(path_output|row_unit|dimensions|check|sql)\\b", "<br/><b>\\1</b>", .)
+  gsub("\\bfile_name: (.+?)\\n", "<br/><h3>\\1</h3>", .) %>%
+  gsub("\\b(path_output|row_unit|dimensions|check|sql|column_names)\\b", "<br/><b>\\1</b>", .)
 
 # table_detail %>%
 #   cat()
@@ -194,7 +203,10 @@ description <- sprintf(
   # whoami::email_address(),
   Sys.time(),
   ds_table_slim %>%
-    dplyr::select(pass, path_output) %>%
+    dplyr::mutate(
+      file = paste0("**", fs::path_file(path_output), "**")
+    ) %>%
+    dplyr::select(file, pass) %>%
     knitr::kable() %>%
     paste(collapse = "\n"),
   table_detail
