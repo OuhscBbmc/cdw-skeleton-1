@@ -237,7 +237,7 @@ directories %>%
 # Save the real datasets.
 ds_table %>%
   dplyr::select(d, path_output) %>%
-  purrr::pwalk(.f=~readr::write_csv(x = .x, path=.y))
+  purrr::pwalk(.f=~readr::write_csv(x = .x, file=.y))
 
 # Save the CSV summarizing the datasets.
 ds_table_slim %>%
