@@ -36,6 +36,7 @@ default:
   # range_hdid                    : !expr c(-1L, 999999908L)
   # range_bp_systolic             : !expr c(30L, 200L)
   # range_bp_diastolic            : !expr c(30L, 200L)
+  # range_npi                     : !expr c(1000000000L, 9999999999L) # a 10-digit integer
   # max_age                       : 99
   # pattern_zipcode               : "^(?<zipcode>\\d{5})(?<zipcode_extension>-\\d{4})?$"
   # pattern_mrn_centricity        : "^\\d{16}$"                 # The 64-bit int is more easily validated as a character.
