@@ -53,6 +53,9 @@ default:
   # pattern_icd10                 : "^[A-Z][0-9][0-9AB]\\.?[0-9A-Z]{0,4}$"                        # Set database column to `varchar(8)`
   # pattern_icd09                 : "^\\d{3}\\.?\\d{0,2}|E\\d{3}\\.?\\d?|V\\d{2}\\.?\\d{0,2}$"    # Set database column to `varchar(6)`
   # pattern_loinc                 : "^\\d{3,5}-\\d$"
+  # pattern_cpt                   : "^\\d{4}[0-9a-z]$"
+  # pattern_hcpcs                 : "^[0-9a-z]\\d{4}$"
+  # pattern_hcpcs_cpt             : "^[0-9a-z]\\d{3}[0-9a-z]$"     # Meditech has a field that accepts either cpt or hcpcs
   
   # tables_to_scribe:
   #   -
