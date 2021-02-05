@@ -9,7 +9,7 @@ requireNamespace("rlang")
 requireNamespace("dplyr")
 requireNamespace("odbc")
 requireNamespace("checkmate")
-requireNamespace("OuhscMunge") # devtools::install_github(repo="OuhscBbmc/OuhscMunge")
+requireNamespace("OuhscMunge") # remotes::install_github(repo="OuhscBbmc/OuhscMunge")
 
 # ---- declare-globals ---------------------------------------------------------
 # Constant values that won't change.
