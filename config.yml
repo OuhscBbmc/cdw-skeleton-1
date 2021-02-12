@@ -43,15 +43,15 @@ default:
   # pattern_zipcode               : "^(?<zipcode>\\d{5})(?<zipcode_extension>-\\d{4})?$"
   # pattern_mrn_centricity        : "^\\d{16}$"                 # The 64-bit int is more easily validated as a character.
   # pattern_mrn_flowcast          : "^\\d{6,7}$"                # There are 22 values with junky meditech mrns."^(?:\\d{6,8}|E\\d{9})$"
-  # pattern_mrn_meditech          : "^(?:E|W)\\d{9}$"           # OKC patients start with 'E'; edmond patients start with 'W'
-  # pattern_account_meditech      : "^(?:E|W)\\d{11}$"
+  # pattern_mrn_meditech          : "^[A-Z]\\d{9}$"           # OKC patients start with 'E'; edmond patients start with 'W'
+  # pattern_account_meditech      : "^[A-Z]\\d{11}$"
   # pattern_pt_name_full          : "^.{2,50}$"
   # pattern_race                  : "^.{5,50}$"
   # pattern_ethnicity             : "^.{7,25}$"
 
-  # pattern_icd                   : "^[A-Z][0-9][0-9AB]\\.?[0-9A-Z]{0,4}|\\d{3}\\.?\\d{0,2}|E\\d{3}\\.?\\d?|V\\d{2}\\.?\\d{0,2}$" # Set database column to `varchar(8)` From https://www.johndcook.com/blog/2019/05/05/regex_icd_codes/
-  # pattern_icd10                 : "^[A-Z][0-9][0-9AB]\\.?[0-9A-Z]{0,4}$"                        # Set database column to `varchar(8)`
-  # pattern_icd09                 : "^\\d{3}\\.?\\d{0,2}|E\\d{3}\\.?\\d?|V\\d{2}\\.?\\d{0,2}$"    # Set database column to `varchar(6)`
+  # pattern_icdcm                 : "^[A-Z][0-9][0-9AB]\\.?[0-9A-Z]{0,4}|\\d{3}\\.?\\d{0,2}|E\\d{3}\\.?\\d?|V\\d{2}\\.?\\d{0,2}$" # Set database column to `varchar(8)` From https://www.johndcook.com/blog/2019/05/05/regex_icd_codes/
+  # pattern_icd10cm               : "^[A-Z][0-9][0-9AB]\\.?[0-9A-Z]{0,4}$"                        # Set database column to `varchar(8)`
+  # pattern_icd9cm                : "^\\d{3}\\.?\\d{0,2}|E\\d{3}\\.?\\d?|V\\d{2}\\.?\\d{0,2}$"    # Set database column to `varchar(6)`
   # pattern_loinc                 : "^\\d{3,5}-\\d$"
   # pattern_cpt                   : "^\\d{4}[0-9a-z]$"
   # pattern_hcpcs                 : "^[0-9a-z]\\d{4}$"
@@ -62,26 +62,23 @@ default:
   #     name: patient
   #     sql: "SELECT * FROM {schema_name}.patient"
   #     columns_include: ""
-  #     path_output: "{directory_output}/patient.csv"
+  #     path_output: !expr strftime(Sys.time(), "{directory_file_server}/data-private/derived/%Y-%m-%d/patient.csv")
   #     #path_output: "data-private/derived/%Y-%m-%d/pt.csv"
   #     row_unit: each row represents a distinct patient.
   #   -
   #     name: patient_upcoming
   #     path_sql: "manipulation/scribe/pt-upcoming.sql"
-  #     path_output: "{directory_output}/patient.csv"
-  #     #path_output: "data-private/derived/%Y-%m-%d/pt-upcoming.csv"
+  #     path_output: !expr strftime(Sys.time(), "{directory_file_server}/data-private/derived/%Y-%m-%d/patient.csv")
   #     row_unit: each row represents a distinct patient with any future appt.
   #   -
   #     name: obs
   #     sql: ""
   #     columns_include: "mrn_flowcast, obs_date, obs_term, obs_value"
-  #     path_output: "{directory_output}/obs.csv"
-  #     #path_output: "data-private/derived/%Y-%m-%d/obs.csv"
+  #     path_output: !expr strftime(Sys.time(), "{directory_file_server}/data-private/derived/%Y-%m-%d/obs.csv")
   #     row_unit: each row represents a distinct measurement
   #   -
   #     name: medicate
   #     columns_include: "*"
-  #     #columns_exclude: "start_date, stop_date"
-  #     path_output: "{directory_output}/medicate.csv"
-  #     #path_output: "data-private/derived/%Y-%m-%d/medicate.csv"
+  #     # columns_exclude: "start_date, stop_date"
+  #     path_output: !expr strftime(Sys.time(), "{directory_file_server}/data-private/derived/%Y-%m-%d/medicate.csv")
   #     row_unit: each row represents a distinct prescription
