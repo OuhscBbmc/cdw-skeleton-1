@@ -45,6 +45,7 @@ default:
   # pattern_mrn_flowcast          : "^\\d{6,7}$"                # There are 22 values with junky meditech mrns."^(?:\\d{6,8}|E\\d{9})$"
   # pattern_mrn_meditech          : "^[A-Z]\\d{9}$"           # OKC patients start with 'E'; edmond patients start with 'W'
   # pattern_account_meditech      : "^[A-Z]\\d{11}$"
+  # pattern_meditech_print_number : "^\\d{3}\\.\\d{5}$
   # pattern_pt_name_full          : "^.{2,50}$"
   # pattern_race                  : "^.{5,50}$"
   # pattern_ethnicity             : "^.{7,25}$"
