@@ -188,10 +188,20 @@ description_template <- paste0(
   "%i datasets were derived from the CDW and saved as separate csvs.\n",
   "The collection of datasets is described in the file `%s`\n",
   "which can be opened in Excel, Notepad++, or any program that can read plain text.\n\n",
+  "%s\n\n",
   "The datasets were saved by %s at %s.\n\n",
   "%s\n\n",
   "%s\n\n"
 )
+
+security_warning <-
+  paste(
+    "<b>Data Security</b>:",
+    "These files have been delivered to you (the researchers) in a secure environment.",
+    "You are responsible for maintaining security of the PHI.",
+    "By receiving this dataset, you agree to follow all OU regulations to protect the data security.",
+    "If you have questions regarding best practices, please contact the CRDW team or Campus IT."
+  )
 
 description <- sprintf(
   description_template,
@@ -199,6 +209,7 @@ description <- sprintf(
   config$project_name,
   nrow(ds_table),
   basename(config$path_output_summary),
+  security_warning,
   whoami::fullname(),
   # whoami::email_address(),
   Sys.time(),
