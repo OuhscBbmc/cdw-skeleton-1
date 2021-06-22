@@ -253,6 +253,11 @@ ds_table %>%
   dplyr::select(d, path_output) %>%
   purrr::pwalk(.f=~readr::write_csv(x = .x, file=.y))
 
+# Save datasets as .sav for SPSS (note: file extensions in config file must end in '.sav')
+#ds_table %>%
+#  dplyr::select(d, path_output) %>%
+#  purrr::pwalk(.f=~haven::write_sav(.x, .y))
+  
 # Save the CSV summarizing the datasets.
 ds_table_slim %>%
   readr::write_csv(config$path_output_summary)
