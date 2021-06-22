@@ -181,17 +181,20 @@ ds_table_slim <-
 
 # ---- message -----------------------------------------------------------------
 description_template <- paste0(
+description_template <- paste0(
   "---\ntitle: %s Extracts\n\n---\n\n",
   "Project: `%s`\n",
   "============================\n\n",
-  "Data Extracts from the BBMC CDW\n\n",
-  "%i datasets were derived from the CDW and saved as separate csvs.\n",
+  "Data Extracts from the BBMC CRDW\n\n",
+  "%i datasets were derived from the CRDW and saved as separate csvs.\n",
   "The collection of datasets is described in the file `%s`\n",
   "which can be opened in Excel, Notepad++, or any program that can read plain text.\n\n",
   "%s\n\n",
   "The datasets were saved by %s at %s.\n\n",
   "%s\n\n",
-  "%s\n\n"
+  "%s\n\n",
+  "This work was made possible by the NIH grant U54GM104938 -[ (Oklahoma Shared Clinical and Translational Resource)](http://osctr.ouhsc.edu). Because our continued existence depends partly on productivity in research dissemination, when producing articles and presentations that utilize these data, please include this grant number in your acknowledgements.\n\n
+   Our suggested acknowledgement:  'Data for this research were provided by the University of Oklahoma Health Sciences Center Clinical Research Data Warehouse (http://ouhsc.edu/bbmc/crdw), whose work is made possible by NIH grant U54GM104938.'\n"
 )
 
 security_warning <-
