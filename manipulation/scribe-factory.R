@@ -258,6 +258,11 @@ ds_table %>%
 #  dplyr::select(d, path_output) %>%
 #  purrr::pwalk(.f=~haven::write_sav(.x, .y))
   
+# Save datasets as .sas7bdat for SAS (note: file extensions in config file must end in 'sas7bdat')
+# ds_table %>%
+#  dplyr::select(d, path_output) %>%
+#  purrr::pwalk(.f=~haven::write_sas(.x, .y))
+  
 # Save the CSV summarizing the datasets.
 ds_table_slim %>%
   readr::write_csv(config$path_output_summary)
