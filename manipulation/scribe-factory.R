@@ -249,20 +249,35 @@ directories %>%
   purrr::walk(., ~dir.create(., recursive = T))
 
 # Save the real datasets.
+# ds_table %>%
+#   dplyr::select(d, path_output) %>%
+#   purrr::pwalk(.f=~readr::write_csv(x = .x, file=.y))
+
 ds_table %>%
   dplyr::select(d, path_output) %>%
-  purrr::pwalk(.f=~readr::write_csv(x = .x, file=.y))
+  dplyr::filter(!(fs:path_ext(path_output) %in% c("sas7bdat", "sav"))) %>%
+  purrr::pwalk(.f = ~readr::write_csv(.x, .y))
+
+ds_table %>%
+  dplyr::select(d, path_output) %>%
+  dplyr::filter(fs:path_ext(path_output) == "sav") %>%
+  purrr::pwalk(.f = ~haven::write_spss(.x, .y))
+
+ds_table %>%
+  dplyr::select(d, path_output) %>%
+  dplyr::filter(fs:path_ext(path_output) == "sas7bdat") %>%
+  purrr::pwalk(.f = ~haven::write_sas(.x, .y))
 
 # Save datasets as .sav for SPSS (note: file extensions in config file must end in '.sav')
 #ds_table %>%
 #  dplyr::select(d, path_output) %>%
 #  purrr::pwalk(.f=~haven::write_sav(.x, .y))
-  
+
 # Save datasets as .sas7bdat for SAS (note: file extensions in config file must end in 'sas7bdat')
 # ds_table %>%
 #  dplyr::select(d, path_output) %>%
 #  purrr::pwalk(.f=~haven::write_sas(.x, .y))
-  
+
 # Save the CSV summarizing the datasets.
 ds_table_slim %>%
   readr::write_csv(config$path_output_summary)
