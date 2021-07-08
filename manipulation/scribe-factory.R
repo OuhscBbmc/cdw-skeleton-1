@@ -256,7 +256,7 @@ directories %>%
 ds_table %>%
   dplyr::select(d, path_output) %>%
   dplyr::filter(!(fs:path_ext(path_output) %in% c("sas7bdat", "sav"))) %>%
-  purrr::pwalk(.f = ~readr::write_csv(.x, .y))
+  purrr::pwalk(.f = ~readr::write_csv(.x, .y, na=''))
 
 ds_table %>%
   dplyr::select(d, path_output) %>%
