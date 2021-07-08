@@ -181,7 +181,6 @@ ds_table_slim <-
 
 # ---- message -----------------------------------------------------------------
 description_template <- paste0(
-description_template <- paste0(
   "---\ntitle: %s Extracts\n\n---\n\n",
   "Project: `%s`\n",
   "============================\n\n",
