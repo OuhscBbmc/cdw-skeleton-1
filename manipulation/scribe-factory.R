@@ -254,17 +254,17 @@ directories %>%
 
 ds_table %>%
   dplyr::select(d, path_output) %>%
-  dplyr::filter(!(fs:path_ext(path_output) %in% c("sas7bdat", "sav"))) %>%
+  dplyr::filter(!(fs::path_ext(path_output) %in% c("sas7bdat", "sav"))) %>%
   purrr::pwalk(.f = ~readr::write_csv(.x, .y, na=''))
 
 ds_table %>%
   dplyr::select(d, path_output) %>%
-  dplyr::filter(fs:path_ext(path_output) == "sav") %>%
+  dplyr::filter(fs::path_ext(path_output) == "sav") %>%
   purrr::pwalk(.f = ~haven::write_spss(.x, .y))
 
 ds_table %>%
   dplyr::select(d, path_output) %>%
-  dplyr::filter(fs:path_ext(path_output) == "sas7bdat") %>%
+  dplyr::filter(fs::path_ext(path_output) == "sas7bdat") %>%
   purrr::pwalk(.f = ~haven::write_sas(.x, .y))
 
 # Save datasets as .sav for SPSS (note: file extensions in config file must end in '.sav')
