@@ -202,7 +202,9 @@ security_warning <-
     "These files have been delivered to you (the researchers) in a secure environment.",
     "You are responsible for maintaining security of the PHI.",
     "By receiving this dataset, you agree to follow all OU regulations to protect the data security.",
-    "If you have questions regarding best practices, please contact the CRDW team or Campus IT."
+    "A human subjects research project must use data only in the manner described in the IRB-approved protocol.",
+    "A quality improvement or other non-IRB project must adhere to the HIPAA minimum necessary standard.",
+    "If you have questions regarding best practices, please contact the CRDW team, the IRB, or Campus IT."
   )
 
 description <- sprintf(
