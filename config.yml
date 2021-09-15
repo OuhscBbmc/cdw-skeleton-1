@@ -5,6 +5,7 @@ default:
   dsn_staging                                         : "cdw_cache_staging"
   # dsn_outpost                                         : "cdw_outpost"
   # dsn_omop                                            : "cdw_omop_1"
+  # dsn_waystation_meditech                             : "cdw_waystation_meditech"
   # dsn_waystation_gecb                                 : "cdw_waystation_idx"
   # dsn_transaction                                     : "cdw_transaction"
   # dsn_security                                        : "BbmcSecurity"
