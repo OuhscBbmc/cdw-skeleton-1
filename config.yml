@@ -29,6 +29,7 @@ default:
   # range_record_id               : !expr c(1L, 999999L)
   # range_mrn_gecb                : !expr c(400000L, 3999999L)
   # range_mrn_flowcast            : !expr c(100000L, 9999999L)                                             # There are a few existing trashy records outside 6 or 7 digits:  c(1L, 9999999L)
+  # range_mrn_flowcast_all        : !expr c(     1L, 9999999L)
   # range_cpt4                    : !expr c(10000L, 99999L)
   # omop_concept_min              : 0
   # omop_concept_local            : 2000000000
