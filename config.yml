@@ -3,6 +3,7 @@ default:
   project_name                                        : "{project_name}"
   schema_name                                         : "{schema_name}"
   dsn_staging                                         : "cdw_cache_staging"
+  # dsn_mpi                                             : "cdw_mpi_1"
   # dsn_outpost                                         : "cdw_outpost"
   # dsn_omop                                            : "cdw_omop_1"
   # dsn_waystation_meditech                             : "cdw_waystation_meditech"
