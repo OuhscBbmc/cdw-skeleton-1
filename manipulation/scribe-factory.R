@@ -4,7 +4,6 @@ rm(list = ls(all.names = TRUE)) # Clear the memory of variables from previous ru
 # ---- load-sources ------------------------------------------------------------
 
 # ---- load-packages -----------------------------------------------------------
-import::from("magrittr", "%>%")
 requireNamespace("rlang")
 requireNamespace("dplyr")
 requireNamespace("odbc")
@@ -15,15 +14,17 @@ requireNamespace("OuhscMunge") # remotes::install_github(repo="OuhscBbmc/OuhscMu
 # Constant values that won't change.
 config                          <- config::get()
 
-# config %>%
+# config |>
 #   purrr::map(~gsub("\\{project_name\\}", config$project_name, .))
+testit::assert("`config$path_output_summary` should be defined.  Did you forget to uncomment it in the config yaml file?", !is.null(config$path_output_summary))
+testit::assert("`config$path_output_description` should be defined.  Did you forget to uncomment it in the config yaml file?", !is.null(config$path_output_description))
 
 if( config$project_name == "cdw-skeleton-1" ) {
   is_test                         <- TRUE
   config$schema_name              <- "main"               # `main` is the default schema in the (test) SQLite database
   config$path_directory_output    <- "data-public/derived"
-  # config$schema_name  <- list("project_name" = "main") %>%
-  #   glue::glue_data(config$schema_name) %>%
+  # config$schema_name  <- list("project_name" = "main") |>
+  #   glue::glue_data(config$schema_name) |>
   #   as.character()
 } else {
   is_test             <- FALSE
@@ -47,37 +48,42 @@ if (is.null(config$tables_to_scribe))
   stop("The `tables_to_scribe` entry is not found in the config file.")
 
 ds_table <-
-  config$tables_to_scribe %>%
-  purrr::map_df(tibble::as_tibble) %>%
+  config$tables_to_scribe |>
+  purrr::map_df(tibble::as_tibble) |>
   dplyr::mutate(
     project_name     = config$schema_name
-  ) %>%
-  tibble::add_column( # https://stackoverflow.com/questions/45857787/adding-column-if-it-does-not-exist
-    .data = .,
-    !!!required_columns[setdiff(names(required_columns), colnames(.))]
-  ) %>%
-  dplyr::rowwise() %>%
+  ) |>
+  {\(.)
+    tibble::add_column( # https://stackoverflow.com/questions/45857787/adding-column-if-it-does-not-exist
+      .data = .,
+      !!!required_columns[setdiff(names(required_columns), colnames(.))]
+    )
+  }() |>
+  dplyr::rowwise() |>
   dplyr::mutate(
     # sql             = gsub("\\{project_name\\}", .data$schema_name, sql)
     sql             = as.character(glue::glue_data(list("project_name" = .data$project_name), .data$sql))
-  ) %>%
-  dplyr::ungroup() %>%
-  dplyr::mutate(
-    file_name       = fs::path_file(path_output),
-    # file_name       = paste0("**", fs::path_file(path_output), "**"),
-    sql_file        = purrr::map_chr(.data$path_sql, read_file_sql),
-    sql_constructed = as.character(glue::glue_data(., "SELECT {columns_include} FROM {project_name}.{name}")),
-    sql             = dplyr::na_if(sql, ""),
-    sql             = dplyr::na_if(sql, "NA"),
-    sql             = dplyr::coalesce(.data$sql, .data$sql_file, .data$sql_constructed),
+  ) |>
+  dplyr::ungroup() |>
+  {\(.)
+    dplyr::mutate(
+      .data           = .,
+      file_name       = fs::path_file(path_output),
+      # file_name       = paste0("**", fs::path_file(path_output), "**"),
+      sql_file        = purrr::map_chr(.data$path_sql, read_file_sql),
+      sql_constructed = as.character(glue::glue_data(., "SELECT {columns_include} FROM {project_name}.{name}")),
+      sql             = dplyr::na_if(sql, ""),
+      sql             = dplyr::na_if(sql, "NA"),
+      sql             = dplyr::coalesce(.data$sql, .data$sql_file, .data$sql_constructed),
 
-    sql_pretty      = gsub("^SELECT\\b"   , "SELECT<br/>  "       , sql),
-    sql_pretty      = gsub("\\bFROM\\b"   , "<br/>FROM"           , sql_pretty),
-    sql_pretty      = gsub("\\bWHERE\\b"  , "<br/>WHERE"          , sql_pretty),
-    sql_pretty      = paste0("<pre><code>", sql_pretty, "</code></pre>"),
+      sql_pretty      = gsub("^SELECT\\b"   , "SELECT<br/>  "       , sql),
+      sql_pretty      = gsub("\\bFROM\\b"   , "<br/>FROM"           , sql_pretty),
+      sql_pretty      = gsub("\\bWHERE\\b"  , "<br/>WHERE"          , sql_pretty),
+      sql_pretty      = paste0("<pre><code>", sql_pretty, "</code></pre>"),
 
-    path_output     = strftime(Sys.Date(), path_output),
-  ) %>%
+      path_output     = strftime(Sys.Date(), path_output),
+    )
+  }() |>
   dplyr::select(file_name, sql, path_output, row_unit, sql_pretty)
 
 checkmate::assert_character(ds_table$sql          , min.chars=10, any.missing=F, unique=T)
@@ -91,32 +97,36 @@ cnn <- if( is_test ) {
   DBI::dbConnect(odbc::odbc(), config$dsn_staging)
 }
 # DBI::dbListTables(cnn)
-ds_table$d <- ds_table$sql %>%
-  purrr::map(., function(s) DBI::dbGetQuery(conn=cnn, statement = s))
+ds_table$d <- ds_table$sql |>
+  {\(.)
+    purrr::map(., function(s) DBI::dbGetQuery(conn=cnn, statement = s))
+  }()
 # d           <- DBI::dbGetQuery(cnn, ds_table$sql[1])
 DBI::dbDisconnect(cnn); rm(cnn)
 
 # ---- tweak-data --------------------------------------------------------------
-ds_table$message_check <- ds_table$d %>%
-  purrr::map_chr(., ~checkmate::check_data_frame(., min.rows = 1))
-ds_table$row_count <- ds_table$d %>%
+ds_table$message_check <- ds_table$d |>
+  {\(.)
+    purrr::map_chr(., ~checkmate::check_data_frame(., min.rows = 1))
+  }()
+ds_table$row_count <- ds_table$d |>
   purrr::map_int(nrow)
-ds_table$col_count <- ds_table$d %>%
+ds_table$col_count <- ds_table$d |>
   purrr::map_int(ncol)
-ds_table$table_size <- ds_table$d %>%
+ds_table$table_size <- ds_table$d |>
   purrr::map_chr(~format(object.size(.), units="KiB"))
-ds_table$column_names <- ds_table$d %>%
+ds_table$column_names <- ds_table$d |>
   purrr::map(~paste(colnames(.), collapse = ", "))
 
 # paste(colnames(ds_table$d[[2]]), collapse = ", ")
 
 ds_table <-
-  ds_table %>%
-  # dplyr::rowwise() %>%
+  ds_table |>
+  # dplyr::rowwise() |>
   # dplyr::mutate(
   #   check_message     =  purrr::pmap_chr(.data$d, function(dd) checkmate::check_data_frame(dd, min.rows = 5))
-  # ) %>%
-  # dplyr::ungroup() %>%
+  # ) |>
+  # dplyr::ungroup() |>
   dplyr::mutate(
     pass                = (message_check == "TRUE"),
     message_check       = dplyr::if_else(message_check == "TRUE", "Pass", message_check),
@@ -125,25 +135,28 @@ ds_table <-
 # ds_table$check_message
 
 # ---- inspect -----------------------------------------------------------------
-ds_table %>%
-  dplyr::select(message_check, sql, path_output, message_dimensions) %>%
+ds_table |>
+  dplyr::select(message_check, sql, path_output, message_dimensions) |>
   dplyr::mutate(
     path_output         = gsub("/", "/<br/>", path_output),
     sql                 = gsub("^SELECT\\b", "SELECT<br/>  ", sql),
     sql                 = gsub("\\bFROM\\b", "<br/>FROM", sql),
     sql                 = paste0("<br/>", sql, "<br/>"),
     message_dimensions  = sub("Table dim \\(c x r\\): ", "", message_dimensions)
-  ) %>%
-  knitr::kable(
-    col.names = gsub("_", "<br/>", colnames(.)),
-    format    = "markdown"
-  )
+  ) |>
+  {\(.)
+    knitr::kable(
+      x         = .,
+      col.names = gsub("_", "<br/>", colnames(.)),
+      format    = "markdown"
+    )
+  }()
 
-ds_table %>%
-  dplyr::select(sql, message_check, message_dimensions) %>%
+ds_table |>
+  dplyr::select(sql, message_check, message_dimensions) |>
   dplyr::transmute(
     message_augmented = paste("\n--------", sql, message_check, message_dimensions, sep="\n")
-  ) %>%
+  ) |>
   purrr::walk(~message(.))
 
 if( !purrr::every(ds_table$pass, isTRUE) ) {
@@ -152,7 +165,7 @@ if( !purrr::every(ds_table$pass, isTRUE) ) {
 
 # ---- details -----------------------------------------------------------------
 table_detail <-
-  ds_table %>%
+  ds_table |>
   dplyr::select(
     file_name,
     row_unit,
@@ -161,22 +174,26 @@ table_detail <-
     check         = message_check,
     column_names,
     sql           = sql_pretty,
-  ) %>%
+  ) |>
   dplyr::mutate(
     path_output   = paste0("<code>", path_output, "</code>")
-  ) %>%
-  purrr::transpose() %>%
-  # purrr::map_df(tibble::as_tibble) %>%
-  yaml::as.yaml() %>%
-  gsub("\\bfile_name: (.+?)\\n", "<br/><h3>\\1</h3>", .) %>%
-  gsub("\\b(path_output|row_unit|dimensions|check|sql|column_names)\\b", "<br/><b>\\1</b>", .)
+  ) |>
+  purrr::transpose() |>
+  # purrr::map_df(tibble::as_tibble) |>
+  yaml::as.yaml() |>
+  {\(.)
+    gsub("\\bfile_name: (.+?)\\n", "<br/><h3>\\1</h3>", .)
+  }() |>
+  {\(.)
+    gsub("\\b(path_output|row_unit|dimensions|check|sql|column_names)\\b", "<br/><b>\\1</b>", .)
+  }()
 
-# table_detail %>%
+# table_detail |>
 #   cat()
 
 # ---- slim-table --------------------------------------------------------------
 ds_table_slim <-
-  ds_table %>%
+  ds_table |>
   dplyr::select(pass, path_output, sql, message_check, message_dimensions)
 
 # ---- message -----------------------------------------------------------------
@@ -217,12 +234,12 @@ description <- sprintf(
   whoami::fullname(),
   # whoami::email_address(),
   Sys.time(),
-  ds_table_slim %>%
+  ds_table_slim |>
     dplyr::mutate(
       file = paste0("**", fs::path_file(path_output), "**")
-    ) %>%
-    dplyr::select(file, pass) %>%
-    knitr::kable() %>%
+    ) |>
+    dplyr::select(file, pass) |>
+    knitr::kable() |>
     paste(collapse = "\n"),
   table_detail
 )
@@ -235,56 +252,57 @@ description <- sprintf(
 # ---- save-to-disk ------------------------------------------------------------
 # Create directories (typically just one directory).
 directories <-
-  ds_table$path_output %>%
-  c(
-    .,                                # All the paths for the exported/scribed datasets
+  ds_table$path_output |>
+  c(                             # All the paths for the exported/scribed datasets
     config$path_output_summary,       # The summary file
     config$path_output_description    # The description file
-  ) %>%
-  dirname() %>%
-  unique() %>%
+  ) |>
+  dirname() |>
+  unique() |>
   sort()
 
-directories %>%
-  purrr::discard(dir.exists) %>%
-  purrr::walk(., ~dir.create(., recursive = T))
+directories |>
+  purrr::discard(dir.exists) |>
+  {\(.)
+    purrr::walk(., ~dir.create(., recursive = T))
+  }()
 
 # Save the real datasets.
-# ds_table %>%
-#   dplyr::select(d, path_output) %>%
+# ds_table |>
+#   dplyr::select(d, path_output) |>
 #   purrr::pwalk(.f=~readr::write_csv(x = .x, file=.y))
 
-ds_table %>%
-  dplyr::select(d, path_output) %>%
-  dplyr::filter(!(fs::path_ext(path_output) %in% c("sas7bdat", "sav"))) %>%
+ds_table |>
+  dplyr::select(d, path_output) |>
+  dplyr::filter(!(fs::path_ext(path_output) %in% c("sas7bdat", "sav"))) |>
   purrr::pwalk(.f = ~readr::write_csv(.x, .y, na=''))
 
-ds_table %>%
-  dplyr::select(d, path_output) %>%
-  dplyr::filter(fs::path_ext(path_output) == "sav") %>%
+ds_table |>
+  dplyr::select(d, path_output) |>
+  dplyr::filter(fs::path_ext(path_output) == "sav") |>
   purrr::pwalk(.f = ~haven::write_spss(.x, .y))
 
-ds_table %>%
-  dplyr::select(d, path_output) %>%
-  dplyr::filter(fs::path_ext(path_output) == "sas7bdat") %>%
+ds_table |>
+  dplyr::select(d, path_output) |>
+  dplyr::filter(fs::path_ext(path_output) == "sas7bdat") |>
   purrr::pwalk(.f = ~haven::write_sas(.x, .y))
 
 # Save datasets as .sav for SPSS (note: file extensions in config file must end in '.sav')
-#ds_table %>%
-#  dplyr::select(d, path_output) %>%
+#ds_table |>
+#  dplyr::select(d, path_output) |>
 #  purrr::pwalk(.f=~haven::write_sav(.x, .y))
 
 # Save datasets as .sas7bdat for SAS (note: file extensions in config file must end in 'sas7bdat')
-# ds_table %>%
-#  dplyr::select(d, path_output) %>%
+# ds_table |>
+#  dplyr::select(d, path_output) |>
 #  purrr::pwalk(.f=~haven::write_sas(.x, .y))
 
 # Save the CSV summarizing the datasets.
-ds_table_slim %>%
+ds_table_slim |>
   readr::write_csv(config$path_output_summary)
 
 # Save the description file.
-description %>%
+description |>
   readr::write_file(config$path_output_description)
 
 # Render markdown summary as html
