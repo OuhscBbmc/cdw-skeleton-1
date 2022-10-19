@@ -1,6 +1,8 @@
 # knitr::stitch_rmd(script="manipulation/scribe-factory.R", output="stitched-output/manipulation/scribe-factory.md")
 rm(list = ls(all.names = TRUE)) # Clear the memory of variables from previous run. This is not called by knitr, because it's above the first chunk.
 
+# Update the scribe factory (if necessary) at https://github.com/OuhscBbmc/cdw-skeleton-1/blob/main/manipulation/scribe-factory.R
+
 # ---- load-sources ------------------------------------------------------------
 
 # ---- load-packages -----------------------------------------------------------
