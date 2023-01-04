@@ -14,7 +14,7 @@ requireNamespace("OuhscMunge") # remotes::install_github(repo="OuhscBbmc/OuhscMu
 
 # ---- declare-globals ---------------------------------------------------------
 # Constant values that won't change.
-config                          <- config::get()
+config          <- config::get(file="data-shared/immunization-1/config.yml")
 
 # config |>
 #   purrr::map(~gsub("\\{project_name\\}", config$project_name, .))
@@ -109,7 +109,7 @@ DBI::dbDisconnect(cnn); rm(cnn)
 # ---- tweak-data --------------------------------------------------------------
 ds_table$message_check <- ds_table$d |>
   {\(.)
-    purrr::map_chr(., ~checkmate::check_data_frame(., min.rows = 1))
+    purrr::map_chr(., ~as.character(checkmate::check_data_frame(., min.rows = 1)))
   }()
 ds_table$row_count <- ds_table$d |>
   purrr::map_int(nrow)
@@ -214,9 +214,9 @@ description_template <- paste0(
   "This work was made possible by the NIH grant U54GM104938 -[ (Oklahoma Shared Clinical and Translational Resource)](http://osctr.ouhsc.edu). Because our continued existence depends partly on productivity in research dissemination, when producing articles and presentations that utilize these data, please include this grant number in your acknowledgements.\n\n
    Our suggested acknowledgement:  'Data for this research were provided by the University of Oklahoma Health Sciences Center Clinical Research Data Warehouse (http://ouhsc.edu/bbmc/crdw), whose work is made possible by NIH grant U54GM104938.'\n"
 )
-         
+
 # Please also update the grant number and langauge at: https://github.com/OuhscBbmc/prairie-outpost/blob/main/documentation/snippets/communication-researchers/correspondence.md
-               
+
 security_warning <-
   paste(
     "<b>Data Security</b>:",
