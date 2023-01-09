@@ -1,27 +1,32 @@
 # knitr::stitch_rmd(script="manipulation/scribe-factory.R", output="stitched-output/manipulation/scribe-factory.md")
 rm(list = ls(all.names = TRUE)) # Clear the memory of variables from previous run. This is not called by knitr, because it's above the first chunk.
-
-# Update the scribe factory (if necessary) at https://github.com/OuhscBbmc/cdw-skeleton-1/blob/main/manipulation/scribe-factory.R
+# lintr::lint("manipulation/scribe-factory.R")
 
 # ---- load-sources ------------------------------------------------------------
 
 # ---- load-packages -----------------------------------------------------------
-requireNamespace("rlang")
-requireNamespace("dplyr")
-requireNamespace("odbc")
 requireNamespace("checkmate")
+requireNamespace("config")
+requireNamespace("dplyr")
+requireNamespace("fs")
+requireNamespace("knitr")
+requireNamespace("odbc")
+requireNamespace("purrr")
+requireNamespace("readr")
+requireNamespace("yaml")
+
 requireNamespace("OuhscMunge") # remotes::install_github(repo="OuhscBbmc/OuhscMunge")
 
 # ---- declare-globals ---------------------------------------------------------
 # Constant values that won't change.
-config          <- config::get(file="data-shared/immunization-1/config.yml")
+config                          <- config::get()
 
 # config |>
 #   purrr::map(~gsub("\\{project_name\\}", config$project_name, .))
 testit::assert("`config$path_output_summary` should be defined.  Did you forget to uncomment it in the config yaml file?", !is.null(config$path_output_summary))
 testit::assert("`config$path_output_description` should be defined.  Did you forget to uncomment it in the config yaml file?", !is.null(config$path_output_description))
 
-if( config$project_name == "cdw-skeleton-1" ) {
+if (config$project_name == "cdw-skeleton-1") {
   is_test                         <- TRUE
   config$schema_name              <- "main"               # `main` is the default schema in the (test) SQLite database
   config$path_directory_output    <- "data-public/derived"
@@ -33,7 +38,7 @@ if( config$project_name == "cdw-skeleton-1" ) {
   # config$schema_name  <- config$project_name
 }
 
-read_file_sql <- function (path) {
+read_file_sql <- function(path) {
   if (!is.na(path)) {
     readr::read_file(path)
   } else {
@@ -51,7 +56,8 @@ if (is.null(config$tables_to_scribe))
 
 ds_table <-
   config$tables_to_scribe |>
-  purrr::map_df(tibble::as_tibble) |>
+  purrr::map(tibble::as_tibble) |>
+  purrr::list_rbind() |>
   dplyr::mutate(
     project_name     = config$schema_name
   ) |>
@@ -67,13 +73,13 @@ ds_table <-
     sql             = as.character(glue::glue_data(list("project_name" = .data$project_name), .data$sql))
   ) |>
   dplyr::ungroup() |>
-  {\(.)
+  {\(d)
     dplyr::mutate(
-      .data           = .,
+      .data           = d,
       file_name       = fs::path_file(path_output),
       # file_name       = paste0("**", fs::path_file(path_output), "**"),
       sql_file        = purrr::map_chr(.data$path_sql, read_file_sql),
-      sql_constructed = as.character(glue::glue_data(., "SELECT {columns_include} FROM {project_name}.{name}")),
+      sql_constructed = as.character(glue::glue_data(d, "SELECT {columns_include} FROM {project_name}.{name}")),
       sql             = dplyr::na_if(sql, ""),
       sql             = dplyr::na_if(sql, "NA"),
       sql             = dplyr::coalesce(.data$sql, .data$sql_file, .data$sql_constructed),
@@ -88,37 +94,37 @@ ds_table <-
   }() |>
   dplyr::select(file_name, sql, path_output, row_unit, sql_pretty)
 
-checkmate::assert_character(ds_table$sql          , min.chars=10, any.missing=F, unique=T)
-checkmate::assert_character(ds_table$sql_pretty   , min.chars=10, any.missing=F, unique=T)
-checkmate::assert_character(ds_table$path_output  , min.chars=10, any.missing=F, unique=T)
+# checkmate::assert_character(ds_table$sql          , min.chars = 10, any.missing = FALSE, unique = TRUE)
+# checkmate::assert_character(ds_table$sql_pretty   , min.chars = 10, any.missing = FALSE, unique = TRUE)
+checkmate::assert_character(ds_table$path_output  , min.chars = 10, any.missing = FALSE, unique = TRUE)
 
 # ---- load-data ---------------------------------------------------------------
-cnn <- if( is_test ) {
-  DBI::dbConnect(drv=RSQLite::SQLite(), dbname=config$path_database)
+cnn <- if (is_test) {
+  DBI::dbConnect(drv = RSQLite::SQLite(), dbname = config$path_database)
 } else {
   DBI::dbConnect(odbc::odbc(), config$dsn_staging)
 }
 # DBI::dbListTables(cnn)
 ds_table$d <- ds_table$sql |>
-  {\(.)
-    purrr::map(., function(s) DBI::dbGetQuery(conn=cnn, statement = s))
+  {\(s)
+    purrr::map(s, \(.s) DBI::dbGetQuery(conn=cnn, statement = .s))
   }()
 # d           <- DBI::dbGetQuery(cnn, ds_table$sql[1])
 DBI::dbDisconnect(cnn); rm(cnn)
 
 # ---- tweak-data --------------------------------------------------------------
 ds_table$message_check <- ds_table$d |>
-  {\(.)
-    purrr::map_chr(., ~as.character(checkmate::check_data_frame(., min.rows = 1)))
+  {\(d)
+    purrr::map_chr(d, \(.d) as.character(checkmate::check_data_frame(.d, min.rows = 1)))
   }()
 ds_table$row_count <- ds_table$d |>
   purrr::map_int(nrow)
 ds_table$col_count <- ds_table$d |>
   purrr::map_int(ncol)
 ds_table$table_size <- ds_table$d |>
-  purrr::map_chr(~format(object.size(.), units="KiB"))
+  purrr::map_chr( \(.) format(object.size(.), units="KiB"))
 ds_table$column_names <- ds_table$d |>
-  purrr::map(~paste(colnames(.), collapse = ", "))
+  purrr::map( \(d) paste(colnames(d), collapse = ", "))
 
 # paste(colnames(ds_table$d[[2]]), collapse = ", ")
 
@@ -146,10 +152,10 @@ ds_table |>
     sql                 = paste0("<br/>", sql, "<br/>"),
     message_dimensions  = sub("Table dim \\(c x r\\): ", "", message_dimensions)
   ) |>
-  {\(.)
+  {\(d)
     knitr::kable(
-      x         = .,
-      col.names = gsub("_", "<br/>", colnames(.)),
+      x         = d,
+      col.names = gsub("_", "<br/>", colnames(d)),
       format    = "markdown"
     )
   }()
@@ -159,9 +165,9 @@ ds_table |>
   dplyr::transmute(
     message_augmented = paste("\n--------", sql, message_check, message_dimensions, sep="\n")
   ) |>
-  purrr::walk(~message(.))
+  purrr::walk( \(d) message(d))
 
-if( !purrr::every(ds_table$pass, isTRUE) ) {
+if (!purrr::every(ds_table$pass, isTRUE)) {
   stop(sum(!ds_table$pass), " out of ", nrow(ds_table), " tables failed.")
 }
 
@@ -267,19 +273,15 @@ directories <-
 
 directories |>
   purrr::discard(dir.exists) |>
-  {\(.)
-    purrr::walk(., ~dir.create(., recursive = T))
+  {\(d)
+    purrr::walk(d, \(.d) dir.create(.d, recursive = T))
   }()
 
 # Save the real datasets.
-# ds_table |>
-#   dplyr::select(d, path_output) |>
-#   purrr::pwalk(.f=~readr::write_csv(x = .x, file=.y))
-
 ds_table |>
   dplyr::select(d, path_output) |>
   dplyr::filter(!(fs::path_ext(path_output) %in% c("sas7bdat", "sav"))) |>
-  purrr::pwalk(.f = ~readr::write_csv(.x, .y, na=''))
+  purrr::pwalk(.f = ~readr::write_csv(.x, .y, na = ""))
 
 ds_table |>
   dplyr::select(d, path_output) |>
@@ -290,16 +292,6 @@ ds_table |>
   dplyr::select(d, path_output) |>
   dplyr::filter(fs::path_ext(path_output) == "sas7bdat") |>
   purrr::pwalk(.f = ~haven::write_sas(.x, .y))
-
-# Save datasets as .sav for SPSS (note: file extensions in config file must end in '.sav')
-#ds_table |>
-#  dplyr::select(d, path_output) |>
-#  purrr::pwalk(.f=~haven::write_sav(.x, .y))
-
-# Save datasets as .sas7bdat for SAS (note: file extensions in config file must end in 'sas7bdat')
-# ds_table |>
-#  dplyr::select(d, path_output) |>
-#  purrr::pwalk(.f=~haven::write_sas(.x, .y))
 
 # Save the CSV summarizing the datasets.
 ds_table_slim |>
