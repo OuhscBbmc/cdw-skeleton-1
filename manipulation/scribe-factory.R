@@ -205,6 +205,7 @@ ds_table_slim <-
   dplyr::select(pass, path_output, sql, message_check, message_dimensions)
 
 # ---- message -----------------------------------------------------------------
+# See https://osctr.ouhsc.edu/Cite%20the%20OSCTR
 description_template <- paste0(
   "---\ntitle: %s Extracts\n\n---\n\n",
   "Project: `%s`\n",
@@ -217,7 +218,7 @@ description_template <- paste0(
   "The datasets were saved by %s at %s.\n\n",
   "%s\n\n",
   "%s\n\n",
-  "This work was made possible by the NIH grant U54GM104938 -[ (Oklahoma Shared Clinical and Translational Resource)](http://osctr.ouhsc.edu). Because our continued existence depends partly on productivity in research dissemination, when producing articles and presentations that utilize these data, please include this grant number in your acknowledgements.\n\n
+  "This work was supported by the NIH grant U54GM104938 -[ (Oklahoma Shared Clinical and Translational Resource)](http://osctr.ouhsc.edu). Because our continued existence depends partly on productivity in research dissemination, when producing articles and presentations that utilize these data, please include this grant number in your acknowledgements.\n\n
    Our suggested acknowledgement:  'Data for this research were provided by the University of Oklahoma Health Sciences Center Clinical Research Data Warehouse (http://ouhsc.edu/bbmc/crdw), whose work is made possible by NIH grant U54GM104938.'\n"
 )
 
