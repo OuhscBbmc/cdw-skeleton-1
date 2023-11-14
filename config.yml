@@ -28,6 +28,7 @@ default:
 
   # ---- Validation Ranges & Patterns ----
   # range_record_id               : !expr c(1L, 999999L)
+  # range_mrn_epic_external       : !expr c(1000000000L,  1099999999L)
   # range_mrn_gecb                : !expr c(400000L, 3999999L)
   # range_mrn_flowcast            : !expr c(100000L,  9999999L)                                             # There are a few existing trashy records outside 6 or 7 digits:  c(1L, 9999999L)
   # range_mrn_flowcast_all        : !expr c(     1L, 99999999L)
@@ -44,6 +45,7 @@ default:
   # range_npi                     : !expr c(1000000000L, 9999999999L) # a 10-digit integer
   # max_age                       : 99
   # pattern_zipcode               : "^(?<zipcode>\\d{5})(?<zipcode_extension>-\\d{4})?$"
+  # pattern_mrn_epic              : "^10\\d{8}$"
   # pattern_mrn_centricity        : "^\\d{16}$"                 # The 64-bit int is more easily validated as a character.
   # pattern_mrn_flowcast          : "^\\d{6,7}$"                # There are 22 values with junky meditech mrns."^(?:\\d{6,8}|E\\d{9})$"
   # pattern_mrn_meditech          : "^[A-Z]\\d{9}$"             # OKC patients start with 'E'; edmond patients start with 'W'
