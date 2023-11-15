@@ -222,7 +222,6 @@ description_template <- paste0(
    Our suggested acknowledgement:  'Data for this research were provided by the University of Oklahoma Health Sciences Center Clinical Research Data Warehouse (http://ouhsc.edu/bbmc/crdw),",
    "which is supported by the Oklahoma Shared Clinical and Translational Resources (U54GM104938) with an Institutional Development Award (IDeA) from NIGMS.'\n"
 )
-
 # Please also update the grant number and langauge at: https://github.com/OuhscBbmc/prairie-outpost/blob/main/documentation/snippets/communication-researchers/correspondence.md
 
 security_warning <-
@@ -235,6 +234,7 @@ security_warning <-
     "A quality improvement or other non-IRB project must adhere to the HIPAA minimum necessary standard.",
     "If you have questions regarding best practices, please contact the CRDW team, the IRB, or Campus IT."
   )
+# This paragraph is replicated in https://github.com/OuhscBbmc/prairie-outpost/edit/main/documentation/snippets/communication-researchers/guidance-it.md
 
 description <- sprintf(
   description_template,
