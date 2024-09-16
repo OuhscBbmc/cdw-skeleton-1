@@ -308,6 +308,18 @@ description |>
 #    Takes extra steps to avoid using network drive.  https://community.rstudio.com/t/fail-to-generate-file-in-rmarkdwon-openbinaryfile-does-not-exist-no-such-file-or-directory/34913/3
 path_temp_md    <- fs::file_temp(ext = "md")
 path_temp_html  <- fs::file_temp(ext = "html")
+path_temp_dir   <- fs::path_dir(path_temp_md)
+
+# Create temp directory, if needed
+if (!fs::dir_exists(path_temp_dir)) {
+  fs::dir_create(path_temp_dir)
+}
+
+fs::file_copy(
+  path        = config$path_output_description,
+  new_path    = path_temp_md,
+  overwrite   = TRUE
+)
 
 fs::file_copy(
   path        = config$path_output_description,
