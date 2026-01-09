@@ -74,12 +74,12 @@ generate_redcap_ferry <- function(
     message("Using root table: '", root_table, "'")
   }
 
-  # ---- auto-exclude-staging-tables -------------------------------------------
+  # ---- auto-exclude-ss-tables -------------------------------------------
   # Automatically exclude tables starting with "ss_"
   auto_exclude <- all_tables[grepl("^ss_", all_tables, ignore.case = TRUE)]
 
   if (length(auto_exclude) > 0) {
-    message("\n--- Auto-excluding staging tables (ss_*) ---")
+    message("\n--- Auto-excluding ss tables (ss_*) ---")
     message("  ", paste(auto_exclude, collapse = ", "))
   }
 
@@ -93,7 +93,7 @@ generate_redcap_ferry <- function(
 
     # Show all tables with numbers
     remaining_tables <- setdiff(all_tables, auto_exclude)
-    message("\nTables available for ferry (excluding ss_* staging tables):\n")
+    message("\nTables available for ferry (excluding ss_* ss tables):\n")
     for (i in seq_along(remaining_tables)) {
       root_marker <- if (remaining_tables[i] == root_table) " [ROOT]" else ""
       message("  ", sprintf("%2d", i), ". ", remaining_tables[i], root_marker)
