@@ -242,6 +242,66 @@ generate_redcap_ferry <- function(
     }
   })
 
+  # ---- generate-identity-script ----------------------------------------------
+  message("\n--- Generating pt-identity SQL script ---")
+
+  identity_file <- file.path(output_dir, "pt-identity.sql")
+
+  identity_sql <- glue::glue(
+    "-- Create schema in cdw_transaction if it doesn't exist
+IF NOT EXISTS (SELECT * FROM cdw_transaction.sys.schemas WHERE name = '{config$schema_name}')
+BEGIN
+    EXEC cdw_transaction.dbo.sp_executesql N'CREATE SCHEMA [{config$schema_name}]'
+END
+GO
+
+-- use cdw_cache_staging
+
+-- !! don't drop & recreate this unless you have a backup & you know what you're doing.  This has to be preserved!!
+ --DROP TABLE if exists cdw_transaction.{config$schema_name}.pt_identity;
+ --CREATE TABLE cdw_transaction.{config$schema_name}.pt_identity (
+ --  {link_column}   int primary key,
+ --  record_id     int identity not null  unique
+ --);
+-- !! don't drop & recreate this unless you have a backup & you know what you're doing.  This has to be preserved!!
+
+with mrn_to_add as (
+  SELECT p.{link_column} FROM cdw_cache_staging.{config$schema_name}.{root_table} p
+  EXCEPT
+  SELECT pi.{link_column} FROM cdw_transaction.{config$schema_name}.pt_identity pi
+)
+
+INSERT cdw_transaction.{config$schema_name}.pt_identity
+SELECT
+  {link_column}
+FROM mrn_to_add
+
+-- !! don't drop & recreate this unless you have a backup & you know what you're doing.  This has to be preserved!!
+"
+  )
+
+  # Handle existing identity file (backup if changed)
+  if (file.exists(identity_file)) {
+    existing_content <- paste(readLines(identity_file, warn = FALSE), collapse = "\n")
+    normalize <- function(x) gsub("\\s+", " ", trimws(x))
+
+    if (normalize(existing_content) != normalize(identity_sql)) {
+      backup_path <- file.path(backup_dir, paste0(
+        "pt-identity_",
+        format(Sys.time(), "%Y%m%d_%H%M%S"), ".sql"
+      ))
+      file.copy(identity_file, backup_path)
+      message("  Backup: ", basename(backup_path))
+      writeLines(identity_sql, identity_file)
+      message("  Updated: pt-identity.sql")
+    } else {
+      message("  (unchanged)")
+    }
+  } else {
+    writeLines(identity_sql, identity_file)
+    message("  Generated: pt-identity.sql")
+  }
+
   # ---- generate-ferry-script -------------------------------------------------
   message("\n--- Generating R ferry script ---")
 
@@ -489,12 +549,14 @@ generate_redcap_ferry <- function(
   }
 
   message("\nGenerated files:")
-  message("  - ", output_dir, "/*.sql (", length(sql_files), " files)")
+  message("  - ", output_dir, "/pt-identity.sql (identity table setup)")
+  message("  - ", output_dir, "/*.sql (", length(sql_files), " data files)")
   message("  - ", ferry_file)
 
   message("\nNext steps:")
   message("  1. Review generated SQL scripts in ", output_dir)
-  message("  2. Run: source('", ferry_file, "')")
+  message("  2. Run pt-identity.sql FIRST to set up the identity table")
+  message("  3. Run: source('", ferry_file, "')")
 
   invisible(data_objects)
 }
