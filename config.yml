@@ -56,9 +56,9 @@ default:
   # pattern_ethnicity             : "^.{7,25}$"
   # pattern_npi                   : "^\\d{10}$" # a 10-digit integer
 
-  # pattern_icdcm                 : "^[A-Z][0-9][0-9AB]\\.?[0-9A-Z]{0,4}|\\d{3}\\.?\\d{0,2}|E\\d{3}\\.?\\d?|V\\d{2}\\.?\\d{0,2}|NOD.X$" # Set database column to `varchar(8)` From https://www.johndcook.com/blog/2019/05/05/regex_icd_codes/
+  # pattern_icdcm                 : "^[A-Z][0-9AB][0-9AB]\\.?[0-9A-Z]{0,4}|\\d{3}\\.?\\d{0,2}|E\\d{3}\\.?\\d?|V\\d{2}\\.?\\d{0,2}|NOD.X$" # Set database column to `varchar(8)` From https://www.johndcook.com/blog/2019/05/05/regex_icd_codes/
   # pattern_icd9cm                : "^\\d{3}\\.?\\d{0,2}|E\\d{3}\\.?\\d?|V\\d{2}\\.?\\d{0,2}$"    # Set database column to `varchar(6)`
-  # pattern_icd10cm               : "^[A-Z][0-9][0-9AB]\\.?[0-9A-Z]{0,4}|NOD.X$"                  # Set database column to `varchar(8)`
+  # pattern_icd10cm               : "^[A-Z][0-9AB][0-9AB]\\.?[0-9A-Z]{0,4}|NOD.X$"                  # Set database column to `varchar(8)`
   # pattern_loinc                 : "^\\d{3,5}-\\d$"
   # pattern_cpt                   : "^\\d{4}[0-9a-z]$"
   # pattern_hcpcs                 : "^[0-9a-z]\\d{4}$"
