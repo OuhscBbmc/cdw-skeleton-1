@@ -292,6 +292,47 @@ data_dict <- schema_data |>
     ) |>
     dplyr::select(dplyr::all_of(redcap_columns))
 
+# ---- add-record-id-and-reorder ---------------------------------------------
+message("\nAdding record_id field and reordering...")
+
+# Create record_id row for the root table
+record_id_row <- tibble::tibble(
+  `Variable / Field Name` = "record_id",
+  `Form Name` = root_table,
+  `Section Header` = "",
+  `Field Type` = "text",
+  `Field Label` = "Record ID",
+  `Choices, Calculations, OR Slider Labels` = "",
+  `Field Note` = "",
+  `Text Validation Type OR Show Slider Number` = "",
+  `Text Validation Min` = "",
+  `Text Validation Max` = "",
+  `Identifier?` = "",
+  `Branching Logic (Show field only if...)` = "",
+  `Required Field?` = "",
+  `Custom Alignment` = "",
+  `Question Number (surveys only)` = "",
+  `Matrix Group Name` = "",
+  `Matrix Ranking?` = "",
+  `Field Annotation` = "",
+)
+
+# Split data_dict into root table and other tables
+root_table_rows <- data_dict |>
+  dplyr::filter(`Form Name` == root_table)
+
+other_table_rows <- data_dict |>
+  dplyr::filter(`Form Name` != root_table)
+
+# Combine: record_id first, then root table rows, then other tables
+data_dict <- dplyr::bind_rows(
+  record_id_row,
+  root_table_rows,
+  other_table_rows
+)
+
+message("  Placed '", root_table, "' first with record_id as the first field")
+
 # ---- merge-with-existing ---------------------------------------------------
   if (!is.null(existing_dict) && nrow(existing_dict) > 0) {
     message("Merging with existing data dictionary to preserve edits...")
@@ -338,6 +379,16 @@ data_dict <- schema_data |>
       removed_rows <- removed_rows |> dplyr::select(dplyr::all_of(redcap_columns))
       data_dict <- dplyr::bind_rows(data_dict, removed_rows)
     }
+
+    # Re-order after merge: record_id first, root table, then other tables
+    message("  Re-ordering to maintain root table first...")
+    record_id_row <- data_dict |> dplyr::filter(`Variable / Field Name` == "record_id")
+    root_table_rows <- data_dict |>
+      dplyr::filter(`Form Name` == root_table, `Variable / Field Name` != "record_id")
+    other_rows <- data_dict |>
+      dplyr::filter(`Form Name` != root_table, `Variable / Field Name` != "record_id")
+
+    data_dict <- dplyr::bind_rows(record_id_row, root_table_rows, other_rows)
   }
 
 # ---- save-output -----------------------------------------------------------
