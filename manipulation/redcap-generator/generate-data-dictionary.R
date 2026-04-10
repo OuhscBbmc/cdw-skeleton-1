@@ -242,6 +242,13 @@ message("--- End repeat instrument analysis ---\n")
 schema_data <- schema_data |>
   dplyr::mutate(is_primary = (table_name == root_table))
 
+# ---- reorder-root-table-first ----------------------------------------------
+schema_data <- dplyr::bind_rows(
+  schema_data |> dplyr::filter( is_primary),
+  schema_data |> dplyr::filter(!is_primary)
+)
+message("Placed '", root_table, "' first in data dictionary")
+
 # ---- handle-duplicate-column-names -----------------------------------------
 duplicate_vars <- schema_data |>
   dplyr::group_by(column_name) |>
@@ -338,6 +345,13 @@ data_dict <- schema_data |>
       removed_rows <- removed_rows |> dplyr::select(dplyr::all_of(redcap_columns))
       data_dict <- dplyr::bind_rows(data_dict, removed_rows)
     }
+
+    # Re-order after merge to maintain root table first
+    message("  Re-ordering to maintain root table first...")
+    data_dict <- dplyr::bind_rows(
+      data_dict |> dplyr::filter(`Form Name` == root_table),
+      data_dict |> dplyr::filter(`Form Name` != root_table)
+    )
   }
 
 # ---- save-output -----------------------------------------------------------
