@@ -4,7 +4,9 @@ generate_data_dictionary <- function(
     output_path      = "./data-public/metadata/redcap-data-dictionary.csv",
     root_table       = NULL,
     link_column      = "mrn_mpi",
-    preserve_edits   = TRUE
+    preserve_edits   = TRUE,
+    exclude_tables   = character(0),
+    exclude_table_patterns = "^ss_"
 ) {
 
 # ---- load-packages ---------------------------------------------------------
@@ -95,6 +97,73 @@ if (nrow(schema_data) > 0) {
  if (nrow(schema_data) == 0) {
    stop("No tables found in schema '", schema_name, "'. Verify the schema exists.")
  }
+
+excluded_tables_pattern <- character(0)
+if (length(exclude_table_patterns) > 0) {
+  is_excluded_table_pattern <- purrr::reduce(
+    purrr::map(exclude_table_patterns, \(pattern) grepl(pattern, schema_data$table_name, ignore.case = TRUE)),
+    `|`
+  )
+  excluded_tables_pattern <- sort(unique(schema_data$table_name[is_excluded_table_pattern]))
+
+  if (length(excluded_tables_pattern) > 0)
+    message("Auto-excluding tables from REDCap data dictionary: ", paste(excluded_tables_pattern, collapse = ", "))
+}
+
+schema_data <- schema_data |>
+  dplyr::filter(!table_name %in% excluded_tables_pattern)
+
+tables_available <- sort(unique(schema_data$table_name))
+
+if (interactive() && length(tables_available) > 0) {
+  message("\n", strrep("=", 60))
+  message("TABLE EXCLUSION")
+  message(strrep("=", 60))
+  message("\nTables available for the REDCap data dictionary:\n")
+  for (i in seq_along(tables_available)) {
+    message("  ", sprintf("%2d", i), ". ", tables_available[i])
+  }
+  message("\nEnter additional table names to EXCLUDE from the data dictionary and ferry.")
+  message("Format: table names separated by commas. Press ENTER to include all listed tables.")
+  user_input <- readline(prompt = "Tables to exclude: ")
+
+  if (nchar(trimws(user_input)) > 0) {
+    user_exclude <- trimws(strsplit(user_input, ",")[[1]])
+    user_exclude <- user_exclude[nchar(user_exclude) > 0]
+
+    valid_exclude <- user_exclude[user_exclude %in% tables_available]
+    invalid_exclude <- user_exclude[!user_exclude %in% tables_available]
+
+    if (length(invalid_exclude) > 0) {
+      message("Ignoring unknown tables: ", paste(invalid_exclude, collapse = ", "))
+    }
+    exclude_tables <- unique(c(exclude_tables, valid_exclude))
+  }
+  message(strrep("=", 60), "\n")
+}
+
+exclude_tables <- unique(exclude_tables)
+if (length(exclude_tables) > 0) {
+  message("Excluding requested tables from REDCap data dictionary: ", paste(sort(exclude_tables), collapse = ", "))
+  schema_data <- schema_data |>
+    dplyr::filter(!table_name %in% exclude_tables)
+}
+
+excluded_tables_all <- unique(c(excluded_tables_pattern, exclude_tables))
+if (!is.null(existing_dict) && "Form Name" %in% names(existing_dict) && length(excluded_tables_all) > 0) {
+  existing_excluded_forms <- sort(unique(existing_dict$`Form Name`[existing_dict$`Form Name` %in% excluded_tables_all]))
+
+  if (length(existing_excluded_forms) > 0) {
+    message("Dropping excluded tables from existing data dictionary merge: ", paste(existing_excluded_forms, collapse = ", "))
+    existing_dict <- existing_dict |>
+      dplyr::filter(!`Form Name` %in% existing_excluded_forms)
+  }
+}
+
+if (nrow(schema_data) == 0) {
+  stop("No tables remain after applying exclude_table_patterns.")
+}
+
 tables_found <- unique(schema_data$table_name)
 message("Found ", length(tables_found), " tables: ", paste(tables_found, collapse = ", "))
 
@@ -332,19 +401,8 @@ data_dict <- schema_data |>
       }
     }
 
-    if (length(removed_fields) > 0) {
-      removed_rows <- existing_dict |>
-        dplyr::filter(`Variable / Field Name` %in% removed_fields) |>
-        dplyr::mutate(`Field Note` = paste0("[REMOVED FROM SCHEMA] ", `Field Note`))
-
-      for (col in redcap_columns) {
-        if (!col %in% names(removed_rows)) {
-          removed_rows[[col]] <- NA_character_
-        }
-      }
-      removed_rows <- removed_rows |> dplyr::select(dplyr::all_of(redcap_columns))
-      data_dict <- dplyr::bind_rows(data_dict, removed_rows)
-    }
+    if (length(removed_fields) > 0)
+      message("  Dropping removed fields from output so REDCap form blocks stay contiguous.")
 
     # Re-order after merge to maintain root table first
     message("  Re-ordering to maintain root table first...")
