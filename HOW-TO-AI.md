@@ -108,10 +108,13 @@ From a terminal in the repo root:
 claude
 ```
 
-It reads `AGENTS.md` automatically. To orient it at the start of a session:
+It reads `AGENTS.md` automatically. To start a session properly, use the slash command:
 ```
-Read AGENTS.md and documentation/github-issues.md, then tell me what this study is about.
+/repo-work
 ```
+
+This runs the full session start checklist — pulls issues if needed, summarizes the study,
+checks what scripts exist, and proposes next steps before asking what you want to do.
 
 ### Codex (OpenAI CLI)
 
@@ -164,3 +167,4 @@ run — they define which patients and concepts are in scope for the study.
 | Populate SQL scripts | `Ctrl+Shift+P` → Populate CRDW Scripts | `python utility/populate-scripts.py` |
 | Start Claude Code | — | `claude` (from repo root) |
 | Start Gemini CLI | — | `gemini` (from repo root) |
+| Start Claude Code session | — | `/repo-work` (inside Claude Code) |
