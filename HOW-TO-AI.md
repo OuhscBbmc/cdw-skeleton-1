@@ -83,6 +83,11 @@ python utility/populate-scripts.py --templates patient dx medication-meditech
 The scripts land in `manipulation/` ready to edit. Review and customize before running
 against live data — especially dates, WHERE clauses, and inclusion criteria.
 
+Each SQL script should leave behind permanent project-schema output tables only. Use CTEs
+or `#temp` tables for intermediary data, or split distinct permanent outputs into separate
+scripts. `pt-identity.sql` is only needed when the project requires a REDCap database or
+stable REDCap `record_id`.
+
 ---
 
 ## Using Your AI Tool

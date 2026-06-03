@@ -95,7 +95,7 @@ Available templates and when to use them:
 
 | Template | Use when |
 |---|---|
-| `patient.sql` | Always — builds `pt_pool` and `patient` tables |
+| `patient.sql` | Always — builds the permanent `patient` table; any patient-pool helper should be a CTE or `#temp` table unless explicitly needed as a deliverable |
 | `dx.sql` | Study involves diagnoses / problem list (Epic + harmonized) |
 | `dx-meditech.sql` | Study needs encounter-level billing diagnoses from Meditech only |
 | `medication-epic.sql` | Medications from Epic (admin date >= 2023-06-03) |
@@ -146,8 +146,8 @@ before reusing anything.
 
 - Keywords lower case **except**: `SELECT`, `FROM`, `WHERE`, `GROUP BY`, `HAVING`,
   `ORDER BY`, `DECLARE`
-- Use CTEs for readability; avoid intermediate staging tables unless a CTE would be used
-  more than twice or becomes unreadably long
+- Use CTEs for readability; use `#temp` tables when intermediary logic is reused enough
+  that a CTE becomes unreadable
 - Every SQL script should create permanent project-schema tables as its final outputs.
   Intermediary tables should be CTEs or `#temp` tables. If a second permanent table is
   needed as a distinct deliverable or reusable project table, create it deliberately and

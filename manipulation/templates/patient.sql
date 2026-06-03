@@ -1,11 +1,11 @@
 -- ================================================================================================
 -- TEMPLATE: patient.sql
 -- Source:   cdw_outpost.snowflake_2 (unified across all time periods; no date-based routing needed)
--- Purpose:  Build pt_pool (inclusion criteria) and patient (demographics) tables
+-- Purpose:  Build a temporary patient pool for inclusion criteria and a permanent patient table
 --
 -- !! CUSTOMIZE before running — find-replace {project_schema} with your schema (e.g., benbrook_diabetes_1)
 -- !! CUSTOMIZE @date_start, @date_stop, @age_min, @age_max to match your IRB
--- !! CUSTOMIZE the WHERE clause in pt_pool to match your inclusion criteria
+-- !! CUSTOMIZE the WHERE clause in #pt_pool to match your inclusion criteria
 -- !! CUSTOMIZE columns in CREATE TABLE / SELECT to match what your project needs
 -- ================================================================================================
 
@@ -18,15 +18,18 @@ declare @age_max       int     = 89;               -- inclusive upper bound (yea
 
 
 -- ------------------------------------------------------------------------------------------------
--- Step 1: pt_pool  — one row per eligible patient; holds mrn_mpi for downstream joins
+-- Step 1: #pt_pool  — one row per eligible patient; temporary helper for this script
 -- ------------------------------------------------------------------------------------------------
-DROP TABLE IF EXISTS [cdw_cache_staging].[{project_schema}].[pt_pool];
-CREATE TABLE [cdw_cache_staging].[{project_schema}].[pt_pool] (
+DROP TABLE IF EXISTS #pt_pool;
+CREATE TABLE #pt_pool (
     mrn_mpi             int         not null primary key,
     pt_index            int         not null unique,    -- stable surrogate key used across all project tables
 );
 
-INSERT INTO {project_schema}.pt_pool
+INSERT INTO #pt_pool (
+    mrn_mpi
+    ,pt_index
+)
 SELECT
     p.mrn_mpi
     ,cast(row_number() over (order by p.mrn_mpi) as int) as pt_index
@@ -62,7 +65,21 @@ CREATE TABLE [cdw_cache_staging].[{project_schema}].[patient] (
     mrn_epic_externals          varchar(150)    null,
 );
 
-INSERT INTO {project_schema}.patient
+INSERT INTO {project_schema}.patient (
+    pt_index
+    ,mrn_mpi
+    ,birth_date
+    ,birth_year
+    ,death_date
+    ,age_years
+    ,gender_male
+    ,race
+    ,ethnicity
+    ,zipcode
+    ,mrn_meditech_externals
+    ,mrn_gecbs
+    ,mrn_epic_externals
+)
 SELECT
     pp.pt_index
     ,p.mrn_mpi
@@ -77,10 +94,12 @@ SELECT
     ,mx.mrn_meditech_externals
     ,mx.mrn_gecbs
     ,mx.mrn_epic_externals
-FROM {project_schema}.pt_pool pp
+FROM #pt_pool pp
   inner join cdw_outpost.snowflake_2.person p        on pp.mrn_mpi = p.mrn_mpi
   left  join cdw_mpi_1.cluster.mrn_mpi_collapsed mx  on pp.mrn_mpi = mx.mrn_mpi
   --left  join cdw_mpi_1.groomed.node_assigned na      on pp.mrn_mpi = na.mrn_mpi and na.type = 'epic14'
 ORDER BY pp.pt_index;
+
+DROP TABLE IF EXISTS #pt_pool;
 
 -- (N rows affected) HH:MM:SS

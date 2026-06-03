@@ -41,6 +41,12 @@ Common templates: `patient.sql`, `dx.sql`, `medication-epic.sql`, `medication-me
 
 Substitute `{project_schema}` with the `schema_name` from `config.yml`.
 
+Every generated SQL script should produce one or more permanent tables in the project
+schema. Use CTEs or `#temp` tables for intermediary data. If distinct permanent outputs
+would make one script unclear, split them into separate scripts. Only generate
+`pt-identity.sql` when the project requires a REDCap database or stable REDCap
+`record_id`; it is not needed for routine cross-system MRN lookup.
+
 When adding SQL scripts that create delivery tables, also add them to `flow.R` in dependency
 order and add matching `config.yml` `tables_to_scribe` entries. `scribe-factory.R` needs
 `path_output_summary`, `path_output_description`, and each table entry's `name`,
@@ -49,7 +55,7 @@ order and add matching `config.yml` `tables_to_scribe` entries. `scribe-factory.
 ## SQL Style
 
 - Keywords lower case except: `SELECT`, `FROM`, `WHERE`, `GROUP BY`, `HAVING`, `ORDER BY`, `DECLARE`
-- CTEs preferred over staging tables
+- CTEs or `#temp` tables preferred for intermediary data; permanent project-schema tables should be final script outputs
 - Joins nested under `FROM`, extra space in `left  join`
 - 2-space indentation
 
