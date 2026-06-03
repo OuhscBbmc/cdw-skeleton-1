@@ -40,6 +40,9 @@ Only after those steps are done should you respond to what the user is asking.
     until the PI provides reviewed concept sets. These are distinct from the extraction
     scripts in `manipulation/` — ss- files define *what* to look for; extraction scripts
     define *how* to pull it.
+  - When creating an `ss_dx` script, use the placeholder script already in the repo as the
+    starting point. Do not fetch or create a separate new template. The finished script
+    should be named `manipulation/ss/ss-dx-create.sql`.
   - `manipulation/scribe-factory.R` — pulls data from CRDW staging tables into local CSV files.
   - `manipulation/pt-list-ellis.R` — patient list processing (if present).
   - SQL scripts here pull from `cdw_cache_staging.{schema_name}.*` staging tables.
