@@ -195,13 +195,15 @@ before reusing anything.
 
 ## Session Logs
 
-At the end of every session that does real work, create a summary note at:
+At the end of every session that does real work, update the daily summary note at:
 
 ```
-documentation/ai-sessions/yyyy-mm-dd short-descriptive-title.md
+documentation/ai-sessions/yyyy-mm-dd.md
 ```
 
-Create the `ai-sessions/` folder if it doesn't exist. Include:
+Prefer one AI session note per day. If today's note already exists, append a new dated/time-stamped
+section to the existing file instead of creating another same-day note. Create the `ai-sessions/`
+folder if it doesn't exist. Include:
 - what was done
 - files created or changed
 - commands run (if any)
