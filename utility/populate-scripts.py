@@ -83,7 +83,7 @@ TEMPLATE_DESCRIPTIONS = {
     "procedure-harmonized":    "Procedures (CPT codes) across systems",
     "charlson-comorbidities":  "Charlson comorbidity index",
     "elixhauser-comorbidities":"Elixhauser comorbidity index",
-    "pt-identity":             "Cross-system MRN lookups",
+    "pt-identity":             "REDCap-only stable record_id mapping",
     "patient-insurance":       "Insurance / payer data",
     "birth-epic":              "Birth records — Epic",
     "birth-meditech":          "Birth records — Meditech",
