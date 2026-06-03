@@ -27,6 +27,10 @@ If `python` is not on PATH, try `py`, then this Windows Python path:
 - `documentation/` — project docs and issue mirror
 - `data-unshared/` — local data, not committed to GitHub
 
+For `ss_dx`, use the existing placeholder script in the repo as the starting point and
+name the finished script `manipulation/ss/ss-dx-create.sql`. Do not fetch or create a
+separately named diagnosis concept-set template.
+
 ## SQL Templates
 
 When generating SQL scripts, fetch templates from:
@@ -36,6 +40,11 @@ Common templates: `patient.sql`, `dx.sql`, `medication-epic.sql`, `medication-me
 `encounter-harmonized.sql`, `lab-epic.sql`, `charlson-comorbidities.sql`.
 
 Substitute `{project_schema}` with the `schema_name` from `config.yml`.
+
+When adding SQL scripts that create delivery tables, also add them to `flow.R` in dependency
+order and add matching `config.yml` `tables_to_scribe` entries. `scribe-factory.R` needs
+`path_output_summary`, `path_output_description`, and each table entry's `name`,
+`columns_include`, `path_output`, and `row_unit`.
 
 ## SQL Style
 

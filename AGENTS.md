@@ -73,6 +73,16 @@ templates they want. Instead:
    If `python` is not on PATH, use the same Python fallback sequence from the session-start checklist.
 4. Show the user which templates you chose and why, then describe what needs to be
    customized in each generated file (dates, WHERE clause, inclusion criteria).
+5. Add the generated SQL scripts to `flow.R` in dependency order, and add every output
+   staging table that should be exported to `config.yml` under `tables_to_scribe`.
+   `scribe-factory.R` requires `path_output_summary`, `path_output_description`, and
+   one `tables_to_scribe` entry per exported table with `name`, `columns_include`,
+   `path_output`, and `row_unit`.
+6. Every generated SQL script should produce one or more permanent tables in the
+   project schema. If a table is only intermediary, use a CTE or `#temp` table instead
+   of a project-schema staging table. If the workflow naturally needs multiple permanent
+   output tables and one script would become unclear, generate a second script rather
+   than hiding a separate deliverable as an intermediary table.
 
 Fetch templates from:
 ```
@@ -106,7 +116,7 @@ Available templates and when to use them:
 | `procedure-harmonized.sql` | Procedures (CPT codes) across systems |
 | `charlson-comorbidities.sql` | Charlson comorbidity index |
 | `elixhauser-comorbidities.sql` | Elixhauser comorbidity index |
-| `pt-identity.sql` | Cross-system MRN lookups |
+| `pt-identity.sql` | Only when the project requires a REDCap database or stable REDCap `record_id`; do not generate for routine cross-system MRN lookup |
 | `patient-insurance.sql` | Insurance / payer data |
 | `birth-epic.sql` | Birth records from Epic |
 | `birth-meditech.sql` | Birth records from Meditech |
@@ -138,8 +148,14 @@ before reusing anything.
   `ORDER BY`, `DECLARE`
 - Use CTEs for readability; avoid intermediate staging tables unless a CTE would be used
   more than twice or becomes unreadably long
+- Every SQL script should create permanent project-schema tables as its final outputs.
+  Intermediary tables should be CTEs or `#temp` tables. If a second permanent table is
+  needed as a distinct deliverable or reusable project table, create it deliberately and
+  consider splitting it into a second script.
 - `ss-` files are an exception: study-specific lookup tables (ss_dx, ss_med, etc.) stay as
   separate staged tables when PI review is required
+- When a SQL script creates a table intended for delivery, add a matching
+  `tables_to_scribe` config entry so `manipulation/scribe-factory.R` exports it.
 - Joins indented and nested under `FROM`
 - Extra space in `left  join`
 - Single-variable join on one line:
