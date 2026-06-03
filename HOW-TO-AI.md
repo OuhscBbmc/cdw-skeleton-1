@@ -44,6 +44,16 @@ show progress and close when done.
 python utility/export-repo-issues.py
 ```
 
+If `python` is not on PATH, try:
+```powershell
+py utility/export-repo-issues.py
+```
+
+On this Windows workstation, this fallback path is known to work:
+```powershell
+& "$env:LOCALAPPDATA\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe" utility\export-repo-issues.py
+```
+
 Re-run any time issues are updated on GitHub. The file overwrites cleanly each time.
 
 ---
@@ -62,6 +72,8 @@ menu in the terminal — type the numbers for the scripts you want and press Ent
 ```
 python utility/populate-scripts.py
 ```
+
+If `python` is not on PATH, use `py` or the Windows Python path shown above.
 
 For specific templates without the menu:
 ```

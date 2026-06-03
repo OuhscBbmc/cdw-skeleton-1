@@ -11,7 +11,11 @@ across all OuhscBbmc research projects.
 At the start of every session, do these steps before anything else:
 
 1. Check whether `documentation/github-issues.md` exists.
-   - If it's missing, run `python utility/export-repo-issues.py` and tell the user it was generated.
+   - If it's missing, run `utility/export-repo-issues.py` automatically and tell the user it was generated.
+   - Prefer `python utility/export-repo-issues.py`. If `python` is not on PATH, try `py utility/export-repo-issues.py`. If both fail on this Windows workstation, use:
+     ```powershell
+     & "$env:LOCALAPPDATA\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe" utility\export-repo-issues.py
+     ```
    - If it exists but was last generated more than 7 days ago (check the `Generated:` line
      at the top), offer to refresh it before proceeding.
 2. Read `documentation/github-issues.md` to understand the research question, inclusion
@@ -63,6 +67,7 @@ templates they want. Instead:
    ```
    python utility/populate-scripts.py --templates patient dx medication-meditech
    ```
+   If `python` is not on PATH, use the same Python fallback sequence from the session-start checklist.
 4. Show the user which templates you chose and why, then describe what needs to be
    customized in each generated file (dates, WHERE clause, inclusion criteria).
 

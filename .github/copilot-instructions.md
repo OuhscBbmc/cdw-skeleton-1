@@ -5,7 +5,18 @@ This is a clinical research data warehouse (CRDW) project repository (OuhscBbmc)
 ## Read First
 
 If `documentation/github-issues.md` exists, read it before starting any work. It contains
-the research question, inclusion criteria, and current task status.
+the research question, inclusion criteria, and current task status. If it is missing, generate
+it automatically before proceeding:
+
+```powershell
+python utility/export-repo-issues.py
+```
+
+If `python` is not on PATH, try `py`, then this Windows Python path:
+
+```powershell
+& "$env:LOCALAPPDATA\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe" utility\export-repo-issues.py
+```
 
 ## Repo Layout
 
