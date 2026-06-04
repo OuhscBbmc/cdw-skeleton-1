@@ -69,10 +69,10 @@ DROP TABLE IF EXISTS [cdw_cache_staging].[{project_schema}].[ss_lab];
 CREATE TABLE [cdw_cache_staging].[{project_schema}].[ss_lab] (
     ss_lab_index        int             identity(1,1) primary key,
     source_system       varchar(10)     not null,   -- 'epic' | 'meditech'
-    lab_component_key   int             null,       -- Epic join key; null for Meditech rows
-    mnemonic            varchar(15)     null,       -- Meditech join key; null for Epic rows
-    name                varchar(150)    null,
-    loinc_code          varchar(30)     null,
+    lab_component_key   int,       -- Epic join key; null for Meditech rows
+    mnemonic            varchar(15),       -- Meditech join key; null for Epic rows
+    name                varchar(150),
+    loinc_code          varchar(30),
     lab_category        varchar(100)    not null,
 );
 

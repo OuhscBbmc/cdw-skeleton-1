@@ -28,8 +28,8 @@ CREATE TABLE [cdw_cache_staging].[{project_schema}].[note_meditech] (
     mrn_mpi                 int             not null,
     mrn_meditech_internal   varchar(8)      not null,
     entered_datetime        smalldatetime   not null,
-    report_name             varchar(100)    null,
-    note_text               varchar(max)    null,
+    report_name             varchar(100),
+    note_text               varchar(max),
 );
 
 INSERT INTO {project_schema}.note_meditech

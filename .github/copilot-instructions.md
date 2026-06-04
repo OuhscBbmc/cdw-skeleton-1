@@ -47,14 +47,24 @@ would make one script unclear, split them into separate scripts. Only generate
 `pt-identity.sql` when the project requires a REDCap database or stable REDCap
 `record_id`; it is not needed for routine cross-system MRN lookup.
 
+Name SQL scripts with a two-digit sequence prefix that reflects dependency order, e.g.
+`01-patient.sql`, `02-dx.sql`, `03-medication-meditech.sql`. The patient pool script is
+always `01`. Downstream tables that join to `pt_pool` follow in execution order.
+
 When adding SQL scripts that create delivery tables, also add them to `flow.R` in dependency
 order and add matching `config.yml` `tables_to_scribe` entries. `scribe-factory.R` needs
 `path_output_summary`, `path_output_description`, and each table entry's `name`,
 `columns_include`, `path_output`, and `row_unit`.
+Never add `ss-` tables (ss_dx, ss_med, ss_clinic, etc.) to `tables_to_scribe` — they are
+concept-set lookup inputs, not study outputs.
 
 ## SQL Style
 
 - Keywords lower case except: `SELECT`, `FROM`, `WHERE`, `GROUP BY`, `HAVING`, `ORDER BY`, `DECLARE`
+- `CREATE TABLE`: nullable columns omit `null` — only `not null` is stated explicitly
+- `CREATE TABLE`: trailing comma on the last column definition
+- `INSERT`: no column list — `INSERT INTO table` followed directly by `SELECT`
+- All `CREATE TABLE` statements must appear before the first `SELECT` in the file
 - CTEs or `#temp` tables preferred for intermediary data; permanent project-schema tables should be final script outputs
 - Joins nested under `FROM`, extra space in `left  join`
 - 2-space indentation

@@ -21,15 +21,15 @@ CREATE TABLE [cdw_cache_staging].[{project_schema}].[lab_meditech] (
     mrn_mpi                 int             not null,
     mrn_meditech_internal   varchar(10)     not null,
     mnemonic                varchar(15)     not null,
-    loinc                   varchar(7)      null,
+    loinc                   varchar(7),
     collection_datetime     smalldatetime   not null,
-    result_value            varchar(75)     null,
-    result_numeric          float           null,
-    unit                    varchar(10)     null,
-    normal_range            varchar(25)     null,
-    status                  varchar(5)      null,   -- lab status code; see lexis.dim_meditech_lab_status
+    result_value            varchar(75),
+    result_numeric          float,
+    unit                    varchar(10),
+    normal_range            varchar(25),
+    status                  varchar(5),   -- lab status code; see lexis.dim_meditech_lab_status
     -- Study classification:
-    lab_category            varchar(100)    null,
+    lab_category            varchar(100),
 );
 
 INSERT INTO {project_schema}.lab_meditech

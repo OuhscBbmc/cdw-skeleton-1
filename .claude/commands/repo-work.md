@@ -33,3 +33,15 @@ Run this at the start of every Claude Code session in a CRDW project repo.
 - ss- files require PI review before running.
 - Editing files is always safe. Running them requires a go-ahead.
 - Write a session log to `documentation/ai-sessions/yyyy-mm-dd short-title.md` at the end.
+
+## Script Naming
+
+Name SQL scripts with a two-digit sequence prefix that reflects dependency order:
+`01-patient.sql`, `02-dx.sql`, `03-medication-meditech.sql`, etc. The patient pool
+script is always `01`. This makes run order unambiguous without needing to read `flow.R`.
+
+## On tables_to_scribe
+
+Never add `ss-` files (ss_dx, ss_med, ss_clinic, etc.) to `tables_to_scribe` in
+`config.yml`. They are concept-set lookup inputs used by extraction scripts, not
+study output tables. Only final delivery tables belong in `tables_to_scribe`.

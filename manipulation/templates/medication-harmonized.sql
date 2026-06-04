@@ -19,22 +19,22 @@ CREATE TABLE [cdw_cache_staging].[{project_schema}].[medication] (
     med_index               int             identity(1,1) primary key,
     source_system           varchar(10)     not null,   -- 'meditech' | 'epic'
     -- System-specific encounter/event keys:
-    account_number          char(12)        null,       -- Meditech
-    medication_event_key    int             null,       -- Epic
+    account_number          char(12),       -- Meditech
+    medication_event_key    int,       -- Epic
     mrn_mpi                 int             not null,
     -- Medication
-    medication_name         varchar(300)    null,
-    simple_generic_name     varchar(300)    null,       -- Epic only; null for Meditech
-    pharmaceutical_class    varchar(300)    null,       -- Epic only
-    therapeutic_class       varchar(300)    null,       -- Epic only
+    medication_name         varchar(300),
+    simple_generic_name     varchar(300),       -- Epic only; null for Meditech
+    pharmaceutical_class    varchar(300),       -- Epic only
+    therapeutic_class       varchar(300),       -- Epic only
     admin_datetime          datetime2       not null,
-    administered            bit             null,       -- Epic: 1=administered; Meditech: always 1
-    route                   varchar(300)    null,
-    minimum_dose            numeric(18,2)   null,   -- Epic only; no per-admin dose in Caboodle; always null for Meditech
-    maximum_dose            numeric(18,2)   null,   -- Epic only
-    dose_unit               varchar(300)    null,
+    administered            bit,       -- Epic: 1=administered; Meditech: always 1
+    route                   varchar(300),
+    minimum_dose            numeric(18,2),   -- Epic only; no per-admin dose in Caboodle; always null for Meditech
+    maximum_dose            numeric(18,2),   -- Epic only
+    dose_unit               varchar(300),
     -- Study classification:
-    med_category            varchar(100)    null,
+    med_category            varchar(100),
 );
 
 -- ---- Meditech arm (< 2023-06-03) -------------------------------------------------------------

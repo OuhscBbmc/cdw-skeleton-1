@@ -24,11 +24,26 @@ CREATE TABLE [cdw_cache_staging].[{project_schema}].[invoice_gecb] (
     invpk               int             not null,   -- GECB invoice PK; join key for CPTs/diagnoses
     invnum              int             not null,
     inv_service_date    date            not null,
-    location_name       varchar(100)    null,
-    provider_name       varchar(100)    null,
-    icd_code            varchar(40)     null,
-    icd_description     varchar(256)    null,
-    visit_number        int             null,
+    location_name       varchar(100),
+    provider_name       varchar(100),
+    icd_code            varchar(40),
+    icd_description     varchar(256),
+    visit_number        int,
+);
+
+-- ---- CPT codes per invoice -------------------------------------------------------------------
+DROP TABLE IF EXISTS [cdw_cache_staging].[{project_schema}].[cpt_gecb];
+CREATE TABLE [cdw_cache_staging].[{project_schema}].[cpt_gecb] (
+    cpt_gecb_index      int             identity(1,1) primary key,
+    mrn_mpi             int             not null,
+    invpk               int             not null,
+    inv_service_date    date            not null,
+    visit_number        int,
+    billing_code        varchar(10),
+    billing_description varchar(100),
+    billing_category    varchar(100),
+    vocabulary_id       varchar(10),
+    provider_name       varchar(100),
 );
 
 WITH pt AS (
@@ -61,21 +76,6 @@ WHERE
     i.inv_service_date between @date_start and @date_stop
 ORDER BY pt.mrn_mpi, i.inv_service_date;
 
-
--- ---- CPT codes per invoice -------------------------------------------------------------------
-DROP TABLE IF EXISTS [cdw_cache_staging].[{project_schema}].[cpt_gecb];
-CREATE TABLE [cdw_cache_staging].[{project_schema}].[cpt_gecb] (
-    cpt_gecb_index      int             identity(1,1) primary key,
-    mrn_mpi             int             not null,
-    invpk               int             not null,
-    inv_service_date    date            not null,
-    visit_number        int             null,
-    billing_code        varchar(10)     null,
-    billing_description varchar(100)    null,
-    billing_category    varchar(100)    null,
-    vocabulary_id       varchar(10)     null,
-    provider_name       varchar(100)    null,
-);
 
 INSERT INTO {project_schema}.cpt_gecb
 SELECT

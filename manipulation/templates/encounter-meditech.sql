@@ -21,37 +21,23 @@ CREATE TABLE [cdw_cache_staging].[{project_schema}].[encounter_meditech] (
     mrn_mpi                     int             not null,
     mrn_meditech_internal       varchar(10)     not null,
     -- Encounter details
-    facility                    varchar(50)     null,
-    campus                      varchar(50)     null,
+    facility                    varchar(50),
+    campus                      varchar(50),
     visit_start_date            date            not null,
-    visit_stop_date             date            null,
-    length_of_stay              smallint        null,
-    patient_status              varchar(50)     null,
-    location_first_description  varchar(50)     null,
-    location_last_description   varchar(50)     null,
-    location_last_room          varchar(50)     null,
-    provider_discharge          varchar(50)     null,
-    admit_source                varchar(50)     null,
-    discharge_disposition       varchar(50)     null,
+    visit_stop_date             date,
+    length_of_stay              smallint,
+    patient_status              varchar(50),
+    location_first_description  varchar(50),
+    location_last_description   varchar(50),
+    location_last_room          varchar(50),
+    provider_discharge          varchar(50),
+    admit_source                varchar(50),
+    discharge_disposition       varchar(50),
 );
 
 INSERT INTO {project_schema}.encounter_meditech
 SELECT
-    v.account_number
-    ,na.mrn_mpi
-    ,v.mrn_meditech_internal
-    ,v.facility
-    ,v.campus
-    ,v.visit_start_date
-    ,v.visit_stop_date
-    ,v.length_of_stay
-    ,v.patient_status
-    ,v.location_first_description
-    ,v.location_last_description
-    ,v.location_last_room
-    ,v.provider_discharge
-    ,v.admit_source
-    ,v.discharge_disposition
+    v.account_number,na.mrn_mpi,v.mrn_meditech_internal,v.facility,v.campus,v.visit_start_date,v.visit_stop_date,v.length_of_stay,v.patient_status,v.location_first_description,v.location_last_description,v.location_last_room,v.provider_discharge,v.admit_source,v.discharge_disposition
 FROM cdw_meditech.meditech.visit v
   inner join cdw_mpi_1.groomed.node_assigned na          on v.mrn_meditech_internal = na.mrn_meditech_internal
   inner join {project_schema}.pt_pool pp                 on na.mrn_mpi = pp.mrn_mpi

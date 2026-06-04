@@ -58,7 +58,7 @@ ORDER BY d.obs_nurse_name;
 DROP TABLE IF EXISTS [cdw_cache_staging].[{project_schema}].[ss_obs];
 CREATE TABLE [cdw_cache_staging].[{project_schema}].[ss_obs] (
     obs_key_id      int             not null primary key,
-    obs_mnemonic    varchar(50)     null,
+    obs_mnemonic    varchar(50),
     obs_name        varchar(100)    not null,
     obs_category    varchar(100)    not null,
 );

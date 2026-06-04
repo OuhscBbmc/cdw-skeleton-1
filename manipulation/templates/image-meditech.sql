@@ -21,8 +21,8 @@ CREATE TABLE [cdw_cache_staging].[{project_schema}].[image_meditech] (
     account_number          char(12)        not null,
     mrn_mpi                 int             not null,
     exam_date               date            not null,
-    exam_name               varchar(30)     null,
-    impression              varchar(max)    null,
+    exam_name               varchar(30),
+    impression              varchar(max),
 );
 
 INSERT INTO {project_schema}.image_meditech
@@ -37,9 +37,4 @@ inner join cdw_mpi_1.groomed.node_assigned na   on i.mrn_meditech_internal = na.
 inner join {project_schema}.pt_pool pp          on na.mrn_mpi = pp.mrn_mpi
 WHERE i.exam_date between @date_start and @date_stop
 -- !! Optionally limit to accounts from a visit pool:
--- and i.account_number in (SELECT v.account_number FROM {project_schema}.visit_pool v)
--- !! Or filter by exam name:
--- and i.exam_name like '%mri%'
-ORDER BY na.mrn_mpi, i.exam_date;
-
--- (N rows affected) HH:MM:SS
+-- and i.account_number in (SELECT v.account_number FROM {project_schema}.vis

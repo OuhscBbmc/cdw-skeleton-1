@@ -22,18 +22,18 @@ CREATE TABLE [cdw_cache_staging].[{project_schema}].[encounter_epic] (
     encounter_key               int             not null primary key,
     mrn_mpi                     int             not null,
     mrn_epic_durable            int             not null,
-    encounter_epic_csn          bigint          null,
+    encounter_epic_csn          bigint,
     -- Encounter details
     encounter_start_date        date            not null,
-    encounter_end_date          date            null,
-    length_of_stay              smallint        null,
-    encounter_type              varchar(300)    null,
-    patient_class               varchar(50)     null,         -- 'Inpatient' | 'Outpatient' | 'Emergency'
-    department_name             varchar(100)    null,
-    facility_name               varchar(100)    null,
-    visit_provider_name         varchar(200)    null,
-    discharge_disposition       varchar(300)    null,
-    primary_benefit_payor_class varchar(100)    null,
+    encounter_end_date          date,
+    length_of_stay              smallint,
+    encounter_type              varchar(300),
+    patient_class               varchar(50),         -- 'Inpatient' | 'Outpatient' | 'Emergency'
+    department_name             varchar(100),
+    facility_name               varchar(100),
+    visit_provider_name         varchar(200),
+    discharge_disposition       varchar(300),
+    primary_benefit_payor_class varchar(100),
 );
 
 WITH insurance AS (

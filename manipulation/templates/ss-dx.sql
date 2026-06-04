@@ -53,8 +53,8 @@ CREATE TABLE [cdw_cache_staging].[{project_schema}].[ss_dx] (
     vocabulary_id   varchar(7)      not null,
     icd_code        varchar(8)      not null,
     icd_description varchar(255)    not null,
-    category_1      varchar(100)    null,
-    category_2      varchar(100)    null,
+    category_1      varchar(100),
+    category_2      varchar(100),
     -- Add category_3, category_4 as needed
 );
 

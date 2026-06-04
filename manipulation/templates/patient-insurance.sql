@@ -13,8 +13,8 @@ use cdw_cache_staging;
 DROP TABLE IF EXISTS [cdw_cache_staging].[{project_schema}].[patient_insurance];
 CREATE TABLE [cdw_cache_staging].[{project_schema}].[patient_insurance] (
     mrn_mpi                     int             not null primary key,
-    last_insurance_cat_epic     varchar(100)    null,
-    last_insurance_cat_gecb     varchar(100)    null,
+    last_insurance_cat_epic     varchar(100),
+    last_insurance_cat_gecb     varchar(100),
 );
 
 WITH insurance_epic AS (

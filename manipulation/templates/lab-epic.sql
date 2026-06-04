@@ -22,18 +22,18 @@ CREATE TABLE [cdw_cache_staging].[{project_schema}].[lab_epic] (
     mrn_mpi                     int             not null,
     mrn_epic_durable            int             not null,
     lab_component_key           int             not null,
-    loinc_code                  varchar(30)     null,
-    component_name              varchar(150)    null,
-    common_name                 varchar(500)    null,
+    loinc_code                  varchar(30),
+    component_name              varchar(150),
+    common_name                 varchar(500),
     result_datetime             datetime        not null,
-    result_value                varchar(200)    null,
-    result_numeric              float           null,
-    unit                        varchar(50)     null,
-    reference_values            varchar(300)    null,
-    flag                        varchar(50)     null,
-    result_status               varchar(50)     null,
+    result_value                varchar(200),
+    result_numeric              float,
+    unit                        varchar(50),
+    reference_values            varchar(300),
+    flag                        varchar(50),
+    result_status               varchar(50),
     -- Study classification:
-    lab_category                varchar(100)    null,
+    lab_category                varchar(100),
 );
 
 INSERT INTO {project_schema}.lab_epic

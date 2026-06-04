@@ -18,24 +18,24 @@ DROP TABLE IF EXISTS [cdw_cache_staging].[{project_schema}].[medication_centrici
 CREATE TABLE [cdw_cache_staging].[{project_schema}].[medication_centricity] (
     med_centricity_index    int             identity(1,1) primary key,
     mrn_mpi                 int             not null,
-    index_within_patient    bigint          null,
+    index_within_patient    bigint,
     mid                     bigint          not null,   -- Centricity medication record ID
     sdid                    bigint          not null,   -- Centricity document ID (encounter link)
     description             varchar(80)     not null,   -- brand/trade name
-    genericmed              varchar(60)     null,
-    instructions            varchar(1400)   null,
-    startdate               date            null,
-    stopdate                date            null,
-    stop_date_calc          date            null,
-    stopreason              varchar(1)      null,
-    route                   varchar(30)     null,
-    dose                    numeric(19,5)   null,
-    ndc_11                  varchar(11)     null,
-    gpi                     varchar(14)     null,
-    rxnorm                  int             null,
-    age_years               int             null,
+    genericmed              varchar(60),
+    instructions            varchar(1400),
+    startdate               date,
+    stopdate                date,
+    stop_date_calc          date,
+    stopreason              varchar(1),
+    route                   varchar(30),
+    dose                    numeric(19,5),
+    ndc_11                  varchar(11),
+    gpi                     varchar(14),
+    rxnorm                  int,
+    age_years               int,
     -- Study classification:
-    med_category            varchar(100)    null,
+    med_category            varchar(100),
 );
 
 INSERT INTO {project_schema}.medication_centricity

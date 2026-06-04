@@ -30,24 +30,16 @@ CREATE TABLE [cdw_cache_staging].[{project_schema}].[note_epic] (
     encounter_key           int             not null,
     mrn_mpi                 int             not null,
     mrn_epic_durable        int             not null,
-    creation_instant        datetime        null,
+    creation_instant        datetime,
     note_type               varchar(80)     not null,
-    note_service            varchar(80)     null,
+    note_service            varchar(80),
     note_line               smallint        not null,
     note_text               varchar(2000)   not null,
 );
 
 INSERT INTO {project_schema}.note_epic
 SELECT
-    ns.note_clinical_key
-    ,e.encounter_key
-    ,na.mrn_mpi
-    ,e.mrn_epic_durable
-    ,ns.creation_instant
-    ,ns.note_type
-    ,ns.note_service
-    ,nt.note_line
-    ,nt.text                                    as note_text
+    ns.note_clinical_key,e.encounter_key,na.mrn_mpi,e.mrn_epic_durable,ns.creation_instant,ns.note_type,ns.note_service,nt.note_line,nt.text                                    as note_text
 FROM cdw_epic_waystation.clarity.note_clinical_summary ns
 inner join cdw_epic_waystation.clarity.note_clinical_text_line nt  on ns.note_clinical_key = nt.note_clinical_key
 inner join cdw_epic.caboodle.encounter e                           on ns.encounter_epic_csn = e.encounter_epic_csn

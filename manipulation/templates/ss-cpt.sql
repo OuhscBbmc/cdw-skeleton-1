@@ -63,8 +63,8 @@ ORDER BY source_system, cpt_code;
 DROP TABLE IF EXISTS [cdw_cache_staging].[{project_schema}].[ss_cpt];
 CREATE TABLE [cdw_cache_staging].[{project_schema}].[ss_cpt] (
     cpt_code        varchar(10)     not null primary key,
-    procedure_name  varchar(254)    null,
-    category        varchar(100)    null,
+    procedure_name  varchar(254),
+    category        varchar(100),
 );
 
 INSERT INTO {project_schema}.ss_cpt

@@ -26,11 +26,11 @@ CREATE TABLE [cdw_cache_staging].[{project_schema}].[image_epic] (
     imaging_key             int             not null,
     mrn_mpi                 int             not null,
     mrn_epic_durable        int             not null,
-    procedure_name          varchar(300)    null,
-    exam_date               date            null,       -- decoded from exam_start_date_key
+    procedure_name          varchar(300),
+    exam_date               date,       -- decoded from exam_start_date_key
     exam_start_date_key     int             not null,   -- raw integer key; keep for diagnostics
-    study_status            varchar(30)     null,
-    is_abnormal             bit             null,
+    study_status            varchar(30),
+    is_abnormal             bit,
 );
 
 INSERT INTO {project_schema}.image_epic

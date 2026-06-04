@@ -44,9 +44,9 @@ ORDER BY desired desc, s.clinic_name;
 DROP TABLE IF EXISTS [cdw_cache_staging].[{project_schema}].[ss_location_gecb];
 CREATE TABLE [cdw_cache_staging].[{project_schema}].[ss_location_gecb] (
     sched_location_id   int             not null primary key,
-    sched_location      varchar(100)    null,
-    clinic_name         varchar(100)    null,
-    category            varchar(100)    null,
+    sched_location      varchar(100),
+    clinic_name         varchar(100),
+    category            varchar(100),
 );
 
 INSERT INTO {project_schema}.ss_location_gecb

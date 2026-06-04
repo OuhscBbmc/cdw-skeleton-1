@@ -41,10 +41,10 @@ ORDER BY desired desc, d.location_description;
 DROP TABLE IF EXISTS [cdw_cache_staging].[{project_schema}].[ss_location_meditech];
 CREATE TABLE [cdw_cache_staging].[{project_schema}].[ss_location_meditech] (
     location_mnemonic       varchar(10)     not null primary key,
-    location_description    varchar(30)     null,
-    facility_name           varchar(30)     null,
-    campus_name             varchar(30)     null,
-    category                varchar(100)    null,
+    location_description    varchar(30),
+    facility_name           varchar(30),
+    campus_name             varchar(30),
+    category                varchar(100),
 );
 
 INSERT INTO {project_schema}.ss_location_meditech

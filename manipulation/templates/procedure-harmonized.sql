@@ -22,12 +22,12 @@ CREATE TABLE [cdw_cache_staging].[{project_schema}].[procedure_event] (
     mrn_mpi                 int             not null,
     proc_date               date            not null,
     cpt_code                varchar(10)     not null,
-    procedure_name          varchar(254)    null,
-    procedure_category      varchar(100)    null,       -- Epic: procedure_category; GECB: billing_description
-    provider_name           varchar(200)    null,
+    procedure_name          varchar(254),
+    procedure_category      varchar(100),       -- Epic: procedure_category; GECB: billing_description
+    provider_name           varchar(200),
     -- System-specific keys:
-    invpk                   int             null,       -- GECB invoice PK
-    procedure_event_key     int             null,       -- Epic procedure event key
+    invpk                   int,       -- GECB invoice PK
+    procedure_event_key     int,       -- Epic procedure event key
 );
 
 -- ---- GECB arm (< 2023-06-03) -----------------------------------------------------------------

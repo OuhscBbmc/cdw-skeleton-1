@@ -21,30 +21,20 @@ CREATE TABLE [cdw_cache_staging].[{project_schema}].[dx_meditech] (
     account_number          char(12)        not null,
     mrn_mpi                 int             not null,
     mrn_meditech_internal   varchar(10)     not null,
-    dx_priority             tinyint         null,       -- 1 = primary dx
-    vocabulary_id           varchar(8)      null,
-    icd_code                varchar(20)     null,
-    omop_concept_id         int             null,
-    icd_description         varchar(255)    null,   -- from lexis.dx lookup
-    visit_start_date        date            null,
+    dx_priority             tinyint,       -- 1 = primary dx
+    vocabulary_id           varchar(8),
+    icd_code                varchar(20),
+    omop_concept_id         int,
+    icd_description         varchar(255),   -- from lexis.dx lookup
+    visit_start_date        date,
     -- Study classification (optional):
-    category_1              varchar(255)    null,
-    category_2              varchar(255)    null,
+    category_1              varchar(255),
+    category_2              varchar(255),
 );
 
 INSERT INTO {project_schema}.dx_meditech
 SELECT
-    d.account_number
-    ,na.mrn_mpi
-    ,d.mrn_meditech_internal
-    ,d.dx_priority
-    ,d.vocabulary_id
-    ,d.icd_code
-    ,d.omop_concept_id
-    ,lx.icd_description
-    ,d.visit_start_date
-    ,ss.category_1
-    ,ss.category_2
+    d.account_number,na.mrn_mpi,d.mrn_meditech_internal,d.dx_priority,d.vocabulary_id,d.icd_code,d.omop_concept_id,lx.icd_description,d.visit_start_date,ss.category_1,ss.category_2
 FROM cdw_meditech.meditech.dx d
 inner join cdw_mpi_1.groomed.node_assigned na   on d.mrn_meditech_internal = na.mrn_meditech_internal
 inner join {project_schema}.pt_pool pp           on na.mrn_mpi = pp.mrn_mpi

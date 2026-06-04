@@ -23,14 +23,14 @@ CREATE TABLE [cdw_cache_staging].[{project_schema}].[birth_meditech] (
     birth_meditech_index                int             identity(1,1) primary key,
     mrn_mpi_mother                      int             not null,
     mrn_mpi_baby                        int             not null,
-    birth_index_within_mother           smallint        null,
-    birth_date                          date            null,
-    mother_age_years                    numeric(18,0)   null,
-    gestational_age_weeks_standardized  varchar(25)     null,
-    birth_weight_g                      varchar(25)     null,
+    birth_index_within_mother           smallint,
+    birth_date                          date,
+    mother_age_years                    numeric(18,0),
+    gestational_age_weeks_standardized  varchar(25),
+    birth_weight_g                      varchar(25),
     account_number_baby                 char(12)        not null,
-    account_number_mother               char(12)        null,
-    mrn_meditech_internal_mother        varchar(10)     null,
+    account_number_mother               char(12),
+    mrn_meditech_internal_mother        varchar(10),
 );
 
 INSERT INTO {project_schema}.birth_meditech

@@ -26,25 +26,16 @@ CREATE TABLE [cdw_cache_staging].[{project_schema}].[obs_meditech] (
     mrn_meditech_internal   varchar(10)     not null,
     obs_key_id              int             not null,   -- hdid; identifies the measurement type
     obs_datetime            smalldatetime   not null,
-    obs_name                varchar(100)    null,       -- human-readable name from ss_obs
-    obs_mnemonic            varchar(15)     null,       -- meditech obs mnemonic
-    obs_value               varchar(200)    null,
-    obs_value_numeric       float           null,
-    obs_category            varchar(100)    null,       -- study classification from ss_obs
+    obs_name                varchar(100),       -- human-readable name from ss_obs
+    obs_mnemonic            varchar(15),       -- meditech obs mnemonic
+    obs_value               varchar(200),
+    obs_value_numeric       float,
+    obs_category            varchar(100),       -- study classification from ss_obs,
 );
 
 INSERT INTO {project_schema}.obs_meditech
 SELECT
-    o.account_number
-    ,na.mrn_mpi
-    ,o.mrn_meditech_internal
-    ,o.obs_key_id
-    ,o.obs_datetime
-    ,ss.obs_name
-    ,o.obs_mnemonic
-    ,o.obs_value
-    ,try_convert(float, o.obs_value)        as obs_value_numeric
-    ,ss.obs_category
+    o.account_number,na.mrn_mpi,o.mrn_meditech_internal,o.obs_key_id,o.obs_datetime,ss.obs_name,o.obs_mnemonic,o.obs_value,try_convert(float, o.obs_value)        as obs_value_numeric,ss.obs_category
 FROM cdw_meditech.meditech.obs o
 inner join cdw_mpi_1.groomed.node_assigned na   on o.mrn_meditech_internal = na.mrn_meditech_internal
 inner join {project_schema}.pt_pool pp           on na.mrn_mpi = pp.mrn_mpi

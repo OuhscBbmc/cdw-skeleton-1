@@ -27,8 +27,7 @@ CREATE TABLE #pt_epic (
 
 INSERT INTO #pt_epic
 SELECT
-    na.mrn_epic_durable
-    ,pp.mrn_mpi
+    na.mrn_epic_durable,pp.mrn_mpi
 FROM {project_schema}.pt_pool pp
 inner join cdw_mpi_1.groomed.node_assigned na   on pp.mrn_mpi = na.mrn_mpi and na.type = 'epic14';
 
@@ -42,37 +41,25 @@ CREATE TABLE [cdw_cache_staging].[{project_schema}].[obs_epic] (
     flowsheet_row_key           int             not null,
     name                        varchar(250)    not null,
     display_name                varchar(300)    not null,
-    value_numeric               numeric(18,2)   null,
-    value_string                varchar(2500)   null,
-    value_date                  date            null,
-    value_time                  time            null,
-    obs_index_within_patient    bigint          null,
-    obs_index_within_encounter  bigint          null,
+    value_numeric               numeric(18,2),
+    value_string                varchar(2500),
+    value_date                  date,
+    value_time                  time,
+    obs_index_within_patient    bigint,
+    obs_index_within_encounter  bigint,
     -- Study classification:
-    obs_category                varchar(100)    null,
+    obs_category                varchar(100),
 );
 
 INSERT INTO {project_schema}.obs_epic
 SELECT
-    p.mrn_mpi
-    ,p.mrn_epic_durable
-    ,f.encounter_key
-    ,f.flowsheet_row_key
-    ,fd.name
-    ,fd.display_name
-    ,f.value_numeric
-    ,f.value_string
-    ,f.value_date
-    ,f.value_time
-    ,row_number() over (
+    p.mrn_mpi,p.mrn_epic_durable,f.encounter_key,f.flowsheet_row_key,fd.name,fd.display_name,f.value_numeric,f.value_string,f.value_date,f.value_time,row_number() over (
         partition by p.mrn_mpi
         order by f.encounter_key, f.flowsheet_row_key, f.value_date, f.value_time, f.value_string
-     )                                          as obs_index_within_patient
-    ,row_number() over (
+     )                                          as obs_index_within_patient,row_number() over (
         partition by f.encounter_key
         order by f.flowsheet_row_key, f.value_date, f.value_time, f.value_string
-     )                                          as obs_index_within_encounter
-    ,ss.obs_category
+     )                                          as obs_index_within_encounter,ss.obs_category
 FROM cdw_epic.caboodle.flowsheet f
 inner join cdw_epic_waystation.caboodle.flowsheet_row_dim fd    on f.flowsheet_row_key = fd.flowsheet_row_key
 inner join {project_schema}.ss_obs_epic ss                      on f.flowsheet_row_key = ss.flowsheet_row_key

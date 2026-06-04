@@ -21,18 +21,18 @@ CREATE TABLE [cdw_cache_staging].[{project_schema}].[encounter] (
     encounter_index             int             identity(1,1) primary key,
     source_system               varchar(10)     not null,   -- 'meditech' | 'epic'
     -- Universal encounter key: account_number for meditech, encounter_key for epic
-    account_number              char(12)        null,       -- Meditech only
-    encounter_key               int             null,       -- Epic only
+    account_number              char(12),       -- Meditech only
+    encounter_key               int,            -- Epic only
     mrn_mpi                     int             not null,
     -- Encounter
     encounter_start_date        date            not null,
-    encounter_end_date          date            null,
-    length_of_stay              smallint        null,
-    patient_class               varchar(50)     null,   -- 'inpatient' | 'outpatient' | 'emergency'
-    facility                    varchar(100)    null,
-    department_or_campus        varchar(100)    null,
-    discharge_disposition       varchar(100)    null,
-    insurance_category          varchar(100)    null,
+    encounter_end_date          date,
+    length_of_stay              smallint,
+    patient_class               varchar(50),   -- 'inpatient' | 'outpatient' | 'emergency'
+    facility                    varchar(100),
+    department_or_campus        varchar(100),
+    discharge_disposition       varchar(100),
+    insurance_category          varchar(100),
 );
 
 WITH epic_encounter_types AS (

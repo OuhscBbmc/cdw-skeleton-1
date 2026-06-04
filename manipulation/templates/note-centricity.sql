@@ -1,10 +1,10 @@
 -- ================================================================================================
 -- TEMPLATE: note-centricity.sql
 -- Source:   cdw_centricity.centricity.document + document_note + usr
--- Applies:  clinical_dates < 2023-06-03  (Centricity — outpatient/ambulatory)
+-- Applies:  clinical_dates < 2023-06-03  (Centricity -- outpatient/ambulatory)
 -- Purpose:  Free-text clinical notes from Centricity (office visits, op reports, etc.)
 --           Uses a two-step pattern: first resolve eligible documents into a temp table,
---           then pull full note text only for those — avoids loading all note text upfront.
+--           then pull full note text only for those -- avoids loading all note text upfront.
 --
 -- Common doctype_description values:
 --   'Office Visit', 'Telemedicine Encounter', 'Progress Notes', 'Operative Report',
@@ -25,14 +25,14 @@ DROP TABLE IF EXISTS [cdw_cache_staging].[{project_schema}].[note_centricity];
 CREATE TABLE [cdw_cache_staging].[{project_schema}].[note_centricity] (
     sdid                    bigint          not null primary key,   -- Centricity document ID
     mrn_centricity          bigint          not null,
-    mrn_mpi                 int             null,
+    mrn_mpi                 int,
     clinical_date           date            not null,
-    location_name           varchar(70)     null,
-    doctype_description     varchar(32)     null,
-    summary                 varchar(64)     null,
+    location_name           varchar(70),
+    doctype_description     varchar(32),
+    summary                 varchar(64),
     note_text               varchar(max)    not null,
-    physician_name_full     varchar(50)     null,
-    physician_specialty     varchar(32)     null,
+    physician_name_full     varchar(50),
+    physician_specialty     varchar(32),
 );
 
 -- Step 1: resolve eligible document IDs (avoids full note text scan)

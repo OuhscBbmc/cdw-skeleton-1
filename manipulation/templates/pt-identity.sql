@@ -22,7 +22,7 @@ use cdw_cache_staging;
 DROP TABLE IF EXISTS cdw_transaction.{project_schema}.pt_identity;
 CREATE TABLE cdw_transaction.{project_schema}.pt_identity (
     mrn_mpi     int     not null primary key,
-    record_id   int     identity not null unique,   -- stable, auto-incrementing study ID
+    record_id   int     identity not null unique,   -- stable, auto-incrementing study ID,
 );
 */
 
@@ -39,7 +39,7 @@ WITH mrn_to_add AS (
     FROM cdw_transaction.{project_schema}.pt_identity pi
 )
 
-INSERT INTO cdw_transaction.{project_schema}.pt_identity (mrn_mpi)
+INSERT INTO cdw_transaction.{project_schema}.pt_identity
 SELECT mrn_mpi
 FROM mrn_to_add;
 

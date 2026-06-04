@@ -22,14 +22,14 @@ DROP TABLE IF EXISTS [cdw_cache_staging].[{project_schema}].[obs_centricity];
 CREATE TABLE [cdw_cache_staging].[{project_schema}].[obs_centricity] (
     obs_centricity_index    int             identity(1,1) primary key,
     mrn_mpi                 int             not null,
-    index_within_patient    bigint          null,
+    index_within_patient    bigint,
     hdid                    int             not null,
     name                    varchar(15)     not null,
     description             varchar(220)    not null,
-    keyword                 varchar(255)    null,
+    keyword                 varchar(255),
     obs_date                date            not null,
     obs_value               varchar(2000)   not null,
-    obs_value_numeric       float           null,
+    obs_value_numeric       float,
 );
 
 INSERT INTO {project_schema}.obs_centricity

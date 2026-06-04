@@ -54,9 +54,9 @@ ORDER BY desired desc, d.department_external_name;
 DROP TABLE IF EXISTS [cdw_cache_staging].[{project_schema}].[ss_location_epic];
 CREATE TABLE [cdw_cache_staging].[{project_schema}].[ss_location_epic] (
     department_key              int             not null primary key,
-    department_name             varchar(300)    null,
-    department_external_name    varchar(300)    null,
-    category                    varchar(100)    null,
+    department_name             varchar(300),
+    department_external_name    varchar(300),
+    category                    varchar(100),
 );
 
 INSERT INTO {project_schema}.ss_location_epic

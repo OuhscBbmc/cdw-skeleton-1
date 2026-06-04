@@ -73,11 +73,16 @@ templates they want. Instead:
    If `python` is not on PATH, use the same Python fallback sequence from the session-start checklist.
 4. Show the user which templates you chose and why, then describe what needs to be
    customized in each generated file (dates, WHERE clause, inclusion criteria).
+   Name generated scripts with a two-digit sequence prefix that reflects dependency
+   order, e.g. `01-patient.sql`, `02-dx.sql`, `03-medication-meditech.sql`. The patient
+   pool script always runs first; downstream tables that join to `pt_pool` come after.
 5. Add the generated SQL scripts to `flow.R` in dependency order, and add every output
    staging table that should be exported to `config.yml` under `tables_to_scribe`.
    `scribe-factory.R` requires `path_output_summary`, `path_output_description`, and
    one `tables_to_scribe` entry per exported table with `name`, `columns_include`,
    `path_output`, and `row_unit`.
+   Never add `ss-` tables (ss_dx, ss_med, ss_clinic, etc.) to `tables_to_scribe` — they
+   are concept-set lookup inputs, not study outputs.
 6. Every generated SQL script should produce one or more permanent tables in the
    project schema. If a table is only intermediary, use a CTE or `#temp` table instead
    of a project-schema staging table. If the workflow naturally needs multiple permanent
@@ -146,6 +151,14 @@ before reusing anything.
 
 - Keywords lower case **except**: `SELECT`, `FROM`, `WHERE`, `GROUP BY`, `HAVING`,
   `ORDER BY`, `DECLARE`
+- In `CREATE TABLE`: nullable columns omit the `null` keyword — just the type is enough.
+  Only `not null` needs to be stated explicitly.
+- In `CREATE TABLE`: use a trailing comma on the last column definition (before the closing `)`).
+- In `INSERT` statements: never include a column list. Use `INSERT INTO table` followed
+  directly by `SELECT`.
+- All `CREATE TABLE` statements for a script's output tables must appear before the first
+  `SELECT` in the file. If a script uses a `#temp` table, define all permanent output
+  tables first, then define and populate the temp table, then insert into the permanent tables.
 - Use CTEs for readability; use `#temp` tables when intermediary logic is reused enough
   that a CTE becomes unreadable
 - Every SQL script should create permanent project-schema tables as its final outputs.
@@ -156,6 +169,7 @@ before reusing anything.
   separate staged tables when PI review is required
 - When a SQL script creates a table intended for delivery, add a matching
   `tables_to_scribe` config entry so `manipulation/scribe-factory.R` exports it.
+  Never add `ss-` tables to `tables_to_scribe` — they are lookup inputs, not outputs.
 - Joins indented and nested under `FROM`
 - Extra space in `left  join`
 - Single-variable join on one line:
