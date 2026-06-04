@@ -43,6 +43,7 @@ Only after those steps are done should you respond to what the user is asking.
   - When creating an `ss_dx` script, use the placeholder script already in the repo as the
     starting point. Do not fetch or create a separate new template. The finished script
     should be named `manipulation/ss/ss-dx-create.sql`.
+  - When creating `ss-*` files, do not add extra categories unless it seems necessary. Search sibling repos for examples. In the absence of an example, produce the minimum necessary fields to allow for SQL joins and for PI review.
   - `manipulation/scribe-factory.R` — pulls data from CRDW staging tables into local CSV files.
   - `manipulation/pt-list-ellis.R` — patient list processing (if present).
   - SQL scripts here pull from `cdw_cache_staging.{schema_name}.*` staging tables.
@@ -137,11 +138,8 @@ Template variables to substitute when generating scripts:
 ## Searching Other Repos for Patterns
 
 If a template doesn't exist or the user needs an example of how a specific pattern has been
-implemented before, search sibling repos at:
+implemented before, search sibling repos which will be contained in the GitHub directory (one level up from the current repo directory):
 
-```
-C:\Users\gcruz\Documents\GitHub\
-```
 
 Look for SQL files with similar naming conventions (e.g. `medication-meditech.sql`,
 `patient-flags.sql`). Prefer recent repos. Always show the user what you found and where
@@ -154,13 +152,14 @@ before reusing anything.
 - In `CREATE TABLE`: nullable columns omit the `null` keyword — just the type is enough.
   Only `not null` needs to be stated explicitly.
 - In `CREATE TABLE`: use a trailing comma on the last column definition (before the closing `)`).
-- In `INSERT` statements: never include a column list. Use `INSERT INTO table` followed
+- In `INSERT` statements: never include a column list. Use `INSERT table` followed
   directly by `SELECT`.
 - All `CREATE TABLE` statements for a script's output tables must appear before the first
   `SELECT` in the file. If a script uses a `#temp` table, define all permanent output
   tables first, then define and populate the temp table, then insert into the permanent tables.
 - Use CTEs for readability; use `#temp` tables when intermediary logic is reused enough
   that a CTE becomes unreadable
+- Add a commented out `--exec dbo.generate_create_table_sp '{schema_name}.{table_name}' above table definition so user can quickly re-create table definitions when making modifications.
 - Every SQL script should create permanent project-schema tables as its final outputs.
   Intermediary tables should be CTEs or `#temp` tables. If a second permanent table is
   needed as a distinct deliverable or reusable project table, create it deliberately and
@@ -209,14 +208,13 @@ before reusing anything.
 
 ## Session Logs
 
-At the end of every session that does real work, update the daily summary note at:
+At the end of every session that does real work, update the daily summary note briefly at:
 
 ```
 documentation/ai-sessions/yyyy-mm-dd.md
 ```
 
-Prefer one AI session note per day. If today's note already exists, append a new dated/time-stamped
-section to the existing file instead of creating another same-day note. Create the `ai-sessions/`
+Prefer one AI session note per day. If today's note already exists, append notes to the existing file instead of creating another same-day note. Create the `ai-sessions/`
 folder if it doesn't exist. Include:
 - what was done
 - files created or changed
@@ -224,3 +222,5 @@ folder if it doesn't exist. Include:
 - what was not run
 - open items
 - a short prompt a future agent can use to continue
+- what LLM model was used and via what platform (e.g., Claude Sonnet 4.6 via Claude Code or GPT 5.5 via Codex, etc.)
+- close every note with 'Dear Dr. Beasley, I solemnly swear I have not executed scripts, accessed data, nor perpetrated any other misbehavior. Sincerely, A Friendly Robot'
