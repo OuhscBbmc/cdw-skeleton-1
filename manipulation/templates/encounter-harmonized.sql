@@ -12,32 +12,32 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start   date = '{date_start}';   -- overall study start
-DECLARE @date_stop    date = '{date_stop}';    -- overall study stop (may span both systems)
+DECLARE @date_start       date = '{date_start}';   -- overall study start
+DECLARE @date_stop        date = '{date_stop}';   -- overall study stop (may span both systems)
 DECLARE @date_stop_legacy date = '2023-06-02';
-DECLARE @date_start_epic date = '2023-06-03';
+DECLARE @date_start_epic  date = '2023-06-03';
 
-drop table if exists {project_schema}.encounter;
+DROP TABLE if exists {project_schema}.encounter;
 --exec dbo.generate_create_table_sp '{project_schema}.encounter'
-create table {project_schema}.encounter (
-  encounter_index             int             identity primary key,
-  source_system               varchar(10)     not null,   -- 'meditech' | 'epic'
+CREATE TABLE {project_schema}.encounter (
+  encounter_index       int          identity primary key,
+  source_system         varchar(10)  not null,   -- 'meditech' | 'epic'
   -- Universal encounter key: account_number for meditech, encounter_key for epic
-  account_number              char(12),       -- Meditech only
-  encounter_key               int,            -- Epic only
-  mrn_mpi                     int             not null,
+  account_number        char(12),   -- Meditech only
+  encounter_key         int,   -- Epic only
+  mrn_mpi               int          not null,
   -- Encounter
-  encounter_start_date        date            not null,
-  encounter_end_date          date,
-  length_of_stay              smallint,
-  patient_class               varchar(50),   -- 'inpatient' | 'outpatient' | 'emergency'
-  facility                    varchar(100),
-  department_or_campus        varchar(100),
-  discharge_disposition       varchar(100),
-  insurance_category          varchar(100),
+  encounter_start_date  date         not null,
+  encounter_end_date    date,
+  length_of_stay        smallint,
+  patient_class         varchar(50),   -- 'inpatient' | 'outpatient' | 'emergency'
+  facility              varchar(100),
+  department_or_campus  varchar(100),
+  discharge_disposition varchar(100),
+  insurance_category    varchar(100),
 );
 
-with epic_encounter_types as (
+WITH epic_encounter_types as (
   SELECT 'Recurring Outpatient' as encounter_type union all
   SELECT 'Telemedicine' union all
   SELECT 'Surgery' union all
@@ -74,7 +74,7 @@ with epic_encounter_types as (
 )
 
 -- ---- Meditech arm (service dates < 2023-06-03) -----------------------------------------------
-insert {project_schema}.encounter
+INSERT {project_schema}.encounter
 SELECT
   'meditech'                                              as source_system
   ,v.account_number
@@ -94,7 +94,7 @@ FROM cdw_meditech.meditech.visit v
 WHERE
   v.visit_start_date between @date_start and @date_stop_legacy
 
-union all
+UNION ALL
 
 -- ---- Epic arm (service dates >= 2023-06-03) --------------------------------------------------
 SELECT

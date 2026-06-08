@@ -10,30 +10,30 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start   date           = '{date_start}';
-DECLARE @date_stop    date           = '{date_stop}';
-DECLARE @cpts         varchar(2000)  = '{cpts}';   -- e.g., '27447;27446;27445' (knee replacement CPTs)
-DECLARE @date_stop_legacy date = '2023-06-02';
-DECLARE @date_start_epic date = '2023-06-03';
+DECLARE @date_start       date          = '{date_start}';
+DECLARE @date_stop        date          = '{date_stop}';
+DECLARE @cpts             varchar(2000) = '{cpts}';   -- e.g., '27447;27446;27445' (knee replacement CPTs)
+DECLARE @date_stop_legacy date          = '2023-06-02';
+DECLARE @date_start_epic  date          = '2023-06-03';
 
-drop table if exists {project_schema}.procedure_event;
+DROP TABLE if exists {project_schema}.procedure_event;
 --exec dbo.generate_create_table_sp '{project_schema}.procedure_event'
-create table {project_schema}.procedure_event (
-  proc_index              int             identity primary key,
-  source_system           varchar(10)     not null,   -- 'gecb' | 'epic'
-  mrn_mpi                 int             not null,
-  proc_date               date            not null,
-  cpt_code                varchar(10)     not null,
-  procedure_name          varchar(254),
-  procedure_category      varchar(100),       -- Epic: procedure_category; GECB: billing_description
-  provider_name           varchar(200),
+CREATE TABLE {project_schema}.procedure_event (
+  proc_index          int          identity primary key,
+  source_system       varchar(10)  not null,   -- 'gecb' | 'epic'
+  mrn_mpi             int          not null,
+  proc_date           date         not null,
+  cpt_code            varchar(10)  not null,
+  procedure_name      varchar(254),
+  procedure_category  varchar(100),   -- Epic: procedure_category; GECB: billing_description
+  provider_name       varchar(200),
   -- System-specific keys:
-  invpk                   int,       -- GECB invoice PK
-  procedure_event_key     int,       -- Epic procedure event key
+  invpk               int,   -- GECB invoice PK
+  procedure_event_key int,   -- Epic procedure event key
 );
 
 -- ---- GECB arm (< 2023-06-03) -----------------------------------------------------------------
-insert {project_schema}.procedure_event
+INSERT {project_schema}.procedure_event
 SELECT distinct
   'gecb'
   ,na.mrn_mpi
@@ -52,7 +52,7 @@ WHERE
   i.inv_service_date between @date_start and @date_stop_legacy
   and t.billing_code in (SELECT [value] FROM string_split(@cpts, ';'))
 
-union all
+UNION ALL
 
 -- ---- Epic arm (>= 2023-06-03) ---------------------------------------------------------------
 SELECT distinct

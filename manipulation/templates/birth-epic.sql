@@ -15,59 +15,59 @@
 use cdw_cache_staging;
 
 DECLARE @date_start_epic date = '2023-06-03';
-DECLARE @date_stop    date = '{date_stop}';
+DECLARE @date_stop       date = '{date_stop}';
 
-drop table if exists {project_schema}.birth_epic;
+DROP TABLE if exists {project_schema}.birth_epic;
 --exec dbo.generate_create_table_sp '{project_schema}.birth_epic'
-create table {project_schema}.birth_epic (
-  birth_epic_index                    int             identity primary key,
-  mrn_mpi_mother                      int             not null,
-  baby_mrn_epic_durable               int             not null,
-  birth_index_within_mother           smallint,   -- row_number per mother
-  birth_datetime                      datetime,
+CREATE TABLE {project_schema}.birth_epic (
+  birth_epic_index                   int           identity primary key,
+  mrn_mpi_mother                     int           not null,
+  baby_mrn_epic_durable              int           not null,
+  birth_index_within_mother          smallint,   -- row_number per mother
+  birth_datetime                     datetime,
   -- Pregnancy timeline:
-  pregnancy_estimated_start_date      date,
-  pregnancy_estimated_end_date        date,
-  pregravid_weight                    numeric(18,1),
-  pregravid_bmi                       numeric(18,1),
-  labor_start_datetime                datetime,
-  mother_age_years                    int,
+  pregnancy_estimated_start_date     date,
+  pregnancy_estimated_end_date       date,
+  pregravid_weight                   numeric(18,1),
+  pregravid_bmi                      numeric(18,1),
+  labor_start_datetime               datetime,
+  mother_age_years                   int,
   -- Delivery:
-  delivery_method                     varchar(80),
-  labor_type                          varchar(80),
-  presentation_type                   varchar(80),
-  placenta_method                     varchar(50),
-  antenatal_steroids                  varchar(80),
+  delivery_method                    varchar(80),
+  labor_type                         varchar(80),
+  presentation_type                  varchar(80),
+  placenta_method                    varchar(50),
+  antenatal_steroids                 varchar(80),
   -- Gestational age:
-  gestational_age_days                int,
-  gestational_age_weeks               tinyint,
-  gestational_age_days_remainder      tinyint,
+  gestational_age_days               int,
+  gestational_age_weeks              tinyint,
+  gestational_age_days_remainder     tinyint,
   -- Multiple births:
-  multiple_delivery_count             tinyint,
-  multiple_delivery_order             tinyint,
+  multiple_delivery_count            tinyint,
+  multiple_delivery_order            tinyint,
   -- Infant measurements:
-  birth_weight_grams                  numeric(10,3),
-  birth_length                        numeric(8,3),
-  head_circumference                  numeric(8,3),
-  baby_discharge_weight               numeric(10,3),
-  baby_inpatient_length_of_stay_days  smallint,
+  birth_weight_grams                 numeric(10,3),
+  birth_length                       numeric(8,3),
+  head_circumference                 numeric(8,3),
+  baby_discharge_weight              numeric(10,3),
+  baby_inpatient_length_of_stay_days smallint,
   -- APGAR scores:
-  total_apgar_one_minute              tinyint,
-  total_apgar_five_minute             tinyint,
-  total_apgar_ten_minute              tinyint,
+  total_apgar_one_minute             tinyint,
+  total_apgar_five_minute            tinyint,
+  total_apgar_ten_minute             tinyint,
   -- Flags:
-  breast_milk_given                   bit,
-  spontaneous_vaginal_delivery        bit,
-  labor_attempted                     bit,
+  breast_milk_given                  bit,
+  spontaneous_vaginal_delivery       bit,
+  labor_attempted                    bit,
 );
 
-insert {project_schema}.birth_epic
+INSERT {project_schema}.birth_epic
 SELECT distinct
   na.mrn_mpi                              as mrn_mpi_mother
   ,b.baby_mrn_epic_durable
   ,row_number() over (
     partition by na.mrn_mpi
-    ORDER BY b.birth_datetime
+    order by b.birth_datetime
     )                                      as birth_index_within_mother
   ,b.birth_datetime
   ,b.pregnancy_estimated_start_date

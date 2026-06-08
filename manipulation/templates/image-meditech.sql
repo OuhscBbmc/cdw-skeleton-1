@@ -11,21 +11,21 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start   date = '{date_start}';
+DECLARE @date_start       date = '{date_start}';
 DECLARE @date_stop_legacy date = '2023-06-02';
 
-drop table if exists {project_schema}.image_meditech;
+DROP TABLE if exists {project_schema}.image_meditech;
 --exec dbo.generate_create_table_sp '{project_schema}.image_meditech'
-create table {project_schema}.image_meditech (
-  image_meditech_index    int             identity primary key,
-  account_number          char(12)        not null,
-  mrn_mpi                 int             not null,
-  exam_date               date            not null,
-  exam_name               varchar(30),
-  impression              varchar(max),
+CREATE TABLE {project_schema}.image_meditech (
+  image_meditech_index int          identity primary key,
+  account_number       char(12)     not null,
+  mrn_mpi              int          not null,
+  exam_date            date         not null,
+  exam_name            varchar(30),
+  impression           varchar(max),
 );
 
-insert {project_schema}.image_meditech
+INSERT {project_schema}.image_meditech
 SELECT
   i.account_number
   ,na.mrn_mpi

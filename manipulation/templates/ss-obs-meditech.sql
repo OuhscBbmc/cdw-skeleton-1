@@ -55,17 +55,17 @@ ORDER BY d.obs_nurse_name;
 -- ---- STEP 2: Load ss_obs after PI review ----------------------------------------------------
 
 /*
-drop table if exists {project_schema}.ss_obs;
+DROP TABLE if exists {project_schema}.ss_obs;
 --exec dbo.generate_create_table_sp '{project_schema}.ss_obs'
-create table {project_schema}.ss_obs (
-  obs_key_id      int primary key,
-  obs_mnemonic    varchar(50),
-  obs_name        varchar(100)    not null,
-  obs_category    varchar(100)    not null,
+CREATE TABLE {project_schema}.ss_obs (
+  obs_key_id   int          primary key,
+  obs_mnemonic varchar(50),
+  obs_name     varchar(100) not null,
+  obs_category varchar(100) not null,
 );
 
-insert {project_schema}.ss_obs
-values
+INSERT {project_schema}.ss_obs
+VALUES
   ({obs_key_id}, '{obs_mnemonic}', '{obs_name}', '{obs_category}'),
   -- ...
 */

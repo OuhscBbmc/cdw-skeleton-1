@@ -12,31 +12,31 @@
 use cdw_cache_staging;
 
 DECLARE @date_start_epic date = '2023-06-03';   -- Epic go-live floor
-DECLARE @date_stop    date = '{date_stop}';
+DECLARE @date_stop       date = '{date_stop}';
 
-drop table if exists {project_schema}.lab_epic;
+DROP TABLE if exists {project_schema}.lab_epic;
 --exec dbo.generate_create_table_sp '{project_schema}.lab_epic'
-create table {project_schema}.lab_epic (
-  lab_component_result_key    int primary key,
-  encounter_key               int             not null,
-  mrn_mpi                     int             not null,
-  mrn_epic_durable            int             not null,
-  lab_component_key           int             not null,
-  loinc_code                  varchar(30),
-  component_name              varchar(150),
-  common_name                 varchar(500),
-  result_datetime             datetime        not null,
-  result_value                varchar(200),
-  result_numeric              float,
-  unit                        varchar(50),
-  reference_values            varchar(300),
-  flag                        varchar(50),
-  result_status               varchar(50),
+CREATE TABLE {project_schema}.lab_epic (
+  lab_component_result_key int          primary key,
+  encounter_key            int          not null,
+  mrn_mpi                  int          not null,
+  mrn_epic_durable         int          not null,
+  lab_component_key        int          not null,
+  loinc_code               varchar(30),
+  component_name           varchar(150),
+  common_name              varchar(500),
+  result_datetime          datetime     not null,
+  result_value             varchar(200),
+  result_numeric           float,
+  unit                     varchar(50),
+  reference_values         varchar(300),
+  flag                     varchar(50),
+  result_status            varchar(50),
   -- Study classification:
-  lab_category                varchar(100),
+  lab_category             varchar(100),
 );
 
-insert {project_schema}.lab_epic
+INSERT {project_schema}.lab_epic
 SELECT
   lr.lab_component_result_key
   ,lr.encounter_key

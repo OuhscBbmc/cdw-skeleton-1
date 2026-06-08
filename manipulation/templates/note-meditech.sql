@@ -13,25 +13,25 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start           date           = '{date_start}';
-DECLARE @date_stop_legacy date = '2023-06-02';
-DECLARE @report_name_pattern  varchar(100)   = '%{report_name_pattern}%';
+DECLARE @date_start          date         = '{date_start}';
+DECLARE @date_stop_legacy    date         = '2023-06-02';
+DECLARE @report_name_pattern varchar(100) = '%{report_name_pattern}%';
 -- Common patterns: '%discharge%', '%pallia%', '%history%physical%', '%operative%', '%progress%'
-drop table if exists {project_schema}.note_meditech;
+DROP TABLE if exists {project_schema}.note_meditech;
 --exec dbo.generate_create_table_sp '{project_schema}.note_meditech'
-create table {project_schema}.note_meditech (
-  note_meditech_index     int             identity primary key,
-  report_urn              varchar(8)      not null unique,
-  source_meditech         varchar(15)     not null,
-  account_number          varchar(12)     not null,
-  mrn_mpi                 int             not null,
-  mrn_meditech_internal   varchar(8)      not null,
-  entered_datetime        smalldatetime   not null,
-  report_name             varchar(100),
-  note_text               varchar(max),
+CREATE TABLE {project_schema}.note_meditech (
+  note_meditech_index   int           identity primary key,
+  report_urn            varchar(8)    not null unique,
+  source_meditech       varchar(15)   not null,
+  account_number        varchar(12)   not null,
+  mrn_mpi               int           not null,
+  mrn_meditech_internal varchar(8)    not null,
+  entered_datetime      smalldatetime not null,
+  report_name           varchar(100),
+  note_text             varchar(max),
 );
 
-insert {project_schema}.note_meditech
+INSERT {project_schema}.note_meditech
 SELECT
   r.report_urn
   ,r.source_meditech

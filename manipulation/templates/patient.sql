@@ -11,47 +11,47 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start    date    = '{date_start}';   -- e.g., '2019-01-01'
-DECLARE @date_stop     date    = '{date_stop}';    -- e.g., '2024-12-31'
-DECLARE @age_min       int     = 18;               -- inclusive lower bound (years)
-DECLARE @age_max       int     = 89;               -- inclusive upper bound (years); remove if not needed
+DECLARE @date_start date = '{date_start}';   -- e.g., '2019-01-01'
+DECLARE @date_stop  date = '{date_stop}';   -- e.g., '2024-12-31'
+DECLARE @age_min    int  = 18;   -- inclusive lower bound (years)
+DECLARE @age_max    int  = 89;   -- inclusive upper bound (years); remove if not needed
 
 -- ------------------------------------------------------------------------------------------------
 -- Step 1: pt_pool  -- one row per eligible patient; holds mrn_mpi for downstream joins
 -- ------------------------------------------------------------------------------------------------
-drop table if exists {project_schema}.pt_pool;
+DROP TABLE if exists {project_schema}.pt_pool;
 --exec dbo.generate_create_table_sp '{project_schema}.pt_pool'
-create table {project_schema}.pt_pool (
-  mrn_mpi             int primary key,
-  pt_index            int         not null unique,    -- stable surrogate key used across all project tables
+CREATE TABLE {project_schema}.pt_pool (
+  mrn_mpi  int primary key,
+  pt_index int not null unique,   -- stable surrogate key used across all project tables
 );
 
 -- ------------------------------------------------------------------------------------------------
 -- Step 2: patient  -- one row per patient; demographics + cross-system MRNs
 -- ------------------------------------------------------------------------------------------------
-drop table if exists {project_schema}.patient;
+DROP TABLE if exists {project_schema}.patient;
 --exec dbo.generate_create_table_sp '{project_schema}.patient'
-create table {project_schema}.patient (
-  pt_index                    int primary key,
-  mrn_mpi                     int             not null unique,
-  birth_date                  date,
-  birth_year                  smallint,
-  death_date                  date,
-  age_years                   smallint,
-  gender_male                 bit,
-  race                        varchar(50),
-  ethnicity                   varchar(50),
-  zipcode                     varchar(10),
+CREATE TABLE {project_schema}.patient (
+  pt_index               int          primary key,
+  mrn_mpi                int          not null unique,
+  birth_date             date,
+  birth_year             smallint,
+  death_date             date,
+  age_years              smallint,
+  gender_male            bit,
+  race                   varchar(50),
+  ethnicity              varchar(50),
+  zipcode                varchar(10),
   -- Cross-system MRN externals (pipe-delimited)
-  mrn_meditech_externals      varchar(150),
-  mrn_gecbs                   varchar(120),
-  mrn_epic_externals          varchar(150),
+  mrn_meditech_externals varchar(150),
+  mrn_gecbs              varchar(120),
+  mrn_epic_externals     varchar(150),
 );
 
-insert {project_schema}.pt_pool
+INSERT {project_schema}.pt_pool
 SELECT
   p.mrn_mpi
-  ,cast(row_number() over (ORDER BY p.mrn_mpi) as int) as pt_index
+  ,cast(row_number() over (order by p.mrn_mpi) as int) as pt_index
 FROM cdw_outpost.snowflake_2.person p
 -- !! Add inclusion joins here, e.g.:
 -- inner join {project_schema}.ss_dx sd on ...   (diagnosis-based inclusion)
@@ -61,7 +61,7 @@ WHERE
   and p.age_years <= @age_max
   -- and p.death_date is null   -- uncomment to exclude deceased patients
 ;
-insert {project_schema}.patient
+INSERT {project_schema}.patient
 SELECT
   pp.pt_index
   ,p.mrn_mpi

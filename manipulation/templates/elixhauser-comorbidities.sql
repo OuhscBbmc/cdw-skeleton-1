@@ -12,47 +12,48 @@
 -- ================================================================================================
 
 use cdw_cache_staging;
-drop table if exists {project_schema}.pt_elixhauser;
+
+DROP TABLE if exists {project_schema}.pt_elixhauser;
 --exec dbo.generate_create_table_sp '{project_schema}.pt_elixhauser'
-create table {project_schema}.pt_elixhauser (
-  mrn_mpi                         int primary key,
-  dx_count_any                    int     not null,
-  dx_count_elixhauser             int     not null,
+CREATE TABLE {project_schema}.pt_elixhauser (
+  mrn_mpi                      int primary key,
+  dx_count_any                 int not null,
+  dx_count_elixhauser          int not null,
   -- Elixhauser flags:
-  congestive_heart_failure        bit     not null,
-  cardiac_arrhythmias             bit     not null,
-  valvular_diseases               bit     not null,
-  pulmonary_circulation_disord    bit     not null,
-  peripheral_vascular_disord      bit     not null,
-  hypertension_uncomplicated      bit     not null,
-  hypertension_complicated        bit     not null,
-  paralysis                       bit     not null,
-  other_neurological_disord       bit     not null,
-  chronic_pulmonary_disease       bit     not null,
-  diabetes_uncomp                 bit     not null,
-  diabetes_comp                   bit     not null,
-  hypothyroidism                  bit     not null,
-  renal_failure                   bit     not null,
-  liver_dis                       bit     not null,
-  peptic_ulcer_dis                bit     not null,
-  aids_hiv                        bit     not null,
-  lymphoma                        bit     not null,
-  meta_cancer                     bit     not null,
-  solid_tumor_no_meta             bit     not null,
-  rheum_arth                      bit     not null,
-  coagulopathy                    bit     not null,
-  obesity                         bit     not null,
-  weight_loss                     bit     not null,
-  fluid_electrolyte_disord        bit     not null,
-  blood_loss_anemia               bit     not null,
-  deficiency_anemia               bit     not null,
-  alcohol_abuse                   bit     not null,
-  drug_abuse                      bit     not null,
-  psychoses                       bit     not null,
-  depression                      bit     not null,
+  congestive_heart_failure     bit not null,
+  cardiac_arrhythmias          bit not null,
+  valvular_diseases            bit not null,
+  pulmonary_circulation_disord bit not null,
+  peripheral_vascular_disord   bit not null,
+  hypertension_uncomplicated   bit not null,
+  hypertension_complicated     bit not null,
+  paralysis                    bit not null,
+  other_neurological_disord    bit not null,
+  chronic_pulmonary_disease    bit not null,
+  diabetes_uncomp              bit not null,
+  diabetes_comp                bit not null,
+  hypothyroidism               bit not null,
+  renal_failure                bit not null,
+  liver_dis                    bit not null,
+  peptic_ulcer_dis             bit not null,
+  aids_hiv                     bit not null,
+  lymphoma                     bit not null,
+  meta_cancer                  bit not null,
+  solid_tumor_no_meta          bit not null,
+  rheum_arth                   bit not null,
+  coagulopathy                 bit not null,
+  obesity                      bit not null,
+  weight_loss                  bit not null,
+  fluid_electrolyte_disord     bit not null,
+  blood_loss_anemia            bit not null,
+  deficiency_anemia            bit not null,
+  alcohol_abuse                bit not null,
+  drug_abuse                   bit not null,
+  psychoses                    bit not null,
+  depression                   bit not null,
 );
 
-insert {project_schema}.pt_elixhauser
+INSERT {project_schema}.pt_elixhauser
 SELECT
   pr.mrn_mpi
   ,count(distinct pr.problem_concept_id)                                          as dx_count_any

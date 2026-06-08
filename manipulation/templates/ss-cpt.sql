@@ -32,7 +32,7 @@ FROM cdw_gecb.waystation.dim_cpt cp
 WHERE
   cp.billing_description like '%{keyword}%'
 
-union all
+UNION ALL
 
 -- ---- Epic arm -------------------------------------------------------------------------------
 SELECT
@@ -60,16 +60,16 @@ ORDER BY source_system, cpt_code;
 -- Only create the table below if you need procedure-level category classification.
 
 /*
-drop table if exists {project_schema}.ss_cpt;
+DROP TABLE if exists {project_schema}.ss_cpt;
 --exec dbo.generate_create_table_sp '{project_schema}.ss_cpt'
-create table {project_schema}.ss_cpt (
-  cpt_code        varchar(10) primary key,
-  procedure_name  varchar(254),
-  category        varchar(100),
+CREATE TABLE {project_schema}.ss_cpt (
+  cpt_code       varchar(10)  primary key,
+  procedure_name varchar(254),
+  category       varchar(100),
 );
 
-insert {project_schema}.ss_cpt
-values
+INSERT {project_schema}.ss_cpt
+VALUES
   ('{cpt_code}', '{procedure_name}', '{category}'),
   -- ...
 */

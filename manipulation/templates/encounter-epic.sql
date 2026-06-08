@@ -10,25 +10,25 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start_epic date = '2023-06-03';     -- Epic go-live floor; adjust forward if needed
-DECLARE @date_stop        date           = '{date_stop}';    -- e.g., '2025-12-31'
+DECLARE @date_start_epic date = '2023-06-03';   -- Epic go-live floor; adjust forward if needed
+DECLARE @date_stop       date = '{date_stop}';   -- e.g., '2025-12-31'
 -- Optionally narrow to specific departments or encounter types (semicolon-delimited):
-DECLARE @department_name  varchar(500)   = null;             -- e.g., 'OU CHILDREN''S PHYSICIANS;SOONER PEDIATRICS'
-DECLARE @encounter_type   varchar(500)   = null;             -- additional filter inside the default visit-type list
+DECLARE @department_name varchar(500) = null;   -- e.g., 'OU CHILDREN''S PHYSICIANS;SOONER PEDIATRICS'
+DECLARE @encounter_type  varchar(500) = null;   -- additional filter inside the default visit-type list
 
-drop table if exists {project_schema}.encounter_epic;
+DROP TABLE if exists {project_schema}.encounter_epic;
 --exec dbo.generate_create_table_sp '{project_schema}.encounter_epic'
-create table {project_schema}.encounter_epic (
-  encounter_key               int primary key,
-  mrn_mpi                     int             not null,
-  mrn_epic_durable            int             not null,
+CREATE TABLE {project_schema}.encounter_epic (
+  encounter_key               int          primary key,
+  mrn_mpi                     int          not null,
+  mrn_epic_durable            int          not null,
   encounter_epic_csn          bigint,
   -- Encounter details
-  encounter_start_date        date            not null,
+  encounter_start_date        date         not null,
   encounter_end_date          date,
   length_of_stay              smallint,
   encounter_type              varchar(300),
-  patient_class               varchar(50),         -- 'Inpatient' | 'Outpatient' | 'Emergency'
+  patient_class               varchar(50),   -- 'Inpatient' | 'Outpatient' | 'Emergency'
   department_name             varchar(100),
   facility_name               varchar(100),
   visit_provider_name         varchar(200),
@@ -36,7 +36,7 @@ create table {project_schema}.encounter_epic (
   primary_benefit_payor_class varchar(100),
 );
 
-with insurance as (
+WITH insurance as (
   SELECT
     ba.primary_encounter_key
     ,ba.primary_benefit_payor_class
@@ -77,7 +77,7 @@ epic_encounter_types as (
   SELECT 'Pharmacy Visit' union all
   SELECT 'Office Visit'
 )
-insert {project_schema}.encounter_epic
+INSERT {project_schema}.encounter_epic
 SELECT
   e.encounter_key
   ,na.mrn_mpi

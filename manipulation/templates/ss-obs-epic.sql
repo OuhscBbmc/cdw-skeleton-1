@@ -72,16 +72,16 @@ ORDER BY pt_count desc, frd.name;
 -- ---- STEP 2: Load ss_obs_epic after PI review -----------------------------------------------
 
 /*
-drop table if exists {project_schema}.ss_obs_epic;
+DROP TABLE if exists {project_schema}.ss_obs_epic;
 --exec dbo.generate_create_table_sp '{project_schema}.ss_obs_epic'
-create table {project_schema}.ss_obs_epic (
-  flowsheet_row_key   int primary key,
-  name                varchar(250)    not null,
-  obs_category        varchar(100)    not null,
+CREATE TABLE {project_schema}.ss_obs_epic (
+  flowsheet_row_key int          primary key,
+  name              varchar(250) not null,
+  obs_category      varchar(100) not null,
 );
 
-insert {project_schema}.ss_obs_epic
-values
+INSERT {project_schema}.ss_obs_epic
+VALUES
   ({flowsheet_row_key}, '{name}', '{obs_category}'),
   -- ...
 */

@@ -11,34 +11,34 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start   date = '{date_start}';
+DECLARE @date_start       date = '{date_start}';
 DECLARE @date_stop_legacy date = '2023-06-02';
 
 -- ---- Invoice / Claim header ------------------------------------------------------------------
-drop table if exists {project_schema}.invoice_gecb;
+DROP TABLE if exists {project_schema}.invoice_gecb;
 --exec dbo.generate_create_table_sp '{project_schema}.invoice_gecb'
-create table {project_schema}.invoice_gecb (
-  invoice_gecb_index  int             identity primary key,
-  mrn_gecb            int             not null,
-  mrn_mpi             int             not null,
-  invpk               int             not null,   -- GECB invoice PK; join key for CPTs/diagnoses
-  invnum              int             not null,
-  inv_service_date    date            not null,
-  location_name       varchar(100),
-  provider_name       varchar(100),
-  icd_code            varchar(40),
-  icd_description     varchar(256),
-  visit_number        int,
+CREATE TABLE {project_schema}.invoice_gecb (
+  invoice_gecb_index int          identity primary key,
+  mrn_gecb           int          not null,
+  mrn_mpi            int          not null,
+  invpk              int          not null,   -- GECB invoice PK; join key for CPTs/diagnoses
+  invnum             int          not null,
+  inv_service_date   date         not null,
+  location_name      varchar(100),
+  provider_name      varchar(100),
+  icd_code           varchar(40),
+  icd_description    varchar(256),
+  visit_number       int,
 );
 
 -- ---- CPT codes per invoice -------------------------------------------------------------------
-drop table if exists {project_schema}.cpt_gecb;
+DROP TABLE if exists {project_schema}.cpt_gecb;
 --exec dbo.generate_create_table_sp '{project_schema}.cpt_gecb'
-create table {project_schema}.cpt_gecb (
-  cpt_gecb_index      int             identity primary key,
-  mrn_mpi             int             not null,
-  invpk               int             not null,
-  inv_service_date    date            not null,
+CREATE TABLE {project_schema}.cpt_gecb (
+  cpt_gecb_index      int          identity primary key,
+  mrn_mpi             int          not null,
+  invpk               int          not null,
+  inv_service_date    date         not null,
   visit_number        int,
   billing_code        varchar(10),
   billing_description varchar(100),
@@ -47,14 +47,14 @@ create table {project_schema}.cpt_gecb (
   provider_name       varchar(100),
 );
 
-with pt as (
+WITH pt as (
   SELECT
     pp.mrn_mpi
     ,na.mrn_gecb
   FROM {project_schema}.pt_pool pp
   inner join cdw_mpi_1.groomed.node_assigned na on pp.mrn_mpi = na.mrn_mpi and na.type = 'gecb'
 )
-insert {project_schema}.invoice_gecb
+INSERT {project_schema}.invoice_gecb
 SELECT
   i.mrn_gecb
   ,pt.mrn_mpi
@@ -75,7 +75,7 @@ FROM cdw_gecb.gecb.fact_invoice i
 WHERE
   i.inv_service_date between @date_start and @date_stop_legacy
 ORDER BY pt.mrn_mpi, i.inv_service_date;
-insert {project_schema}.cpt_gecb
+INSERT {project_schema}.cpt_gecb
 SELECT
   ig.mrn_mpi
   ,ig.invpk

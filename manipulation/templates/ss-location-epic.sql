@@ -15,7 +15,7 @@ use cdw_cache_staging;
 
 -- ---- STEP 1: Discovery -----------------------------------------------------------------------
 
-with active_depts as (
+WITH active_depts as (
   SELECT distinct department_key
   FROM cdw_epic.caboodle.encounter
   WHERE 1 <= department_key
@@ -51,17 +51,17 @@ ORDER BY desired desc, d.department_external_name;
 -- ---- STEP 2: Load ss_location_epic after PI review ------------------------------------------
 
 /*
-drop table if exists {project_schema}.ss_location_epic;
+DROP TABLE if exists {project_schema}.ss_location_epic;
 --exec dbo.generate_create_table_sp '{project_schema}.ss_location_epic'
-create table {project_schema}.ss_location_epic (
-  department_key              int primary key,
-  department_name             varchar(300),
-  department_external_name    varchar(300),
-  category                    varchar(100),
+CREATE TABLE {project_schema}.ss_location_epic (
+  department_key           int          primary key,
+  department_name          varchar(300),
+  department_external_name varchar(300),
+  category                 varchar(100),
 );
 
-insert {project_schema}.ss_location_epic
-values
+INSERT {project_schema}.ss_location_epic
+VALUES
   ({department_key}, '{department_name}', '{department_external_name}', '{category}'),
   -- ...
 */

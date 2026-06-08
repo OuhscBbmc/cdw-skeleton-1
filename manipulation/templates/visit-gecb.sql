@@ -13,38 +13,38 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start   date = '{date_start}';
-DECLARE @date_stop_legacy date = '2023-06-02';
-DECLARE @visit_status varchar(50) = 'arrived';   -- 'arrived' | 'no show' | 'cancelled' | remove for all
+DECLARE @date_start       date        = '{date_start}';
+DECLARE @date_stop_legacy date        = '2023-06-02';
+DECLARE @visit_status     varchar(50) = 'arrived';   -- 'arrived' | 'no show' | 'cancelled' | remove for all
 
-drop table if exists {project_schema}.visit_gecb;
+DROP TABLE if exists {project_schema}.visit_gecb;
 --exec dbo.generate_create_table_sp '{project_schema}.visit_gecb'
-create table {project_schema}.visit_gecb (
-  visit_gecb_index            int             identity primary key,
-  visit_number                int             not null unique,
-  mrn_mpi                     int             not null,
-  mrn_gecb                    int             not null,
-  visit_index_within_patient  bigint,
-  appt_date                   date            not null,
-  appt_datetime               smalldatetime   not null,
-  appt_duration               smallint        not null,
-  provider_name               varchar(75)     not null,
-  visit_type                  varchar(160)    not null,
-  sched_location              varchar(40)     not null,
-  clinic_name                 varchar(40),
-  sched_location_id           int             not null,
-  billing_loc_name            varchar(100),
-  visit_status                varchar(30)     not null,
+CREATE TABLE {project_schema}.visit_gecb (
+  visit_gecb_index           int           identity primary key,
+  visit_number               int           not null unique,
+  mrn_mpi                    int           not null,
+  mrn_gecb                   int           not null,
+  visit_index_within_patient bigint,
+  appt_date                  date          not null,
+  appt_datetime              smalldatetime not null,
+  appt_duration              smallint      not null,
+  provider_name              varchar(75)   not null,
+  visit_type                 varchar(160)  not null,
+  sched_location             varchar(40)   not null,
+  clinic_name                varchar(40),
+  sched_location_id          int           not null,
+  billing_loc_name           varchar(100),
+  visit_status               varchar(30)   not null,
 );
 
-insert {project_schema}.visit_gecb
+INSERT {project_schema}.visit_gecb
 SELECT
   fs.visit_number
   ,na.mrn_mpi
   ,fs.mrn_gecb
   ,row_number() over (
     partition by fs.mrn_gecb
-    ORDER BY fs.visit_number
+    order by fs.visit_number
     )                                          as visit_index_within_patient
   ,fs.appt_date
   ,fs.appt_datetime

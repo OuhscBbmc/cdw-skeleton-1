@@ -11,28 +11,28 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start   date = '{date_start}';
+DECLARE @date_start       date = '{date_start}';
 DECLARE @date_stop_legacy date = '2023-06-02';   -- hard ceiling; Meditech data ends here
 
-drop table if exists {project_schema}.dx_meditech;
+DROP TABLE if exists {project_schema}.dx_meditech;
 --exec dbo.generate_create_table_sp '{project_schema}.dx_meditech'
-create table {project_schema}.dx_meditech (
-  dx_meditech_index       int             identity primary key,
-  account_number          char(12)        not null,
-  mrn_mpi                 int             not null,
-  mrn_meditech_internal   varchar(10)     not null,
-  dx_priority             tinyint,       -- 1 = primary dx
-  vocabulary_id           varchar(8),
-  icd_code                varchar(20),
-  omop_concept_id         int,
-  icd_description         varchar(255),   -- FROM lexis.dx lookup
-  visit_start_date        date,
+CREATE TABLE {project_schema}.dx_meditech (
+  dx_meditech_index     int          identity primary key,
+  account_number        char(12)     not null,
+  mrn_mpi               int          not null,
+  mrn_meditech_internal varchar(10)  not null,
+  dx_priority           tinyint,   -- 1 = primary dx
+  vocabulary_id         varchar(8),
+  icd_code              varchar(20),
+  omop_concept_id       int,
+  icd_description       varchar(255),   -- FROM lexis.dx lookup
+  visit_start_date      date,
   -- Study classification (optional):
-  category_1              varchar(255),
-  category_2              varchar(255),
+  category_1            varchar(255),
+  category_2            varchar(255),
 );
 
-insert {project_schema}.dx_meditech
+INSERT {project_schema}.dx_meditech
 SELECT
   d.account_number,na.mrn_mpi,d.mrn_meditech_internal,d.dx_priority,d.vocabulary_id,d.icd_code,d.omop_concept_id,lx.icd_description,d.visit_start_date,ss.category_1,ss.category_2
 FROM cdw_meditech.meditech.dx d

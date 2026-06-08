@@ -38,18 +38,18 @@ ORDER BY desired desc, d.location_description;
 -- ---- STEP 2: Load ss_location_meditech after PI review --------------------------------------
 
 /*
-drop table if exists {project_schema}.ss_location_meditech;
+DROP TABLE if exists {project_schema}.ss_location_meditech;
 --exec dbo.generate_create_table_sp '{project_schema}.ss_location_meditech'
-create table {project_schema}.ss_location_meditech (
-  location_mnemonic       varchar(10) primary key,
-  location_description    varchar(30),
-  facility_name           varchar(30),
-  campus_name             varchar(30),
-  category                varchar(100),
+CREATE TABLE {project_schema}.ss_location_meditech (
+  location_mnemonic    varchar(10)  primary key,
+  location_description varchar(30),
+  facility_name        varchar(30),
+  campus_name          varchar(30),
+  category             varchar(100),
 );
 
-insert {project_schema}.ss_location_meditech
-values
+INSERT {project_schema}.ss_location_meditech
+VALUES
   ('{location_mnemonic}', '{location_description}', '{facility_name}', '{campus_name}', '{category}'),
   -- ...
 */

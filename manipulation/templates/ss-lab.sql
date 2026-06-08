@@ -17,7 +17,7 @@
 
 use cdw_cache_staging;
 
-DECLARE @keywords   varchar(1000) = '%{keyword_1}%;%{keyword_2}%';   -- semicolon-delimited like patterns
+DECLARE @keywords varchar(1000) = '%{keyword_1}%;%{keyword_2}%';   -- semicolon-delimited like patterns
 
 -- ---- STEP 1: Discovery -----------------------------------------------------------------------
 
@@ -40,7 +40,7 @@ WHERE
   (lcd.name like s.value or lcd.common_name like s.value)
   and lcd.lab_component_key in (SELECT distinct lab_component_key FROM cdw_epic.caboodle.lab_component_result)
 
-union all
+UNION ALL
 
 -- ---- Meditech arm ---------------------------------------------------------------------------
 SELECT
@@ -65,18 +65,18 @@ ORDER BY source_system, lab_category, name;
 -- ---- STEP 2: Load ss_lab after PI review ----------------------------------------------------
 
 /*
-drop table if exists {project_schema}.ss_lab;
+DROP TABLE if exists {project_schema}.ss_lab;
 --exec dbo.generate_create_table_sp '{project_schema}.ss_lab'
-create table {project_schema}.ss_lab (
-  ss_lab_index        int             identity primary key,
-  source_system       varchar(10)     not null,   -- 'epic' | 'meditech'
-  lab_component_key   int,       -- Epic join key; null for Meditech rows
-  mnemonic            varchar(15),       -- Meditech join key; null for Epic rows
-  name                varchar(150),
-  loinc_code          varchar(30),
-  lab_category        varchar(100)    not null,
+CREATE TABLE {project_schema}.ss_lab (
+  ss_lab_index      int          identity primary key,
+  source_system     varchar(10)  not null,   -- 'epic' | 'meditech'
+  lab_component_key int,   -- Epic join key; null for Meditech rows
+  mnemonic          varchar(15),   -- Meditech join key; null for Epic rows
+  name              varchar(150),
+  loinc_code        varchar(30),
+  lab_category      varchar(100) not null,
 );
 
-insert {project_schema}.ss_lab
+INSERT {project_schema}.ss_lab
 -- paste approved rows from Step 1, or re-run with desired = 'TRUE' filter
 */

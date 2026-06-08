@@ -17,7 +17,7 @@
 
 use cdw_cache_staging;
 
-DECLARE @keywords   varchar(2000) = '%{keyword_1}%;%{keyword_2}%';   -- semicolon-delimited like patterns
+DECLARE @keywords varchar(2000) = '%{keyword_1}%;%{keyword_2}%';   -- semicolon-delimited like patterns
 
 -- ---- STEP 1: Discovery -----------------------------------------------------------------------
 
@@ -39,7 +39,7 @@ WHERE
   (md.name like s.value or md.simple_generic_name like s.value)
   and md.medication_key in (SELECT distinct medication_key FROM cdw_epic.caboodle.medication_event)
 
-union all
+UNION ALL
 
 -- ---- Meditech arm ---------------------------------------------------------------------------
 SELECT
@@ -64,18 +64,18 @@ ORDER BY source_system, med_category, medication_name;
 -- ---- STEP 2: Load ss_med after PI review ----------------------------------------------------
 
 /*
-drop table if exists {project_schema}.ss_med;
+DROP TABLE if exists {project_schema}.ss_med;
 --exec dbo.generate_create_table_sp '{project_schema}.ss_med'
-create table {project_schema}.ss_med (
-  ss_med_index            int             identity primary key,
-  source_system           varchar(10)     not null,   -- 'epic' | 'meditech'
-  medication_key          int,       -- Epic join key; null for Meditech rows
-  medication_name_meditech varchar(50),       -- Meditech join key; null for Epic rows
-  medication_name         varchar(300),
-  generic_name            varchar(300),
-  med_category            varchar(100)    not null,
+CREATE TABLE {project_schema}.ss_med (
+  ss_med_index             int          identity primary key,
+  source_system            varchar(10)  not null,   -- 'epic' | 'meditech'
+  medication_key           int,   -- Epic join key; null for Meditech rows
+  medication_name_meditech varchar(50),   -- Meditech join key; null for Epic rows
+  medication_name          varchar(300),
+  generic_name             varchar(300),
+  med_category             varchar(100) not null,
 );
 
-insert {project_schema}.ss_med
+INSERT {project_schema}.ss_med
 -- paste approved rows from Step 1, or re-run with desired = 'TRUE' filter
 */

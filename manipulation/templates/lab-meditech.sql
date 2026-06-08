@@ -10,29 +10,29 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start   date = '{date_start}';
+DECLARE @date_start       date = '{date_start}';
 DECLARE @date_stop_legacy date = '2023-06-02';
 
-drop table if exists {project_schema}.lab_meditech;
+DROP TABLE if exists {project_schema}.lab_meditech;
 --exec dbo.generate_create_table_sp '{project_schema}.lab_meditech'
-create table {project_schema}.lab_meditech (
-  lab_meditech_index      int             identity primary key,
-  account_number          char(12)        not null,
-  mrn_mpi                 int             not null,
-  mrn_meditech_internal   varchar(10)     not null,
-  mnemonic                varchar(15)     not null,
-  loinc                   varchar(7),
-  collection_datetime     smalldatetime   not null,
-  result_value            varchar(75),
-  result_numeric          float,
-  unit                    varchar(10),
-  normal_range            varchar(25),
-  status                  varchar(5),   -- lab status code; see lexis.dim_meditech_lab_status
+CREATE TABLE {project_schema}.lab_meditech (
+  lab_meditech_index    int           identity primary key,
+  account_number        char(12)      not null,
+  mrn_mpi               int           not null,
+  mrn_meditech_internal varchar(10)   not null,
+  mnemonic              varchar(15)   not null,
+  loinc                 varchar(7),
+  collection_datetime   smalldatetime not null,
+  result_value          varchar(75),
+  result_numeric        float,
+  unit                  varchar(10),
+  normal_range          varchar(25),
+  status                varchar(5),   -- lab status code; see lexis.dim_meditech_lab_status
   -- Study classification:
-  lab_category            varchar(100),
+  lab_category          varchar(100),
 );
 
-insert {project_schema}.lab_meditech
+INSERT {project_schema}.lab_meditech
 SELECT
   l.account_number
   ,na.mrn_mpi

@@ -48,19 +48,19 @@ ORDER BY d.vocabulary_id, d.icd_code;
 -- to populate the study-specific lookup table. Adjust the SELECT to match your annotations.
 
 /*
-drop table if exists {project_schema}.ss_dx;
+DROP TABLE if exists {project_schema}.ss_dx;
 --exec dbo.generate_create_table_sp '{project_schema}.ss_dx'
-create table {project_schema}.ss_dx (
-  concept_id      int primary key,
-  vocabulary_id   varchar(7)      not null,
-  icd_code        varchar(8)      not null,
-  icd_description varchar(255)    not null,
+CREATE TABLE {project_schema}.ss_dx (
+  concept_id      int          primary key,
+  vocabulary_id   varchar(7)   not null,
+  icd_code        varchar(8)   not null,
+  icd_description varchar(255) not null,
   category_1      varchar(100),
   category_2      varchar(100),
   -- Add category_3, category_4 as needed
 );
 
-insert {project_schema}.ss_dx
+INSERT {project_schema}.ss_dx
 SELECT
   d.concept_id
   ,d.vocabulary_id

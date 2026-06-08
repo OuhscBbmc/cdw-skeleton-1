@@ -13,20 +13,20 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start   date = '{date_start}';   -- earliest problem_start_date to include
-DECLARE @date_stop    date = '{date_stop}';    -- latest  problem_start_date to include
+DECLARE @date_start date = '{date_start}';   -- earliest problem_start_date to include
+DECLARE @date_stop  date = '{date_stop}';   -- latest  problem_start_date to include
 
-drop table if exists {project_schema}.dx;
+DROP TABLE if exists {project_schema}.dx;
 --exec dbo.generate_create_table_sp '{project_schema}.dx'
-create table {project_schema}.dx (
-  dx_index                int             identity primary key,
-  mrn_mpi                 int             not null,
+CREATE TABLE {project_schema}.dx (
+  dx_index                int          identity primary key,
+  mrn_mpi                 int          not null,
   problem_concept_id      int,
-  vocabulary_id           varchar(8)      not null,   -- 'ICD10CM' | 'ICD9CM'
-  icd_code                varchar(12)     not null,
+  vocabulary_id           varchar(8)   not null,   -- 'ICD10CM' | 'ICD9CM'
+  icd_code                varchar(12)  not null,
   icd_description         varchar(255),
   problem_start_date      date,
-  dx_index_within_patient int             not null,   -- 1 = earliest occurrence per concept per patient
+  dx_index_within_patient int          not null,   -- 1 = earliest occurrence per concept per patient
   -- Study-specific classification columns (from ss_dx lookup); add/remove as needed:
   category_1              varchar(255),
   category_2              varchar(255),
@@ -34,11 +34,11 @@ create table {project_schema}.dx (
   category_4              varchar(255),
 );
 
-insert {project_schema}.dx
+INSERT {project_schema}.dx
 SELECT
   pr.mrn_mpi,pr.problem_concept_id,pr.vocabulary_id,pr.icd_code,pr.icd_description,pr.problem_start_date,row_number() over (
     partition by pr.mrn_mpi, pr.problem_concept_id
-    ORDER BY pr.problem_start_date
+    order by pr.problem_start_date
     )                                                              as dx_index_within_patient,ss.category_1,ss.category_2,ss.category_3,ss.category_4
 FROM cdw_outpost.snowflake_2.problem pr
   inner join {project_schema}.pt_pool pp      on pr.mrn_mpi = pp.mrn_mpi

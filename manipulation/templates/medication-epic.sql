@@ -11,33 +11,33 @@
 use cdw_cache_staging;
 
 DECLARE @date_start_epic date = '2023-06-03';   -- Epic go-live floor
-DECLARE @date_stop    date = '{date_stop}';
+DECLARE @date_stop       date = '{date_stop}';
 
-drop table if exists {project_schema}.medication_epic;
+DROP TABLE if exists {project_schema}.medication_epic;
 --exec dbo.generate_create_table_sp '{project_schema}.medication_epic'
-create table {project_schema}.medication_epic (
-  med_epic_index              int             identity primary key,
-  mrn_mpi                     int             not null,
-  mrn_epic_durable            int             not null,
-  medication_event_key        int             not null,
-  medication_key              int             not null,
-  index_within_patient        bigint,
-  name                        varchar(300),
-  simple_generic_name         varchar(300),
-  pharmaceutical_class        varchar(300),
-  pharmaceutical_subclass     varchar(300),
-  therapeutic_class           varchar(300),
-  start_datetime              datetime2       not null,
-  administered                int             not null,
-  route                       varchar(300),
-  minimum_dose                numeric(18,2),
-  maximum_dose                numeric(18,2),
-  dose_unit                   varchar(300),
+CREATE TABLE {project_schema}.medication_epic (
+  med_epic_index          int           identity primary key,
+  mrn_mpi                 int           not null,
+  mrn_epic_durable        int           not null,
+  medication_event_key    int           not null,
+  medication_key          int           not null,
+  index_within_patient    bigint,
+  name                    varchar(300),
+  simple_generic_name     varchar(300),
+  pharmaceutical_class    varchar(300),
+  pharmaceutical_subclass varchar(300),
+  therapeutic_class       varchar(300),
+  start_datetime          datetime2     not null,
+  administered            int           not null,
+  route                   varchar(300),
+  minimum_dose            numeric(18,2),
+  maximum_dose            numeric(18,2),
+  dose_unit               varchar(300),
   -- Study classification:
-  med_category                varchar(100),
+  med_category            varchar(100),
 );
 
-insert {project_schema}.medication_epic
+INSERT {project_schema}.medication_epic
 SELECT
   na.mrn_mpi
   ,na.mrn_epic_durable
@@ -45,7 +45,7 @@ SELECT
   ,m.medication_key
   ,row_number() over (
     partition by na.mrn_mpi
-    ORDER BY m.start_date, md.name, m.medication_event_key
+    order by m.start_date, md.name, m.medication_event_key
     )                                          as index_within_patient
   ,md.name
   ,md.simple_generic_name

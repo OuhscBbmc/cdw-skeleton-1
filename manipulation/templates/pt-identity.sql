@@ -18,11 +18,11 @@ use cdw_cache_staging;
 -- ------------------------------------------------------------------------------------------------
 -- !! Don't drop & recreate once populated - this table has to be preserved!!
 /*
-drop table if exists cdw_transaction.{project_schema}.pt_identity;
+DROP TABLE if exists cdw_transaction.{project_schema}.pt_identity;
 --exec dbo.generate_create_table_sp '{project_schema}.pt_identity'
-create table cdw_transaction.{project_schema}.pt_identity (
-  mrn_mpi     int primary key,
-  record_id   int     identity not null unique,   -- stable, auto-incrementing study ID,
+CREATE TABLE cdw_transaction.{project_schema}.pt_identity (
+  mrn_mpi   int primary key,
+  record_id int identity not null unique,   -- stable, auto-incrementing study ID,
 );
 */
 
@@ -30,14 +30,14 @@ create table cdw_transaction.{project_schema}.pt_identity (
 -- Incremental insert: add any patients in the patient table who don't yet have a record_id
 -- Run this whenever the cohort is refreshed.
 -- ------------------------------------------------------------------------------------------------
-with mrn_to_add as (
+WITH mrn_to_add as (
   SELECT p.mrn_mpi
   FROM cdw_cache_staging.{project_schema}.patient p
   except
   SELECT pi.mrn_mpi
   FROM cdw_transaction.{project_schema}.pt_identity pi
 )
-insert cdw_transaction.{project_schema}.pt_identity
+INSERT cdw_transaction.{project_schema}.pt_identity
 SELECT mrn_mpi
 FROM mrn_to_add;
 

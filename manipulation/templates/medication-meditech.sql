@@ -10,30 +10,30 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start   date           = '{date_start}';
+DECLARE @date_start       date = '{date_start}';
 DECLARE @date_stop_legacy date = '2023-06-02';
 -- Option A - semicolon-delimited mnemonic list (simple name filter):
-DECLARE @mnemonics    varchar(500)   = '{mnemonics}';   -- e.g., 'METFORMIN;LISINOPRIL;ATORVASTATIN'
+DECLARE @mnemonics varchar(500) = '{mnemonics}';   -- e.g., 'METFORMIN;LISINOPRIL;ATORVASTATIN'
 -- Option B - use a study-specific medication lookup table (ss_med) for concept-based filtering;
 --            comment out @mnemonics filter and uncomment ss_med join below.
-drop table if exists {project_schema}.medication_meditech;
+DROP TABLE if exists {project_schema}.medication_meditech;
 --exec dbo.generate_create_table_sp '{project_schema}.medication_meditech'
-create table {project_schema}.medication_meditech (
-  med_meditech_index      int             identity primary key,
-  account_number          char(12)        not null,
-  mrn_mpi                 int             not null,
-  mrn_meditech_internal   varchar(10)     not null,
-  source_meditech         varchar(10)     not null,
-  admin_datetime          smalldatetime   not null,
-  medication_name         varchar(100),
-  dose_unit               varchar(50),
-  route                   varchar(50),
-  sig                     varchar(50),
+CREATE TABLE {project_schema}.medication_meditech (
+  med_meditech_index    int           identity primary key,
+  account_number        char(12)      not null,
+  mrn_mpi               int           not null,
+  mrn_meditech_internal varchar(10)   not null,
+  source_meditech       varchar(10)   not null,
+  admin_datetime        smalldatetime not null,
+  medication_name       varchar(100),
+  dose_unit             varchar(50),
+  route                 varchar(50),
+  sig                   varchar(50),
   -- Study classification (from ss_med lookup):
-  med_category            varchar(100),
+  med_category          varchar(100),
 );
 
-insert {project_schema}.medication_meditech
+INSERT {project_schema}.medication_meditech
 SELECT
   m.account_number,na.mrn_mpi,m.mrn_meditech_internal,m.source_meditech,m.admin_datetime,m.medication_name,m.dose_unit,m.route,m.sig,ss.med_category
 FROM cdw_meditech.meditech.medication m

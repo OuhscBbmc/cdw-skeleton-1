@@ -15,36 +15,36 @@
 use cdw_cache_staging;
 
 DECLARE @date_start_epic date = '2023-06-03';
-DECLARE @date_stop    date = '{date_stop}';
+DECLARE @date_stop       date = '{date_stop}';
 
-drop table if exists {project_schema}.obs_epic;
+DROP TABLE if exists {project_schema}.obs_epic;
 --exec dbo.generate_create_table_sp '{project_schema}.obs_epic'
-create table {project_schema}.obs_epic (
-  obs_epic_index              int             identity primary key,
-  mrn_mpi                     int             not null,
-  mrn_epic_durable            int             not null,
-  encounter_key               int             not null,
-  flowsheet_row_key           int             not null,
-  name                        varchar(250)    not null,
-  display_name                varchar(300)    not null,
-  value_numeric               numeric(18,2),
-  value_string                varchar(2500),
-  value_date                  date,
-  value_time                  time,
-  obs_index_within_patient    bigint,
-  obs_index_within_encounter  bigint,
+CREATE TABLE {project_schema}.obs_epic (
+  obs_epic_index             int           identity primary key,
+  mrn_mpi                    int           not null,
+  mrn_epic_durable           int           not null,
+  encounter_key              int           not null,
+  flowsheet_row_key          int           not null,
+  name                       varchar(250)  not null,
+  display_name               varchar(300)  not null,
+  value_numeric              numeric(18,2),
+  value_string               varchar(2500),
+  value_date                 date,
+  value_time                 time,
+  obs_index_within_patient   bigint,
+  obs_index_within_encounter bigint,
   -- Study classification:
-  obs_category                varchar(100),
+  obs_category               varchar(100),
 );
 
 -- Temp table to resolve mrn_epic_durable -> mrn_mpi once, then reuse in the main join
-drop table if exists #pt_epic;
-create table #pt_epic (
-  mrn_epic_durable    int primary key,
-  mrn_mpi             int     not null,
+DROP TABLE if exists #pt_epic;
+CREATE TABLE #pt_epic (
+  mrn_epic_durable int primary key,
+  mrn_mpi          int not null,
 );
 
-insert #pt_epic
+INSERT #pt_epic
 SELECT
   na.mrn_epic_durable
   ,pp.mrn_mpi
@@ -54,7 +54,7 @@ FROM {project_schema}.pt_pool pp
     and
     na.type = 'epic14';
 
-insert {project_schema}.obs_epic
+INSERT {project_schema}.obs_epic
 SELECT
   p.mrn_mpi
   ,p.mrn_epic_durable
@@ -68,11 +68,11 @@ SELECT
   ,f.value_time
   ,row_number() over (
     partition by p.mrn_mpi
-    ORDER BY f.encounter_key, f.flowsheet_row_key, f.value_date, f.value_time, f.value_string
+    order by f.encounter_key, f.flowsheet_row_key, f.value_date, f.value_time, f.value_string
   )                                            as obs_index_within_patient
   ,row_number() over (
     partition by f.encounter_key
-    ORDER BY f.flowsheet_row_key, f.value_date, f.value_time, f.value_string
+    order by f.flowsheet_row_key, f.value_date, f.value_time, f.value_string
   )                                            as obs_index_within_encounter
   ,ss.obs_category
 FROM cdw_epic.caboodle.flowsheet f
@@ -83,6 +83,6 @@ FROM cdw_epic.caboodle.flowsheet f
 -- inner join cdw_epic.caboodle.encounter e on f.encounter_key = e.encounter_key
 --   and cast(e.encounter_start_date as date) between @date_start_epic and @date_stop
 ORDER BY p.mrn_mpi, f.encounter_key;
-drop table if exists #pt_epic;
+DROP TABLE if exists #pt_epic;
 
 -- (N rows affected) HH:MM:SS

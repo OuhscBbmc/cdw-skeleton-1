@@ -11,32 +11,32 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start   date = '{date_start}';
+DECLARE @date_start       date = '{date_start}';
 DECLARE @date_stop_legacy date = '2023-06-02';
 -- Semicolon-delimited hdid list for your observations of interest:
-DECLARE @hdids        varchar(500) = '{hdids}';   -- e.g., '61;3095;5347;29139'
+DECLARE @hdids varchar(500) = '{hdids}';   -- e.g., '61;3095;5347;29139'
 -- Alternatively filter by name/description/keyword patterns (see commented WHERE clause below)
-drop table if exists {project_schema}.obs_centricity;
+DROP TABLE if exists {project_schema}.obs_centricity;
 --exec dbo.generate_create_table_sp '{project_schema}.obs_centricity'
-create table {project_schema}.obs_centricity (
-  obs_centricity_index    int             identity primary key,
-  mrn_mpi                 int             not null,
-  index_within_patient    bigint,
-  hdid                    int             not null,
-  name                    varchar(15)     not null,
-  description             varchar(220)    not null,
-  keyword                 varchar(255),
-  obs_date                date            not null,
-  obs_value               varchar(2000)   not null,
-  obs_value_numeric       float,
+CREATE TABLE {project_schema}.obs_centricity (
+  obs_centricity_index int           identity primary key,
+  mrn_mpi              int           not null,
+  index_within_patient bigint,
+  hdid                 int           not null,
+  name                 varchar(15)   not null,
+  description          varchar(220)  not null,
+  keyword              varchar(255),
+  obs_date             date          not null,
+  obs_value            varchar(2000) not null,
+  obs_value_numeric    float,
 );
 
-insert {project_schema}.obs_centricity
+INSERT {project_schema}.obs_centricity
 SELECT
   na.mrn_mpi
   ,row_number() over (
     partition by na.mrn_mpi
-    ORDER BY o.obs_date, oh.name, o.obs_value
+    order by o.obs_date, oh.name, o.obs_value
     )                                          as index_within_patient
   ,oh.hdid
   ,oh.name

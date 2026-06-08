@@ -10,40 +10,40 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start   date = '{date_start}';
+DECLARE @date_start       date = '{date_start}';
 DECLARE @date_stop_legacy date = '2023-06-02';
 
-drop table if exists {project_schema}.medication_centricity;
+DROP TABLE if exists {project_schema}.medication_centricity;
 --exec dbo.generate_create_table_sp '{project_schema}.medication_centricity'
-create table {project_schema}.medication_centricity (
-  med_centricity_index    int             identity primary key,
-  mrn_mpi                 int             not null,
-  index_within_patient    bigint,
-  mid                     bigint          not null,   -- Centricity medication record ID
-  sdid                    bigint          not null,   -- Centricity document ID (encounter link)
-  description             varchar(80)     not null,   -- brand/trade name
-  genericmed              varchar(60),
-  instructions            varchar(1400),
-  startdate               date,
-  stopdate                date,
-  stop_date_calc          date,
-  stopreason              varchar(1),
-  route                   varchar(30),
-  dose                    numeric(19,5),
-  ndc_11                  varchar(11),
-  gpi                     varchar(14),
-  rxnorm                  int,
-  age_years               int,
+CREATE TABLE {project_schema}.medication_centricity (
+  med_centricity_index int           identity primary key,
+  mrn_mpi              int           not null,
+  index_within_patient bigint,
+  mid                  bigint        not null,   -- Centricity medication record ID
+  sdid                 bigint        not null,   -- Centricity document ID (encounter link)
+  description          varchar(80)   not null,   -- brand/trade name
+  genericmed           varchar(60),
+  instructions         varchar(1400),
+  startdate            date,
+  stopdate             date,
+  stop_date_calc       date,
+  stopreason           varchar(1),
+  route                varchar(30),
+  dose                 numeric(19,5),
+  ndc_11               varchar(11),
+  gpi                  varchar(14),
+  rxnorm               int,
+  age_years            int,
   -- Study classification:
-  med_category            varchar(100),
+  med_category         varchar(100),
 );
 
-insert {project_schema}.medication_centricity
+INSERT {project_schema}.medication_centricity
 SELECT
   na.mrn_mpi
   ,row_number() over (
     partition by na.mrn_mpi
-    ORDER BY m.startdate, m.description, m.mid
+    order by m.startdate, m.description, m.mid
     )                                          as index_within_patient
   ,m.mid
   ,m.sdid

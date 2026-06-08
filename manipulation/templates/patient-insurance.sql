@@ -8,34 +8,35 @@
 -- ================================================================================================
 
 use cdw_cache_staging;
-drop table if exists {project_schema}.patient_insurance;
+
+DROP TABLE if exists {project_schema}.patient_insurance;
 --exec dbo.generate_create_table_sp '{project_schema}.patient_insurance'
-create table {project_schema}.patient_insurance (
-  mrn_mpi                     int primary key,
-  last_insurance_cat_epic     varchar(100),
-  last_insurance_cat_gecb     varchar(100),
+CREATE TABLE {project_schema}.patient_insurance (
+  mrn_mpi                 int          primary key,
+  last_insurance_cat_epic varchar(100),
+  last_insurance_cat_gecb varchar(100),
 );
 
-with insurance_epic as (
+WITH insurance_epic as (
   SELECT
     na.mrn_mpi
     ,ba.primary_benefit_payor_class
-    ,row_number() over (partition by na.mrn_mpi ORDER BY e.encounter_start_date desc) as rn
+    ,row_number() over (partition by na.mrn_mpi order by e.encounter_start_date desc) as rn
   FROM cdw_epic.caboodle.encounter e
-      inner join cdw_epic.caboodle.billing_account ba   on e.encounter_key = ba.primary_encounter_key
-      inner join cdw_mpi_1.groomed.node_assigned na     on e.mrn_epic_durable = na.mrn_epic_durable
-      inner join {project_schema}.pt_pool pp            on na.mrn_mpi = pp.mrn_mpi
+    inner join cdw_epic.caboodle.billing_account ba   on e.encounter_key = ba.primary_encounter_key
+    inner join cdw_mpi_1.groomed.node_assigned na     on e.mrn_epic_durable = na.mrn_epic_durable
+    inner join {project_schema}.pt_pool pp            on na.mrn_mpi = pp.mrn_mpi
 )
 ,insurance_gecb as (
   SELECT
     na.mrn_mpi
     ,i.fsc_category_1
-    ,row_number() over (partition by na.mrn_mpi ORDER BY i.inv_service_date desc) as rn
+    ,row_number() over (partition by na.mrn_mpi order by i.inv_service_date desc) as rn
   FROM {project_schema}.pt_pool pp
-      inner join cdw_mpi_1.groomed.node_assigned na on pp.mrn_mpi = na.mrn_mpi and na.type = 'gecb'
-      inner join cdw_gecb.gecb.fact_invoice i       on na.mrn_gecb = i.mrn_gecb
+    inner join cdw_mpi_1.groomed.node_assigned na on pp.mrn_mpi = na.mrn_mpi and na.type = 'gecb'
+    inner join cdw_gecb.gecb.fact_invoice i       on na.mrn_gecb = i.mrn_gecb
 )
-insert {project_schema}.patient_insurance
+INSERT {project_schema}.patient_insurance
 SELECT
   pp.mrn_mpi
   ,ie.primary_benefit_payor_class     as last_insurance_cat_epic

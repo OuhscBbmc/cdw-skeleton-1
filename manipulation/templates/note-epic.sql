@@ -18,26 +18,26 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start_epic date = '2023-06-03';
-DECLARE @date_stop    date           = '{date_stop}';
-DECLARE @note_types   varchar(500)   = 'Discharge Summary;H&P;Op Note;Progress Notes;Consult';
+DECLARE @date_start_epic date         = '2023-06-03';
+DECLARE @date_stop       date         = '{date_stop}';
+DECLARE @note_types      varchar(500) = 'Discharge Summary;H&P;Op Note;Progress Notes;Consult';
 
-drop table if exists {project_schema}.note_epic;
+DROP TABLE if exists {project_schema}.note_epic;
 --exec dbo.generate_create_table_sp '{project_schema}.note_epic'
-create table {project_schema}.note_epic (
-  note_epic_index         int             identity primary key,
-  note_clinical_key       int             not null,
-  encounter_key           int             not null,
-  mrn_mpi                 int             not null,
-  mrn_epic_durable        int             not null,
-  creation_instant        datetime,
-  note_type               varchar(80)     not null,
-  note_service            varchar(80),
-  note_line               smallint        not null,
-  note_text               varchar(2000)   not null,
+CREATE TABLE {project_schema}.note_epic (
+  note_epic_index   int           identity primary key,
+  note_clinical_key int           not null,
+  encounter_key     int           not null,
+  mrn_mpi           int           not null,
+  mrn_epic_durable  int           not null,
+  creation_instant  datetime,
+  note_type         varchar(80)   not null,
+  note_service      varchar(80),
+  note_line         smallint      not null,
+  note_text         varchar(2000) not null,
 );
 
-insert {project_schema}.note_epic
+INSERT {project_schema}.note_epic
 SELECT
   ns.note_clinical_key,e.encounter_key,na.mrn_mpi,e.mrn_epic_durable,ns.creation_instant,ns.note_type,ns.note_service,nt.note_line,nt.text                                    as note_text
 FROM cdw_epic_waystation.clarity.note_clinical_summary ns

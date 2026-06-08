@@ -14,7 +14,7 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start   date = '2016-01-01';
+DECLARE @date_start       date = '2016-01-01';
 DECLARE @date_stop_legacy date = '2023-06-02';
 
 -- ---- STEP 1: Discovery -----------------------------------------------------------------------
@@ -41,17 +41,17 @@ ORDER BY desired desc, s.clinic_name;
 -- ---- STEP 2: Load ss_location_gecb after PI review ------------------------------------------
 
 /*
-drop table if exists {project_schema}.ss_location_gecb;
+DROP TABLE if exists {project_schema}.ss_location_gecb;
 --exec dbo.generate_create_table_sp '{project_schema}.ss_location_gecb'
-create table {project_schema}.ss_location_gecb (
-  sched_location_id   int primary key,
-  sched_location      varchar(100),
-  clinic_name         varchar(100),
-  category            varchar(100),
+CREATE TABLE {project_schema}.ss_location_gecb (
+  sched_location_id int          primary key,
+  sched_location    varchar(100),
+  clinic_name       varchar(100),
+  category          varchar(100),
 );
 
-insert {project_schema}.ss_location_gecb
-values
+INSERT {project_schema}.ss_location_gecb
+VALUES
   ({sched_location_id}, '{sched_location}', '{clinic_name}', '{category}'),
   -- ...
 */

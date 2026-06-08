@@ -14,33 +14,34 @@
 -- ================================================================================================
 
 use cdw_cache_staging;
-drop table if exists {project_schema}.pt_charlson;
+
+DROP TABLE if exists {project_schema}.pt_charlson;
 --exec dbo.generate_create_table_sp '{project_schema}.pt_charlson'
-create table {project_schema}.pt_charlson (
-  mrn_mpi                         int primary key,
-  dx_count_any                    int     not null,
-  dx_count_charlson               int     not null,
+CREATE TABLE {project_schema}.pt_charlson (
+  mrn_mpi                       int primary key,
+  dx_count_any                  int not null,
+  dx_count_charlson             int not null,
   -- Charlson comorbidity flags:
-  myocardial_infarction           bit     not null,
-  congestive_heart_failure        bit     not null,
-  peripheral_vascular_disease     bit     not null,
-  stroke                          bit     not null,
-  dementia                        bit     not null,
-  pulmonary                       bit     not null,
-  rheumatic                       bit     not null,
-  peptic_ulcer_disease            bit     not null,
-  liver_mild                      bit     not null,
-  diabetes_mellitis               bit     not null,
-  diabetes_mellitis_complicated   bit     not null,
-  paralysis                       bit     not null,
-  renal                           bit     not null,
-  cancer                          bit     not null,
-  liver_severe                    bit     not null,
-  metastatic_cancer               bit     not null,
-  hiv                             bit     not null,
+  myocardial_infarction         bit not null,
+  congestive_heart_failure      bit not null,
+  peripheral_vascular_disease   bit not null,
+  stroke                        bit not null,
+  dementia                      bit not null,
+  pulmonary                     bit not null,
+  rheumatic                     bit not null,
+  peptic_ulcer_disease          bit not null,
+  liver_mild                    bit not null,
+  diabetes_mellitis             bit not null,
+  diabetes_mellitis_complicated bit not null,
+  paralysis                     bit not null,
+  renal                         bit not null,
+  cancer                        bit not null,
+  liver_severe                  bit not null,
+  metastatic_cancer             bit not null,
+  hiv                           bit not null,
 );
 
-insert {project_schema}.pt_charlson
+INSERT {project_schema}.pt_charlson
 SELECT
   pr.mrn_mpi
   ,count(distinct pr.problem_concept_id)                                  as dx_count_any

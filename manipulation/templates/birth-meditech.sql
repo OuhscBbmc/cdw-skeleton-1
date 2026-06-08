@@ -14,32 +14,32 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start   date = '{date_start}';
+DECLARE @date_start       date = '{date_start}';
 DECLARE @date_stop_legacy date = '2023-06-02';
 
-drop table if exists {project_schema}.birth_meditech;
+DROP TABLE if exists {project_schema}.birth_meditech;
 --exec dbo.generate_create_table_sp '{project_schema}.birth_meditech'
-create table {project_schema}.birth_meditech (
-  birth_meditech_index                int             identity primary key,
-  mrn_mpi_mother                      int             not null,
-  mrn_mpi_baby                        int             not null,
-  birth_index_within_mother           smallint,
-  birth_date                          date,
-  mother_age_years                    numeric(18,0),
-  gestational_age_weeks_standardized  varchar(25),
-  birth_weight_g                      varchar(25),
-  account_number_baby                 char(12)        not null,
-  account_number_mother               char(12),
-  mrn_meditech_internal_mother        varchar(10),
+CREATE TABLE {project_schema}.birth_meditech (
+  birth_meditech_index               int           identity primary key,
+  mrn_mpi_mother                     int           not null,
+  mrn_mpi_baby                       int           not null,
+  birth_index_within_mother          smallint,
+  birth_date                         date,
+  mother_age_years                   numeric(18,0),
+  gestational_age_weeks_standardized varchar(25),
+  birth_weight_g                     varchar(25),
+  account_number_baby                char(12)      not null,
+  account_number_mother              char(12),
+  mrn_meditech_internal_mother       varchar(10),
 );
 
-insert {project_schema}.birth_meditech
+INSERT {project_schema}.birth_meditech
 SELECT distinct
   na.mrn_mpi                              as mrn_mpi_mother
   ,b.mrn_mpi_baby
   ,row_number() over (
     partition by na.mrn_mpi
-    ORDER BY b.birth_date
+    order by b.birth_date
     )                                      as birth_index_within_mother
   ,b.birth_date
   ,floor(datediff(day, p.birth_date, b.birth_date) / 365.25) as mother_age_years
