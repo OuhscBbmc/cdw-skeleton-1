@@ -150,7 +150,7 @@ Look for SQL files with similar naming conventions (e.g. `medication-meditech.sq
 `patient-flags.sql`). Prefer recent repos. Always show the user what you found and where
 before reusing anything.
 
-## SQL Coding Style
+## SQL Coding Style -General Files
 
 - Keywords lower case **except**: `SELECT`, `FROM`, `WHERE`, `GROUP BY`, `HAVING`,
   `ORDER BY`, `DECLARE`
@@ -175,7 +175,20 @@ before reusing anything.
   `tables_to_scribe` config entry so `manipulation/scribe-factory.R` exports it.
   Never add `ss-` tables to `tables_to_scribe` — they are lookup inputs, not outputs.
 - Joins indented and nested under `FROM`
+- Trim the white space from the end of each line
+- Ensure each code file ends with a newline character
+- Avoid three consecutive newline characters.  If a blank line is necessary, use only one.
+- 2 spaces per indentation level; spaces not tabs
 - Extra space in `left  join`
+- Avoid hard-coded constants within the code, like `date_start`. Instead use `declare` at the top of the file.
+- Common static variables include
+  - `date_start_legacy` as 2010-01-01
+  - `date_stop_legacy` as 2023-06-02
+  - `date_start_epic` as 2023-06-03
+  - `date_stop_epic` as `cat(getdate() as date)`
+- Avoid declaring obvious specifications that are the default. Examples include
+  - `identity` instead of `identity(1, 1)`
+  - `primary key` instead of `not null primary key`
 - Single-variable join on one line:
 
   ```sql
@@ -192,6 +205,12 @@ before reusing anything.
       and
       p.birth_date <= v.visit_date
   ```
+
+### SQL Coding Style -cdw_cache_staging files
+
+- When the destination table is in the `cdw_cache_staging` database,
+  start the file with `use cdw_cache_staging;`.
+  Don't qualify tables in the `cdw_cache_staging` database, since it's the default.
 
 ## R Coding Style
 
