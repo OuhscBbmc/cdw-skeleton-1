@@ -9,10 +9,10 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start       date         = '{date_start}';   -- e.g., '2015-01-01'
-DECLARE @date_stop_legacy date         = '2023-06-02';   -- hard ceiling for Meditech; adjust earlier if needed
-DECLARE @campus           varchar(500) = '{campus}';   -- semicolon-delimited; e.g., 'the children''s hospital;ou medical center (adult)'
-DECLARE @patient_status   varchar(50)  = 'inpatient';   -- 'inpatient' | 'outpatient' | 'emergency' | remove filter for all
+DECLARE @date_start       date          = '{date_start}';   -- e.g., '2015-01-01'
+DECLARE @date_stop_legacy date          = '2023-06-02';     -- hard ceiling for Meditech; adjust earlier if needed
+DECLARE @campus           varchar(500)  = '{campus}';       -- semicolon-delimited; e.g., 'the children''s hospital;ou medical center (adult)'
+DECLARE @patient_status   varchar(50)   = 'inpatient';      -- 'inpatient' | 'outpatient' | 'emergency' | remove filter for all
 
 DROP TABLE if exists {project_schema}.encounter_meditech;
 --exec dbo.generate_create_table_sp '{project_schema}.encounter_meditech'

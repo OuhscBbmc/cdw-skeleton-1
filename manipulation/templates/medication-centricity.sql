@@ -10,8 +10,8 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start       date = '{date_start}';
-DECLARE @date_stop_legacy date = '2023-06-02';
+DECLARE @date_start       date          = '{date_start}';
+DECLARE @date_stop_legacy date          = '2023-06-02';
 
 DROP TABLE if exists {project_schema}.medication_centricity;
 --exec dbo.generate_create_table_sp '{project_schema}.medication_centricity'
@@ -19,9 +19,9 @@ CREATE TABLE {project_schema}.medication_centricity (
   med_centricity_index int           identity primary key,
   mrn_mpi              int           not null,
   index_within_patient bigint,
-  mid                  bigint        not null,   -- Centricity medication record ID
-  sdid                 bigint        not null,   -- Centricity document ID (encounter link)
-  description          varchar(80)   not null,   -- brand/trade name
+  mid                  bigint        not null,               -- Centricity medication record ID
+  sdid                 bigint        not null,               -- Centricity document ID (encounter link)
+  description          varchar(80)   not null,               -- brand/trade name
   genericmed           varchar(60),
   instructions         varchar(1400),
   startdate            date,

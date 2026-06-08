@@ -10,8 +10,8 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start       date = '{date_start}';
-DECLARE @date_stop_legacy date = '2023-06-02';
+DECLARE @date_start       date          = '{date_start}';
+DECLARE @date_stop_legacy date          = '2023-06-02';
 
 DROP TABLE if exists {project_schema}.lab_meditech;
 --exec dbo.generate_create_table_sp '{project_schema}.lab_meditech'
@@ -27,7 +27,7 @@ CREATE TABLE {project_schema}.lab_meditech (
   result_numeric        float,
   unit                  varchar(10),
   normal_range          varchar(25),
-  status                varchar(5),   -- lab status code; see lexis.dim_meditech_lab_status
+  status                varchar(5),                           -- lab status code; see lexis.dim_meditech_lab_status
   -- Study classification:
   lab_category          varchar(100),
 );

@@ -11,10 +11,10 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start       date = '{date_start}';
-DECLARE @date_stop_legacy date = '2023-06-02';
+DECLARE @date_start       date          = '{date_start}';
+DECLARE @date_stop_legacy date          = '2023-06-02';
 -- Semicolon-delimited hdid list for your observations of interest:
-DECLARE @hdids varchar(500) = '{hdids}';   -- e.g., '61;3095;5347;29139'
+DECLARE @hdids            varchar(500)  = '{hdids}';        -- e.g., '61;3095;5347;29139'
 -- Alternatively filter by name/description/keyword patterns (see commented WHERE clause below)
 DROP TABLE if exists {project_schema}.obs_centricity;
 --exec dbo.generate_create_table_sp '{project_schema}.obs_centricity'

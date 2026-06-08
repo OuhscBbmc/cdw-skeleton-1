@@ -10,10 +10,10 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start       date = '{date_start}';
-DECLARE @date_stop_legacy date = '2023-06-02';
+DECLARE @date_start       date          = '{date_start}';
+DECLARE @date_stop_legacy date          = '2023-06-02';
 -- Option A - semicolon-delimited mnemonic list (simple name filter):
-DECLARE @mnemonics varchar(500) = '{mnemonics}';   -- e.g., 'METFORMIN;LISINOPRIL;ATORVASTATIN'
+DECLARE @mnemonics        varchar(500)  = '{mnemonics}';    -- e.g., 'METFORMIN;LISINOPRIL;ATORVASTATIN'
 -- Option B - use a study-specific medication lookup table (ss_med) for concept-based filtering;
 --            comment out @mnemonics filter and uncomment ss_med join below.
 DROP TABLE if exists {project_schema}.medication_meditech;

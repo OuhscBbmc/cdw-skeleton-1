@@ -15,7 +15,7 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start_epic date = '2023-06-03';
+DECLARE @date_start_epic date          = '2023-06-03';
 
 -- ---- STEP 1: Discovery -- scoped to observed flowsheet rows ----------------------------------
 

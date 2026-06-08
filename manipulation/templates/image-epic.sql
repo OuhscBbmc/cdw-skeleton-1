@@ -14,10 +14,10 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start_epic date = '2023-06-03';
-DECLARE @date_stop       date = '{date_stop}';
+DECLARE @date_start_epic date          = '2023-06-03';
+DECLARE @date_stop       date          = '{date_stop}';
 -- Semicolon-delimited procedure_durable_key list (or swap for cpt_code filter):
-DECLARE @procedure_keys varchar(2000) = '{procedure_keys}';
+DECLARE @procedure_keys  varchar(2000) = '{procedure_keys}';
 
 DROP TABLE if exists {project_schema}.image_epic;
 --exec dbo.generate_create_table_sp '{project_schema}.image_epic'
@@ -27,8 +27,8 @@ CREATE TABLE {project_schema}.image_epic (
   mrn_mpi             int          not null,
   mrn_epic_durable    int          not null,
   procedure_name      varchar(300),
-  exam_date           date,   -- decoded FROM exam_start_date_key
-  exam_start_date_key int          not null,   -- raw integer key; keep for diagnostics
+  exam_date           date,                                -- decoded FROM exam_start_date_key
+  exam_start_date_key int          not null,               -- raw integer key; keep for diagnostics
   study_status        varchar(30),
   is_abnormal         bit,
 );

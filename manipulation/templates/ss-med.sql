@@ -68,9 +68,9 @@ DROP TABLE if exists {project_schema}.ss_med;
 --exec dbo.generate_create_table_sp '{project_schema}.ss_med'
 CREATE TABLE {project_schema}.ss_med (
   ss_med_index             int          identity primary key,
-  source_system            varchar(10)  not null,   -- 'epic' | 'meditech'
-  medication_key           int,   -- Epic join key; null for Meditech rows
-  medication_name_meditech varchar(50),   -- Meditech join key; null for Epic rows
+  source_system            varchar(10)  not null,               -- 'epic' | 'meditech'
+  medication_key           int,                                 -- Epic join key; null for Meditech rows
+  medication_name_meditech varchar(50),                         -- Meditech join key; null for Epic rows
   medication_name          varchar(300),
   generic_name             varchar(300),
   med_category             varchar(100) not null,

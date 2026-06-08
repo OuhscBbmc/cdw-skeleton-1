@@ -13,9 +13,9 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start       date        = '{date_start}';
-DECLARE @date_stop_legacy date        = '2023-06-02';
-DECLARE @visit_status     varchar(50) = 'arrived';   -- 'arrived' | 'no show' | 'cancelled' | remove for all
+DECLARE @date_start       date          = '{date_start}';
+DECLARE @date_stop_legacy date          = '2023-06-02';
+DECLARE @visit_status     varchar(50)   = 'arrived';        -- 'arrived' | 'no show' | 'cancelled' | remove for all
 
 DROP TABLE if exists {project_schema}.visit_gecb;
 --exec dbo.generate_create_table_sp '{project_schema}.visit_gecb'

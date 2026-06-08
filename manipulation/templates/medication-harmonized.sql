@@ -9,31 +9,31 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start       date         = '{date_start}';
-DECLARE @date_stop        date         = '{date_stop}';
-DECLARE @mnemonics        varchar(500) = '{mnemonics}';   -- for Meditech arm; e.g., 'METFORMIN;LISINOPRIL'
-DECLARE @date_stop_legacy date         = '2023-06-02';
-DECLARE @date_start_epic  date         = '2023-06-03';
+DECLARE @date_start       date          = '{date_start}';
+DECLARE @date_stop        date          = '{date_stop}';
+DECLARE @mnemonics        varchar(500)  = '{mnemonics}';    -- for Meditech arm; e.g., 'METFORMIN;LISINOPRIL'
+DECLARE @date_stop_legacy date          = '2023-06-02';
+DECLARE @date_start_epic  date          = '2023-06-03';
 
 DROP TABLE if exists {project_schema}.medication;
 --exec dbo.generate_create_table_sp '{project_schema}.medication'
 CREATE TABLE {project_schema}.medication (
   med_index            int           identity primary key,
-  source_system        varchar(10)   not null,   -- 'meditech' | 'epic'
+  source_system        varchar(10)   not null,               -- 'meditech' | 'epic'
   -- System-specific encounter/event keys:
-  account_number       char(12),   -- Meditech
-  medication_event_key int,   -- Epic
+  account_number       char(12),                             -- Meditech
+  medication_event_key int,                                  -- Epic
   mrn_mpi              int           not null,
   -- Medication
   medication_name      varchar(300),
-  simple_generic_name  varchar(300),   -- Epic only; null for Meditech
-  pharmaceutical_class varchar(300),   -- Epic only
-  therapeutic_class    varchar(300),   -- Epic only
+  simple_generic_name  varchar(300),                         -- Epic only; null for Meditech
+  pharmaceutical_class varchar(300),                         -- Epic only
+  therapeutic_class    varchar(300),                         -- Epic only
   admin_datetime       datetime2     not null,
-  administered         bit,   -- Epic: 1=administered; Meditech: always 1
+  administered         bit,                                  -- Epic: 1=administered; Meditech: always 1
   route                varchar(300),
-  minimum_dose         numeric(18,2),   -- Epic only; no per-admin dose in Caboodle; always null for Meditech
-  maximum_dose         numeric(18,2),   -- Epic only
+  minimum_dose         numeric(18,2),                        -- Epic only; no per-admin dose in Caboodle; always null for Meditech
+  maximum_dose         numeric(18,2),                        -- Epic only
   dose_unit            varchar(300),
   -- Study classification:
   med_category         varchar(100),

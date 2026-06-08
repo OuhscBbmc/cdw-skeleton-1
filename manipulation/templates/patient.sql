@@ -11,10 +11,10 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start date = '{date_start}';   -- e.g., '2019-01-01'
-DECLARE @date_stop  date = '{date_stop}';   -- e.g., '2024-12-31'
-DECLARE @age_min    int  = 18;   -- inclusive lower bound (years)
-DECLARE @age_max    int  = 89;   -- inclusive upper bound (years); remove if not needed
+DECLARE @date_start date          = '{date_start}';   -- e.g., '2019-01-01'
+DECLARE @date_stop  date          = '{date_stop}';    -- e.g., '2024-12-31'
+DECLARE @age_min    int           = 18;               -- inclusive lower bound (years)
+DECLARE @age_max    int           = 89;               -- inclusive upper bound (years); remove if not needed
 
 -- ------------------------------------------------------------------------------------------------
 -- Step 1: pt_pool  -- one row per eligible patient; holds mrn_mpi for downstream joins

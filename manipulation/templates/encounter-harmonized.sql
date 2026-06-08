@@ -12,25 +12,25 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start       date = '{date_start}';   -- overall study start
-DECLARE @date_stop        date = '{date_stop}';   -- overall study stop (may span both systems)
-DECLARE @date_stop_legacy date = '2023-06-02';
-DECLARE @date_start_epic  date = '2023-06-03';
+DECLARE @date_start       date          = '{date_start}';   -- overall study start
+DECLARE @date_stop        date          = '{date_stop}';    -- overall study stop (may span both systems)
+DECLARE @date_stop_legacy date          = '2023-06-02';
+DECLARE @date_start_epic  date          = '2023-06-03';
 
 DROP TABLE if exists {project_schema}.encounter;
 --exec dbo.generate_create_table_sp '{project_schema}.encounter'
 CREATE TABLE {project_schema}.encounter (
   encounter_index       int          identity primary key,
-  source_system         varchar(10)  not null,   -- 'meditech' | 'epic'
+  source_system         varchar(10)  not null,               -- 'meditech' | 'epic'
   -- Universal encounter key: account_number for meditech, encounter_key for epic
-  account_number        char(12),   -- Meditech only
-  encounter_key         int,   -- Epic only
+  account_number        char(12),                            -- Meditech only
+  encounter_key         int,                                 -- Epic only
   mrn_mpi               int          not null,
   -- Encounter
   encounter_start_date  date         not null,
   encounter_end_date    date,
   length_of_stay        smallint,
-  patient_class         varchar(50),   -- 'inpatient' | 'outpatient' | 'emergency'
+  patient_class         varchar(50),                         -- 'inpatient' | 'outpatient' | 'emergency'
   facility              varchar(100),
   department_or_campus  varchar(100),
   discharge_disposition varchar(100),

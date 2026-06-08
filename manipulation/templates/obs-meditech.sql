@@ -12,10 +12,10 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start       date = '{date_start}';
-DECLARE @date_stop_legacy date = '2023-06-02';
+DECLARE @date_start       date          = '{date_start}';
+DECLARE @date_stop_legacy date          = '2023-06-02';
 -- Semicolon-delimited hdid (obs_key_id) list for your tests of interest:
-DECLARE @hdids varchar(500) = '{hdids}';   -- e.g., '15745;25468;132931' (asthma control, etc.)
+DECLARE @hdids            varchar(500)  = '{hdids}';        -- e.g., '15745;25468;132931' (asthma control, etc.)
 
 DROP TABLE if exists {project_schema}.obs_meditech;
 --exec dbo.generate_create_table_sp '{project_schema}.obs_meditech'
@@ -24,13 +24,13 @@ CREATE TABLE {project_schema}.obs_meditech (
   account_number        char(12)      not null,
   mrn_mpi               int           not null,
   mrn_meditech_internal varchar(10)   not null,
-  obs_key_id            int           not null,   -- hdid; identifies the measurement type
+  obs_key_id            int           not null,               -- hdid; identifies the measurement type
   obs_datetime          smalldatetime not null,
-  obs_name              varchar(100),   -- human-readable name FROM ss_obs
-  obs_mnemonic          varchar(15),   -- meditech obs mnemonic
+  obs_name              varchar(100),                         -- human-readable name FROM ss_obs
+  obs_mnemonic          varchar(15),                          -- meditech obs mnemonic
   obs_value             varchar(200),
   obs_value_numeric     float,
-  obs_category          varchar(100),   -- study classification FROM ss_obs,
+  obs_category          varchar(100),                         -- study classification FROM ss_obs,
 );
 
 INSERT {project_schema}.obs_meditech

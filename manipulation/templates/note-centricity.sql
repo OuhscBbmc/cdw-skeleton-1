@@ -15,9 +15,9 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start       date         = '{date_start}';
-DECLARE @date_stop_legacy date         = '2023-06-02';
-DECLARE @location         varchar(500) = '{location_name}';   -- e.g., 'OU Cancer Institute;Stephenson Cancer Center'
+DECLARE @date_start       date          = '{date_start}';
+DECLARE @date_stop_legacy date          = '2023-06-02';
+DECLARE @location         varchar(500)  = '{location_name}';   -- e.g., 'OU Cancer Institute;Stephenson Cancer Center'
 -- Set @location = null to pull all locations
 DROP TABLE if exists {project_schema}.note_centricity;
 --exec dbo.generate_create_table_sp '{project_schema}.note_centricity'
@@ -45,7 +45,7 @@ FROM   cdw_centricity .centricity.document d
 WHERE
   d.clinical_date between @date_start and @date_stop_legacy
   and (@location is null or d.location_name in (SELECT [value] FROM string_split(@location, ';')))
-  and    d              .doctype != 3;   -- exclude phone notes; remove if you want all types
+  and    d              .doctype != 3;                                                                         -- exclude phone notes; remove if you want all types
 
 -- Step 2: pull note text only for resolved documents
 INSERT {project_schema}.note_centricity

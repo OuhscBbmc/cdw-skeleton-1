@@ -18,9 +18,9 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start_epic date         = '2023-06-03';
-DECLARE @date_stop       date         = '{date_stop}';
-DECLARE @note_types      varchar(500) = 'Discharge Summary;H&P;Op Note;Progress Notes;Consult';
+DECLARE @date_start_epic date          = '2023-06-03';
+DECLARE @date_stop       date          = '{date_stop}';
+DECLARE @note_types      varchar(500)  = 'Discharge Summary;H&P;Op Note;Progress Notes;Consult';
 
 DROP TABLE if exists {project_schema}.note_epic;
 --exec dbo.generate_create_table_sp '{project_schema}.note_epic'

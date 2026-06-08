@@ -14,8 +14,8 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start_epic date = '2023-06-03';
-DECLARE @date_stop       date = '{date_stop}';
+DECLARE @date_start_epic date          = '2023-06-03';
+DECLARE @date_stop       date          = '{date_stop}';
 
 DROP TABLE if exists {project_schema}.birth_epic;
 --exec dbo.generate_create_table_sp '{project_schema}.birth_epic'
@@ -23,7 +23,7 @@ CREATE TABLE {project_schema}.birth_epic (
   birth_epic_index                   int           identity primary key,
   mrn_mpi_mother                     int           not null,
   baby_mrn_epic_durable              int           not null,
-  birth_index_within_mother          smallint,   -- row_number per mother
+  birth_index_within_mother          smallint,                             -- row_number per mother
   birth_datetime                     datetime,
   -- Pregnancy timeline:
   pregnancy_estimated_start_date     date,

@@ -11,8 +11,8 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start       date = '{date_start}';
-DECLARE @date_stop_legacy date = '2023-06-02';
+DECLARE @date_start       date          = '{date_start}';
+DECLARE @date_stop_legacy date          = '2023-06-02';
 
 DROP TABLE if exists {project_schema}.image_meditech;
 --exec dbo.generate_create_table_sp '{project_schema}.image_meditech'

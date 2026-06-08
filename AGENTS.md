@@ -170,9 +170,11 @@ before reusing anything.
   - Nullable columns omit the `null` keyword — just the type is enough. Only `not null` needs to be stated explicitly.
   - Pad with spaces after the column names so the data types are vertically aligned.
   - Pad with spaces after the data types so the constraints are vertically aligned.
+  - Pad with spaces after the comma so the commends are vertically aligned.
 - In the block of `DECLARE` statements near the top of the file:
   - Pad with spaces after the column names so the data types are vertically aligned.
-  - Pad with spaces after the data types so the values are vertically aligned.
+  - Pad with spaces after the data types so the values are vertically aligned. Allow for data types as long as `varchar(1234)`
+  - Pad with spaces after the semicolon so the commends are vertically aligned.
 - In `CREATE TABLE`: use a trailing comma on the last column definition (before the closing `)`).
 - In `INSERT` statements: never include a column list. Use `INSERT table` followed
   directly by `SELECT`.

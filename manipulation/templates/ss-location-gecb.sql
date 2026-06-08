@@ -14,8 +14,8 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start       date = '2016-01-01';
-DECLARE @date_stop_legacy date = '2023-06-02';
+DECLARE @date_start       date          = '2016-01-01';
+DECLARE @date_stop_legacy date          = '2023-06-02';
 
 -- ---- STEP 1: Discovery -----------------------------------------------------------------------
 

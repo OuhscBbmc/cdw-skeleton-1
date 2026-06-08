@@ -11,8 +11,8 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start       date = '{date_start}';
-DECLARE @date_stop_legacy date = '2023-06-02';   -- hard ceiling; Meditech data ends here
+DECLARE @date_start       date          = '{date_start}';
+DECLARE @date_stop_legacy date          = '2023-06-02';     -- hard ceiling; Meditech data ends here
 
 DROP TABLE if exists {project_schema}.dx_meditech;
 --exec dbo.generate_create_table_sp '{project_schema}.dx_meditech'
@@ -21,11 +21,11 @@ CREATE TABLE {project_schema}.dx_meditech (
   account_number        char(12)     not null,
   mrn_mpi               int          not null,
   mrn_meditech_internal varchar(10)  not null,
-  dx_priority           tinyint,   -- 1 = primary dx
+  dx_priority           tinyint,                             -- 1 = primary dx
   vocabulary_id         varchar(8),
   icd_code              varchar(20),
   omop_concept_id       int,
-  icd_description       varchar(255),   -- FROM lexis.dx lookup
+  icd_description       varchar(255),                        -- FROM lexis.dx lookup
   visit_start_date      date,
   -- Study classification (optional):
   category_1            varchar(255),

@@ -10,11 +10,11 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start_epic date = '2023-06-03';   -- Epic go-live floor; adjust forward if needed
-DECLARE @date_stop       date = '{date_stop}';   -- e.g., '2025-12-31'
+DECLARE @date_start_epic date          = '2023-06-03';    -- Epic go-live floor; adjust forward if needed
+DECLARE @date_stop       date          = '{date_stop}';   -- e.g., '2025-12-31'
 -- Optionally narrow to specific departments or encounter types (semicolon-delimited):
-DECLARE @department_name varchar(500) = null;   -- e.g., 'OU CHILDREN''S PHYSICIANS;SOONER PEDIATRICS'
-DECLARE @encounter_type  varchar(500) = null;   -- additional filter inside the default visit-type list
+DECLARE @department_name varchar(500)  = null;            -- e.g., 'OU CHILDREN''S PHYSICIANS;SOONER PEDIATRICS'
+DECLARE @encounter_type  varchar(500)  = null;            -- additional filter inside the default visit-type list
 
 DROP TABLE if exists {project_schema}.encounter_epic;
 --exec dbo.generate_create_table_sp '{project_schema}.encounter_epic'
@@ -28,7 +28,7 @@ CREATE TABLE {project_schema}.encounter_epic (
   encounter_end_date          date,
   length_of_stay              smallint,
   encounter_type              varchar(300),
-  patient_class               varchar(50),   -- 'Inpatient' | 'Outpatient' | 'Emergency'
+  patient_class               varchar(50),                -- 'Inpatient' | 'Outpatient' | 'Emergency'
   department_name             varchar(100),
   facility_name               varchar(100),
   visit_provider_name         varchar(200),

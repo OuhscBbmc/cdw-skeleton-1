@@ -13,9 +13,9 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start          date         = '{date_start}';
-DECLARE @date_stop_legacy    date         = '2023-06-02';
-DECLARE @report_name_pattern varchar(100) = '%{report_name_pattern}%';
+DECLARE @date_start          date          = '{date_start}';
+DECLARE @date_stop_legacy    date          = '2023-06-02';
+DECLARE @report_name_pattern varchar(100)  = '%{report_name_pattern}%';
 -- Common patterns: '%discharge%', '%pallia%', '%history%physical%', '%operative%', '%progress%'
 DROP TABLE if exists {project_schema}.note_meditech;
 --exec dbo.generate_create_table_sp '{project_schema}.note_meditech'

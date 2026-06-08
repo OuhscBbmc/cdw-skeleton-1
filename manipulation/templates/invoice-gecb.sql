@@ -11,8 +11,8 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start       date = '{date_start}';
-DECLARE @date_stop_legacy date = '2023-06-02';
+DECLARE @date_start       date          = '{date_start}';
+DECLARE @date_stop_legacy date          = '2023-06-02';
 
 -- ---- Invoice / Claim header ------------------------------------------------------------------
 DROP TABLE if exists {project_schema}.invoice_gecb;
@@ -21,7 +21,7 @@ CREATE TABLE {project_schema}.invoice_gecb (
   invoice_gecb_index int          identity primary key,
   mrn_gecb           int          not null,
   mrn_mpi            int          not null,
-  invpk              int          not null,   -- GECB invoice PK; join key for CPTs/diagnoses
+  invpk              int          not null,               -- GECB invoice PK; join key for CPTs/diagnoses
   invnum             int          not null,
   inv_service_date   date         not null,
   location_name      varchar(100),

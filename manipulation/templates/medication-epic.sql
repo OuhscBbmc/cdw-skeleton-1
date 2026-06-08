@@ -10,8 +10,8 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start_epic date = '2023-06-03';   -- Epic go-live floor
-DECLARE @date_stop       date = '{date_stop}';
+DECLARE @date_start_epic date          = '2023-06-03';    -- Epic go-live floor
+DECLARE @date_stop       date          = '{date_stop}';
 
 DROP TABLE if exists {project_schema}.medication_epic;
 --exec dbo.generate_create_table_sp '{project_schema}.medication_epic'

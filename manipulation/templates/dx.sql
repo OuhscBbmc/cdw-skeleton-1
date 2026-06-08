@@ -13,8 +13,8 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start date = '{date_start}';   -- earliest problem_start_date to include
-DECLARE @date_stop  date = '{date_stop}';   -- latest  problem_start_date to include
+DECLARE @date_start date          = '{date_start}';   -- earliest problem_start_date to include
+DECLARE @date_stop  date          = '{date_stop}';    -- latest  problem_start_date to include
 
 DROP TABLE if exists {project_schema}.dx;
 --exec dbo.generate_create_table_sp '{project_schema}.dx'
@@ -22,11 +22,11 @@ CREATE TABLE {project_schema}.dx (
   dx_index                int          identity primary key,
   mrn_mpi                 int          not null,
   problem_concept_id      int,
-  vocabulary_id           varchar(8)   not null,   -- 'ICD10CM' | 'ICD9CM'
+  vocabulary_id           varchar(8)   not null,               -- 'ICD10CM' | 'ICD9CM'
   icd_code                varchar(12)  not null,
   icd_description         varchar(255),
   problem_start_date      date,
-  dx_index_within_patient int          not null,   -- 1 = earliest occurrence per concept per patient
+  dx_index_within_patient int          not null,               -- 1 = earliest occurrence per concept per patient
   -- Study-specific classification columns (from ss_dx lookup); add/remove as needed:
   category_1              varchar(255),
   category_2              varchar(255),
