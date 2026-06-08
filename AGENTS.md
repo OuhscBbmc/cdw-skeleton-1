@@ -112,7 +112,7 @@ Available templates and when to use them:
 | `medication-epic.sql` | Medications from Epic (admin date >= 2023-06-03) |
 | `medication-meditech.sql` | Medications from Meditech (admin date < 2023-06-03) |
 | `medication-harmonized.sql` | Medications needed across both Epic and Meditech |
-| `medication-centricity.sql` | Medications from Centricity (OB/GYN patients) |
+| `medication-centricity.sql` | Medications from Centricity |
 | `encounter-epic.sql` | Encounter/visit data from Epic |
 | `encounter-meditech.sql` | Encounter/visit data from Meditech |
 | `encounter-harmonized.sql` | Encounters needed across both systems |
@@ -183,7 +183,7 @@ before reusing anything.
   tables first, then define and populate the temp table, then insert into the permanent tables.
 - Use CTEs for readability; use `#temp` tables when intermediary logic is reused enough
   that a CTE becomes unreadable
-- Add a commented out `--exec dbo.generate_create_table_sp '{schema_name}.{table_name}' above table definition so user can quickly re-create table definitions when making modifications.
+- Add a commented out `--exec dbo.generate_create_table_sp '{schema_name}.{table_name}'` above table definition so user can quickly re-create table definitions when making modifications.
 - `distinct` should be on its own line
 - In the WHERE clause,
   - `and` and `or` should be on their own separate lines
@@ -215,7 +215,7 @@ before reusing anything.
 
   ```sql
   FROM patient p
-    inner join visit v on p.patient_id = v.visit_id
+    inner join visit v on p.patient_id = v.patient_id
   ```
 
 - Multi-variable join, each condition on its own line:
@@ -223,7 +223,7 @@ before reusing anything.
   ```sql
   FROM patient p
     inner join visit v on
-      p.patient_id = v.visit_id
+      p.patient_id = v.patient_id
       and
       p.birth_date <= v.visit_date
   ```
