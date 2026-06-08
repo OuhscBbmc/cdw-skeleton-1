@@ -152,10 +152,27 @@ before reusing anything.
 
 ## SQL Coding Style -General Files
 
-- Keywords lower case **except**: `SELECT`, `FROM`, `WHERE`, `GROUP BY`, `HAVING`,
-  `ORDER BY`, `DECLARE`
-- In `CREATE TABLE`: nullable columns omit the `null` keyword — just the type is enough.
-  Only `not null` needs to be stated explicitly.
+- Keywords lower case **except**:
+  - `CREATE TABLE`
+  - `DECLARE`
+  - `DROP TABLE`
+  - `FROM`
+  - `GROUP BY`
+  - `HAVING`
+  - `INSERT`
+  - `ORDER BY`, unless it's inside a window function
+  - `SELECT`
+  - `UNION` and `UNION ALL`
+  - `VALUES`
+  - `WITH`
+  - `WHERE`
+- In `CREATE TABLE`:
+  - Nullable columns omit the `null` keyword — just the type is enough. Only `not null` needs to be stated explicitly.
+  - Pad with spaces after the column names so the data types are vertically aligned.
+  - Pad with spaces after the data types so the constraints are vertically aligned.
+- In the block of `DECLARE` statements near the top of the file:
+  - Pad with spaces after the column names so the data types are vertically aligned.
+  - Pad with spaces after the data types so the values are vertically aligned.
 - In `CREATE TABLE`: use a trailing comma on the last column definition (before the closing `)`).
 - In `INSERT` statements: never include a column list. Use `INSERT table` followed
   directly by `SELECT`.
@@ -180,7 +197,7 @@ before reusing anything.
 - Avoid three consecutive newline characters.  If a blank line is necessary, use only one.
 - 2 spaces per indentation level; spaces not tabs
 - Extra space in `left  join`
-- Avoid hard-coded constants within the code, like `date_start`. Instead use `declare` at the top of the file.
+- Avoid hard-coded constants within the code, like `date_start`. Instead use `DECLARE` at the top of the file.
 - Common static variables include
   - `date_start_legacy` as 2010-01-01
   - `date_stop_legacy` as 2023-06-02
