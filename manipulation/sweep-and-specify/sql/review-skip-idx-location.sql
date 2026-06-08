@@ -1,14 +1,14 @@
 SELECT
-  DISTINCT
-  cast(locpk AS VARCHAR(16))		     AS loc_id,
-  '{category}'							         AS category,
-  '{exact_match_keyword}'            AS match_keyword,
-  lower(locname)						         AS loc_name,
-  lower(locmnem)						         AS loc_abbrevated,
-  locdeactflag						           AS loc_deactivated_flag,
-  locdeletedflag						         AS loc_deleted_flag,
-  '{project}'						             AS project,
-  'TRUE'							               AS desired
+  distinct
+  cast(locpk as varchar(16))         as loc_id,
+  '{category}'                       as category,
+  '{exact_match_keyword}'            as match_keyword,
+  lower(locname)                     as loc_name,
+  lower(locmnem)                     as loc_abbrevated,
+  locdeactflag                       as loc_deactivated_flag,
+  locdeletedflag                     as loc_deleted_flag,
+  '{project}'                         as project,
+  'TRUE'                             as desired
 FROM
   idx.dim_location
 WHERE

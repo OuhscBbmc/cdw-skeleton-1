@@ -2,7 +2,7 @@
 -- TEMPLATE: ss-lab.sql  (harmonized: Epic + Meditech)
 -- Sources:  cdw_epic_waystation.caboodle.lab_component_dim  (Epic, >= 2023-06-03)
 --           cdw_meditech.dictionary.lab                      (Meditech, < 2023-06-03)
--- Purpose:  Discovery query — find lab components matching study keywords from both systems.
+-- Purpose:  Discovery query - find lab components matching study keywords from both systems.
 --           Run this query, review in SSMS or Excel, set desired = 'TRUE' and fill lab_category.
 --           The final ss_lab table is loaded from the approved rows.
 --
@@ -12,11 +12,12 @@
 --               inner join {project_schema}.ss_lab ss on l.mnemonic = ss.mnemonic
 --           Column selected: ss.lab_category
 --
--- !! CUSTOMIZE @keywords — semicolon-delimited name fragments
+-- !! CUSTOMIZE @keywords - semicolon-delimited name fragments
 -- ================================================================================================
 
-DECLARE @keywords   varchar(1000) = '%{keyword_1}%;%{keyword_2}%';   -- semicolon-delimited LIKE patterns
+use cdw_cache_staging;
 
+DECLARE @keywords   varchar(1000) = '%{keyword_1}%;%{keyword_2}%';   -- semicolon-delimited like patterns
 
 -- ---- STEP 1: Discovery -----------------------------------------------------------------------
 
@@ -39,7 +40,7 @@ WHERE
   (lcd.name like s.value or lcd.common_name like s.value)
   and lcd.lab_component_key in (SELECT distinct lab_component_key FROM cdw_epic.caboodle.lab_component_result)
 
-UNION ALL
+union all
 
 -- ---- Meditech arm ---------------------------------------------------------------------------
 SELECT
@@ -61,21 +62,21 @@ WHERE
 
 ORDER BY source_system, lab_category, name;
 
-
 -- ---- STEP 2: Load ss_lab after PI review ----------------------------------------------------
 
 /*
-DROP TABLE IF EXISTS [cdw_cache_staging].[{project_schema}].[ss_lab];
-CREATE TABLE [cdw_cache_staging].[{project_schema}].[ss_lab] (
-    ss_lab_index        int             identity(1,1) primary key,
-    source_system       varchar(10)     not null,   -- 'epic' | 'meditech'
-    lab_component_key   int,       -- Epic join key; null for Meditech rows
-    mnemonic            varchar(15),       -- Meditech join key; null for Epic rows
-    name                varchar(150),
-    loinc_code          varchar(30),
-    lab_category        varchar(100)    not null,
+drop table if exists {project_schema}.ss_lab;
+--exec dbo.generate_create_table_sp '{project_schema}.ss_lab'
+create table {project_schema}.ss_lab (
+  ss_lab_index        int             identity primary key,
+  source_system       varchar(10)     not null,   -- 'epic' | 'meditech'
+  lab_component_key   int,       -- Epic join key; null for Meditech rows
+  mnemonic            varchar(15),       -- Meditech join key; null for Epic rows
+  name                varchar(150),
+  loinc_code          varchar(30),
+  lab_category        varchar(100)    not null,
 );
 
-INSERT INTO {project_schema}.ss_lab
+insert {project_schema}.ss_lab
 -- paste approved rows from Step 1, or re-run with desired = 'TRUE' filter
 */

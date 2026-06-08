@@ -1,13 +1,13 @@
 SELECT
-  DISTINCT
-  cast(locid AS VARCHAR(16))		 AS loc_id,
-  '{category}'                   AS category,
-  '{broad_match_keyword}'        AS match_keyword,
-  l.name                         AS loc_name,
-  l.abbrevname                   AS loc_abbrevated,
-  concat( address1,', ',city,', ',state,', ',zip) AS loc_address,
-  '{project}'                    AS project,
-  'FALSE'                        AS desired
+  distinct
+  cast(locid as varchar(16))     as loc_id,
+  '{category}'                   as category,
+  '{broad_match_keyword}'        as match_keyword,
+  l.name                         as loc_name,
+  l.abbrevname                   as loc_abbrevated,
+  concat( address1,', ',city,', ',state,', ',zip) as loc_address,
+  '{project}'                    as project,
+  'FALSE'                        as desired
 FROM
   centricity.locreg l
 WHERE

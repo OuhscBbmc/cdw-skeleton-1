@@ -2,7 +2,7 @@
 -- TEMPLATE: ss-cpt.sql
 -- Sources:  cdw_gecb.waystation.dim_cpt                    (GECB, historical)
 --           cdw_epic_waystation.caboodle.procedure_snapshot_dim  (Epic, >= 2023-06-03)
--- Purpose:  Discovery query — find CPT codes matching study procedure keywords from both systems.
+-- Purpose:  Discovery query - find CPT codes matching study procedure keywords from both systems.
 --           Run this query to build the @cpts variable for procedure-harmonized.sql, or to load
 --           a full ss_cpt lookup table if you need procedure-level category classification.
 --
@@ -16,6 +16,7 @@
 -- !! CUSTOMIZE keyword patterns below
 -- ================================================================================================
 
+use cdw_cache_staging;
 
 -- ---- STEP 1: Discovery -----------------------------------------------------------------------
 
@@ -31,7 +32,7 @@ FROM cdw_gecb.waystation.dim_cpt cp
 WHERE
   cp.billing_description like '%{keyword}%'
 
-UNION ALL
+union all
 
 -- ---- Epic arm -------------------------------------------------------------------------------
 SELECT
@@ -47,12 +48,11 @@ WHERE
   and pd.cpt_code is not null
   and
   (
-    pd.name like '%{keyword}%'
-    or pd.category like '%{keyword}%'
+  pd.name like '%{keyword}%'
+  or pd.category like '%{keyword}%'
   )
 
 ORDER BY source_system, cpt_code;
-
 
 -- ---- STEP 2: Load ss_cpt after PI review (optional) -----------------------------------------
 -- If you only need a CPT code list, just pull the distinct cpt_code values from Step 1
@@ -60,15 +60,16 @@ ORDER BY source_system, cpt_code;
 -- Only create the table below if you need procedure-level category classification.
 
 /*
-DROP TABLE IF EXISTS [cdw_cache_staging].[{project_schema}].[ss_cpt];
-CREATE TABLE [cdw_cache_staging].[{project_schema}].[ss_cpt] (
-    cpt_code        varchar(10)     not null primary key,
-    procedure_name  varchar(254),
-    category        varchar(100),
+drop table if exists {project_schema}.ss_cpt;
+--exec dbo.generate_create_table_sp '{project_schema}.ss_cpt'
+create table {project_schema}.ss_cpt (
+  cpt_code        varchar(10) primary key,
+  procedure_name  varchar(254),
+  category        varchar(100),
 );
 
-INSERT INTO {project_schema}.ss_cpt
-VALUES
-    ('{cpt_code}', '{procedure_name}', '{category}'),
-    -- ...
+insert {project_schema}.ss_cpt
+values
+  ('{cpt_code}', '{procedure_name}', '{category}'),
+  -- ...
 */
