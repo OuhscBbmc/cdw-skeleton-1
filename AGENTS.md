@@ -184,6 +184,9 @@ before reusing anything.
 - Use CTEs for readability; use `#temp` tables when intermediary logic is reused enough
   that a CTE becomes unreadable
 - Add a commented out `--exec dbo.generate_create_table_sp '{schema_name}.{table_name}' above table definition so user can quickly re-create table definitions when making modifications.
+- `distinct` should be on its own line
+- In the WHERE clause,
+  - `and` and `or` should be on their own separate lines
 - Every SQL script should create permanent project-schema tables as its final outputs.
   Intermediary tables should be CTEs or `#temp` tables. If a second permanent table is
   needed as a distinct deliverable or reusable project table, create it deliberately and
