@@ -10,11 +10,11 @@
 
 use cdw_cache_staging;
 
-DECLARE @date_start_epic date          = '2023-06-03';    -- Epic go-live floor; adjust forward if needed
+DECLARE @date_start_epic date          = '2023-06-03';   -- Epic go-live floor; adjust forward if needed
 DECLARE @date_stop       date          = '{date_stop}';   -- e.g., '2025-12-31'
 -- Optionally narrow to specific departments or encounter types (semicolon-delimited):
-DECLARE @department_name varchar(500)  = null;            -- e.g., 'OU CHILDREN''S PHYSICIANS;SOONER PEDIATRICS'
-DECLARE @encounter_type  varchar(500)  = null;            -- additional filter inside the default visit-type list
+DECLARE @department_name varchar(500)   = null;            -- e.g., 'OU CHILDREN''S PHYSICIANS;SOONER PEDIATRICS'
+DECLARE @encounter_type  varchar(500)   = null;            -- additional filter inside the default visit-type list
 
 DROP TABLE if exists {project_schema}.encounter_epic;
 --exec dbo.generate_create_table_sp '{project_schema}.encounter_epic'
@@ -94,10 +94,10 @@ SELECT
   ,e.discharge_disposition
   ,i.primary_benefit_payor_class
 FROM cdw_epic.caboodle.encounter e
-  inner join cdw_mpi_1.groomed.node_assigned na    on e.mrn_epic_durable = na.mrn_epic_durable
-  inner join {project_schema}.pt_pool pp           on na.mrn_mpi = pp.mrn_mpi
-  inner join epic_encounter_types eet               on e.encounter_type = eet.encounter_type
-  left  join insurance i                           on e.encounter_key = i.primary_encounter_key
+  inner join cdw_mpi_1.groomed.node_assigned na   on e.mrn_epic_durable = na.mrn_epic_durable
+  inner join {project_schema}.pt_pool pp          on na.mrn_mpi = pp.mrn_mpi
+  inner join epic_encounter_types eet             on e.encounter_type = eet.encounter_type
+  left  join insurance i                          on e.encounter_key = i.primary_encounter_key
 WHERE
   cast(e.encounter_start_date as date) between @date_start_epic and @date_stop
   -- Uncomment to filter by department:

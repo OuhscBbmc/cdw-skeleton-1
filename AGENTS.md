@@ -166,6 +166,31 @@ before reusing anything.
   - `VALUES`
   - `WITH`
   - `WHERE`
+- In the `SELECT` clause:
+  - each variable has a dedicated line
+  - all subsequent variables follow a comma
+  - `distinct` should be on its own line
+- In the `FROM` clause:
+  - Joins indented and nested under `FROM`
+  - Extra space in `left  join`
+  - Single-variable join on one line:
+
+    ```sql
+    FROM patient p
+      inner join visit v on p.patient_id = v.patient_id
+    ```
+
+- Multi-variable join, each condition on its own line.
+  Operators such as `and` and `or` have their own line.
+
+    ```sql
+    FROM patient p
+      inner join visit v on
+        p.patient_id = v.patient_id
+        and
+        p.birth_date <= v.visit_date
+    ```
+
 - In `CREATE TABLE`:
   - Nullable columns omit the `null` keyword — just the type is enough. Only `not null` needs to be stated explicitly.
   - Pad with spaces after the column names so the data types are vertically aligned.
@@ -184,9 +209,7 @@ before reusing anything.
 - Use CTEs for readability; use `#temp` tables when intermediary logic is reused enough
   that a CTE becomes unreadable
 - Add a commented out `--exec dbo.generate_create_table_sp '{schema_name}.{table_name}'` above table definition so user can quickly re-create table definitions when making modifications.
-- `distinct` should be on its own line
 - In the WHERE clause,
-  - `and` and `or` should be on their own separate lines
 - Every SQL script should create permanent project-schema tables as its final outputs.
   Intermediary tables should be CTEs or `#temp` tables. If a second permanent table is
   needed as a distinct deliverable or reusable project table, create it deliberately and
@@ -196,12 +219,10 @@ before reusing anything.
 - When a SQL script creates a table intended for delivery, add a matching
   `tables_to_scribe` config entry so `manipulation/scribe-factory.R` exports it.
   Never add `ss-` tables to `tables_to_scribe` — they are lookup inputs, not outputs.
-- Joins indented and nested under `FROM`
 - Trim the white space from the end of each line
 - Ensure each code file ends with a newline character
 - Avoid three consecutive newline characters.  If a blank line is necessary, use only one.
 - 2 spaces per indentation level; spaces not tabs
-- Extra space in `left  join`
 - Avoid hard-coded constants within the code, like `date_start`. Instead use `DECLARE` at the top of the file.
 - Common static variables include
   - `date_start_legacy` as 2010-01-01
@@ -211,22 +232,6 @@ before reusing anything.
 - Avoid declaring obvious specifications that are the default. Examples include
   - `identity` instead of `identity(1, 1)`
   - `primary key` instead of `not null primary key`
-- Single-variable join on one line:
-
-  ```sql
-  FROM patient p
-    inner join visit v on p.patient_id = v.patient_id
-  ```
-
-- Multi-variable join, each condition on its own line:
-
-  ```sql
-  FROM patient p
-    inner join visit v on
-      p.patient_id = v.patient_id
-      and
-      p.birth_date <= v.visit_date
-  ```
 
 ### SQL Coding Style -cdw_cache_staging files
 

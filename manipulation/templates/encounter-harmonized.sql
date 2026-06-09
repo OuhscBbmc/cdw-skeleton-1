@@ -13,7 +13,7 @@
 use cdw_cache_staging;
 
 DECLARE @date_start       date          = '{date_start}';   -- overall study start
-DECLARE @date_stop        date          = '{date_stop}';    -- overall study stop (may span both systems)
+DECLARE @date_stop        date          = '{date_stop}';   -- overall study stop (may span both systems)
 DECLARE @date_stop_legacy date          = '2023-06-02';
 DECLARE @date_start_epic  date          = '2023-06-03';
 
@@ -111,10 +111,10 @@ SELECT
   ,e.discharge_disposition
   ,ba.primary_benefit_payor_class                         as insurance_category
 FROM cdw_epic.caboodle.encounter e
-  inner join cdw_mpi_1.groomed.node_assigned na          on e.mrn_epic_durable = na.mrn_epic_durable
-  inner join {project_schema}.pt_pool pp                 on na.mrn_mpi = pp.mrn_mpi
-  inner join epic_encounter_types eet                     on e.encounter_type = eet.encounter_type
-  left  join cdw_epic.caboodle.billing_account ba         on e.encounter_key = ba.primary_encounter_key
+  inner join cdw_mpi_1.groomed.node_assigned na         on e.mrn_epic_durable = na.mrn_epic_durable
+  inner join {project_schema}.pt_pool pp                on na.mrn_mpi = pp.mrn_mpi
+  inner join epic_encounter_types eet                   on e.encounter_type = eet.encounter_type
+  left  join cdw_epic.caboodle.billing_account ba       on e.encounter_key = ba.primary_encounter_key
 WHERE
   cast(e.encounter_start_date as date) between @date_start_epic and @date_stop
 ;

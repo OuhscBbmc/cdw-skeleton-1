@@ -28,8 +28,8 @@ SELECT
   ,null                                      as mnemonic
   ,lcd.name
   ,lcd.common_name
-  ,nullif(lcd.loinc_code, '*Unspecified')    as loinc_code
-  ,nullif(lcd.loinc_name, '*Unspecified')    as loinc_name
+  ,nullif(lcd.loinc_code, '*Unspecified')     as loinc_code
+  ,nullif(lcd.loinc_name, '*Unspecified')     as loinc_name
   ,lcd.default_unit
   ,s.value                                   as matched_pattern
   ,'TRUE'                                    as desired
