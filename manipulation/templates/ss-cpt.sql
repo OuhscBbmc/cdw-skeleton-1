@@ -46,10 +46,9 @@ FROM cdw_epic_waystation.caboodle.procedure_snapshot_dim pd
 WHERE
   pd.is_current = 1
   and pd.cpt_code is not null
-  and
-  (
-  pd.name like '%{keyword}%'
-  or pd.category like '%{keyword}%'
+  and (
+    pd.name like '%{keyword}%'
+    or pd.category like '%{keyword}%'
   )
 
 ORDER BY source_system, cpt_code;

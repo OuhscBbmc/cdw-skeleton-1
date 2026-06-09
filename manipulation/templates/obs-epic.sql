@@ -69,11 +69,11 @@ SELECT
   ,row_number() over (
     partition by p.mrn_mpi
     order by f.encounter_key, f.flowsheet_row_key, f.value_date, f.value_time, f.value_string
-  )                                            as obs_index_within_patient
+    )                                          as obs_index_within_patient
   ,row_number() over (
     partition by f.encounter_key
     order by f.flowsheet_row_key, f.value_date, f.value_time, f.value_string
-  )                                            as obs_index_within_encounter
+    )                                          as obs_index_within_encounter
   ,ss.obs_category
 FROM cdw_epic.caboodle.flowsheet f
   inner join cdw_epic_waystation.caboodle.flowsheet_row_dim fd    on f.flowsheet_row_key = fd.flowsheet_row_key

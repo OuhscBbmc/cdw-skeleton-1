@@ -36,10 +36,20 @@ CREATE TABLE {project_schema}.dx (
 
 INSERT {project_schema}.dx
 SELECT
-  pr.mrn_mpi,pr.problem_concept_id,pr.vocabulary_id,pr.icd_code,pr.icd_description,pr.problem_start_date,row_number() over (
+  pr.mrn_mpi
+  ,pr.problem_concept_id
+  ,pr.vocabulary_id
+  ,pr.icd_code
+  ,pr.icd_description
+  ,pr.problem_start_date
+  ,row_number() over (
     partition by pr.mrn_mpi, pr.problem_concept_id
     order by pr.problem_start_date
-    )                                                              as dx_index_within_patient,ss.category_1,ss.category_2,ss.category_3,ss.category_4
+    )                                                           as dx_index_within_patient
+  ,ss.category_1
+  ,ss.category_2
+  ,ss.category_3
+  ,ss.category_4
 FROM cdw_outpost.snowflake_2.problem pr
   inner join {project_schema}.pt_pool pp      on pr.mrn_mpi = pp.mrn_mpi
   -- !! Join to your study-specific dx lookup; remove if pulling all diagnoses:

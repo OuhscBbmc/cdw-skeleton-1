@@ -19,6 +19,7 @@ DECLARE @date_start       date          = '{date_start}';
 DECLARE @date_stop_legacy date          = '2023-06-02';
 DECLARE @location         varchar(500)  = '{location_name}';   -- e.g., 'OU Cancer Institute;Stephenson Cancer Center'
 -- Set @location = null to pull all locations
+
 DROP TABLE if exists {project_schema}.note_centricity;
 --exec dbo.generate_create_table_sp '{project_schema}.note_centricity'
 CREATE TABLE {project_schema}.note_centricity (
@@ -39,13 +40,13 @@ DROP TABLE if exists #docs;
 CREATE TABLE #docs (sdid bigint primary key);
 INSERT #docs
 SELECT d              .sdid
-FROM   cdw_centricity .centricity.document d
-  inner  join           cdw_mpi_1.groomed.node_assigned na   on d.mrn_centricity = na.mrn_centricity
-  inner  join           {project_schema}.pt_pool pp          on na.mrn_mpi = pp.mrn_mpi
+FROM cdw_centricity.centricity.document d
+  inner join cdw_mpi_1.groomed.node_assigned na on d.mrn_centricity = na.mrn_centricity
+  inner join {project_schema}.pt_pool pp        on na.mrn_mpi = pp.mrn_mpi
 WHERE
   d.clinical_date between @date_start and @date_stop_legacy
   and (@location is null or d.location_name in (SELECT [value] FROM string_split(@location, ';')))
-  and    d              .doctype != 3;                                                                         -- exclude phone notes; remove if you want all types
+  and d.doctype != 3;                                                                         -- exclude phone notes; remove if you want all types
 
 -- Step 2: pull note text only for resolved documents
 INSERT {project_schema}.note_centricity
@@ -60,20 +61,20 @@ SELECT
   ,n.note                                     as note_text
   ,u.name_full                                as physician_name_full
   ,u.specialty                                as physician_specialty
-FROM   cdw_centricity .centricity.document d
-  inner  join           cdw_centricity.centricity.document_note n    on d.sdid  = n.sdid
-  inner  join           cdw_centricity.centricity.usr u              on d.usrid = u.pvid
-  left   join           cdw_mpi_1.groomed.node_assigned na           on d.mrn_centricity = na.mrn_centricity
+FROM cdw_centricity.centricity.document d
+  inner join cdw_centricity.centricity.document_note n on d.sdid = n.sdid
+  inner join cdw_centricity.centricity.usr u            on d.usrid = u.pvid
+  left  join cdw_mpi_1.groomed.node_assigned na         on d.mrn_centricity = na.mrn_centricity
 WHERE
   d.sdid in (SELECT td.sdid FROM #docs td)
   -- !! Filter to desired note types; remove for all types:
-  and    d              .doctype_description in (
+  and d.doctype_description in (
     'Office Visit'
     ,'Telemedicine Encounter'
     -- ,'Progress Notes'
     -- ,'Operative Report'
     -- ,'Office Procedure'
   );
-DROP   TABLE          if exists #docs;
+DROP TABLE if exists #docs;
 
 -- (N rows affected) HH:MM:SS
