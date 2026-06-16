@@ -3,11 +3,8 @@ default:
   project_name                                        : "{project_name}"
   schema_name                                         : "{schema_name}"
   dsn_staging                                         : "cdw_cache_staging"
-  # dsn_mpi                                             : "cdw_mpi_1"
   # dsn_outpost                                         : "cdw_outpost"
-  # dsn_omop                                            : "cdw_omop_1"
-  # dsn_waystation_meditech                             : "cdw_waystation_meditech"
-  # dsn_waystation_gecb                                 : "cdw_waystation_idx"
+  # dsn_omop                                            : "cdw_omop_2"
   # dsn_transaction                                     : "cdw_transaction"
   # dsn_security                                        : "BbmcSecurity"
   # redcap_pid                                          : 1
@@ -17,14 +14,13 @@ default:
   directory_output                                    : !expr strftime(Sys.time(), "{directory_file_server}/data-private/derived/%Y-%m-%d")
   # path_output_summary                                 : !expr strftime(Sys.time(), "{directory_file_server}/data-private/derived/%Y-%m-%d/_summary.csv")
   # path_output_description                             : !expr strftime(Sys.time(), "{directory_file_server}/data-private/derived/%Y-%m-%d/_description.md")
-  # directory_meditech_triage                           : "//pedsis/peds/data/BBMC/ou-medicine"
 
   # path_log_flow                                       : !expr strftime(Sys.time(), "data-unshared/log/%Y/%Y-%m/flow-%Y-%m-%d--%H-%M-%S.log")
   # path_log_flow                                       : !expr strftime(Sys.time(), "//pedsis/peds/data/BBMC/prairie-outpost/{project_name}/log/%Y/%Y-%m/flow-%Y-%m-%d--%H-%M-%S.log")
 
   # path_metadata_ss_dx                                 : "data-public/metadata/ss-dx.csv"
 
-  # time_zone_local               :  "America/Chicago"          # Force time calculations to be local, in case remotely run.
+  # time_zone_local                                   :  "America/Chicago"          # Force time calculations to be local, in case remotely run.
 
   # ---- Validation Ranges & Patterns ----
   # range_record_id               : !expr c(1L, 999999L)
@@ -56,9 +52,9 @@ default:
   # pattern_ethnicity             : "^.{7,25}$"
   # pattern_npi                   : "^\\d{10}$" # a 10-digit integer
 
-  # pattern_icdcm                 : "^[A-Z][0-9][0-9AB]\\.?[0-9A-Z]{0,4}|\\d{3}\\.?\\d{0,2}|E\\d{3}\\.?\\d?|V\\d{2}\\.?\\d{0,2}|NOD.X$" # Set database column to `varchar(8)` From https://www.johndcook.com/blog/2019/05/05/regex_icd_codes/
+  # pattern_icdcm                 : "^[A-Z][0-9AB][0-9AB]\\.?[0-9A-Z]{0,4}|\\d{3}\\.?\\d{0,2}|E\\d{3}\\.?\\d?|V\\d{2}\\.?\\d{0,2}|NOD.X$" # Set database column to `varchar(8)` From https://www.johndcook.com/blog/2019/05/05/regex_icd_codes/
   # pattern_icd9cm                : "^\\d{3}\\.?\\d{0,2}|E\\d{3}\\.?\\d?|V\\d{2}\\.?\\d{0,2}$"    # Set database column to `varchar(6)`
-  # pattern_icd10cm               : "^[A-Z][0-9][0-9AB]\\.?[0-9A-Z]{0,4}|NOD.X$"                  # Set database column to `varchar(8)`
+  # pattern_icd10cm               : "^[A-Z][0-9AB][0-9AB]\\.?[0-9A-Z]{0,4}|NOD.X$"                  # Set database column to `varchar(8)`
   # pattern_loinc                 : "^\\d{3,5}-\\d$"
   # pattern_cpt                   : "^\\d{4}[0-9a-z]$"
   # pattern_hcpcs                 : "^[0-9a-z]\\d{4}$"

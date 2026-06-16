@@ -1,17 +1,17 @@
 SELECT
-  DISTINCT
-   CAST(diagpk AS VARCHAR(16))    AS diag_id,
-  '{category}'							      AS category,
-  '{exact_match_keyword}'         AS match_keyword,
-   diagcd                         AS code,
-   CASE WHEN diagicdcmversion = 9 THEN 'ICD-9'
-        WHEN diagicdcmversion = 10 THEN 'ICD-10'
-   END                            AS code_type,
-   lower(diagdesc)                AS code_description,
-   diagdeactflag                  AS code_deactivated_flag,
-   diagdeletedflag                AS code_deleted_flag,
-  '{project}'                    AS project,
-   'TRUE'                         AS desired
+  distinct
+  cast(diagpk as varchar(16))    as diag_id,
+  '{category}'                    as category,
+  '{exact_match_keyword}'         as match_keyword,
+  diagcd                         as code,
+  case when diagicdcmversion = 9 then 'ICD-9'
+    when diagicdcmversion = 10 then 'ICD-10'
+  end                            as code_type,
+  lower(diagdesc)                as code_description,
+  diagdeactflag                  as code_deactivated_flag,
+  diagdeletedflag                as code_deleted_flag,
+  '{project}'                    as project,
+  'TRUE'                         as desired
 FROM
   idx.dim_diagnosis
 WHERE

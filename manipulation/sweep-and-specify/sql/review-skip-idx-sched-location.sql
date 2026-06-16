@@ -1,16 +1,16 @@
 SELECT
-  DISTINCT
-  cast(schlocpk as varchar(10))		 AS loc_id,
-  '{category}'							       AS category,
-  '{exact_match_keyword}'          AS match_keyword,
-  schloc		                       AS loc_name,
-  schlocmnem	                     AS loc_abbrevated,
-  schlocbillinglocname             AS loc_billing_name,
-  schlocclinicname		             AS loc_clinic_name,
-  schlocdeactflag                  AS loc_deactivated_flag,
-  schlocdeletedflag                AS loc_deleted_flag,
-  '{project}'						           AS project,
-  'TRUE'							             AS desired
+  distinct
+  cast(schlocpk as varchar(10))     as loc_id,
+  '{category}'                     as category,
+  '{exact_match_keyword}'          as match_keyword,
+  schloc                           as loc_name,
+  schlocmnem                       as loc_abbrevated,
+  schlocbillinglocname             as loc_billing_name,
+  schlocclinicname                 as loc_clinic_name,
+  schlocdeactflag                  as loc_deactivated_flag,
+  schlocdeletedflag                as loc_deleted_flag,
+  '{project}'                       as project,
+  'TRUE'                           as desired
 FROM
   idx.dim_schedloc
 WHERE

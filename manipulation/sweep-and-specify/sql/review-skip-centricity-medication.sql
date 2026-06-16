@@ -1,13 +1,13 @@
- SELECT
-  DISTINCT
-  cast(mid AS VARCHAR(16))  AS mid,
-  '{category}'              AS category,
-  '{exact_match_keyword}'   AS match_keyword,
-  lower(description)        AS med_description,
+SELECT
+  distinct
+  cast(mid as varchar(16))  as mid,
+  '{category}'              as category,
+  '{exact_match_keyword}'   as match_keyword,
+  lower(description)        as med_description,
   --instructions            AS med_instructions,
-  lower(genericmed)         AS med_generic,
-  '{project}'               AS project,
-  'FALSE'                   AS desired
+  lower(genericmed)         as med_generic,
+  '{project}'               as project,
+  'FALSE'                   as desired
 FROM
   centricity.medicate
 WHERE

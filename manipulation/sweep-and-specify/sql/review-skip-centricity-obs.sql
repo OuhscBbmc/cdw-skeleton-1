@@ -1,15 +1,15 @@
 SELECT
-  DISTINCT
-  cast(oh.hdid AS varchar(10))  AS obs_hdid,
-  '{category}'                  AS category,
-  '{exact_match_keyword}'       AS match_keyword,
-  lower(oh.name)                AS obs_name,
-  lower(oh.description)         AS obs_description,
-  lower(oh.unit)                AS obs_units,
-  cast(oh.active AS varchar(1)) AS obs_active_flag,
-  '{project}'                   AS project,
-  'TRUE'                        AS desired
+  distinct
+  cast(oh.hdid as varchar(10))  as obs_hdid,
+  '{category}'                  as category,
+  '{exact_match_keyword}'       as match_keyword,
+  lower(oh.name)                as obs_name,
+  lower(oh.description)         as obs_description,
+  lower(oh.unit)                as obs_units,
+  cast(oh.active as varchar(1)) as obs_active_flag,
+  '{project}'                   as project,
+  'TRUE'                        as desired
 FROM
   centricity.obshead oh
 WHERE
-  oh.name = '{exact_match_keyword}' 
+  oh.name = '{exact_match_keyword}'

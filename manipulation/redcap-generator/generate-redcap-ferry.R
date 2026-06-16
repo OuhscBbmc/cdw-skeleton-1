@@ -3,7 +3,9 @@ generate_redcap_ferry <- function(
     dictionary_path = "./data-public/metadata/redcap-data-dictionary.csv",
     output_dir      = "manipulation/redcap-ferry",
     root_table      = NULL,
-    link_column     = "mrn_mpi"
+    link_column     = "mrn_mpi",
+    exclude_tables  = character(0),
+    exclude_table_patterns = "^ss_"
 ) {
 
   # ---- load-packages ---------------------------------------------------------
@@ -74,17 +76,23 @@ generate_redcap_ferry <- function(
     message("Using root table: '", root_table, "'")
   }
 
-  # ---- auto-exclude-ss-tables -------------------------------------------
-  # Automatically exclude tables starting with "ss_"
-  auto_exclude <- all_tables[grepl("^ss_", all_tables, ignore.case = TRUE)]
+  # ---- auto-exclude-tables ----------------------------------------------------
+  auto_exclude <- character(0)
+  if (length(exclude_table_patterns) > 0) {
+    is_excluded_table_pattern <- purrr::reduce(
+      purrr::map(exclude_table_patterns, \(pattern) grepl(pattern, all_tables, ignore.case = TRUE)),
+      `|`
+    )
+    auto_exclude <- sort(unique(all_tables[is_excluded_table_pattern]))
+  }
 
   if (length(auto_exclude) > 0) {
-    message("\n--- Auto-excluding ss tables (ss_*) ---")
+    message("\n--- Auto-excluding tables from ferry ---")
     message("  ", paste(auto_exclude, collapse = ", "))
   }
 
   # ---- prompt-for-additional-exclusions --------------------------------------
-  exclude_tables <- auto_exclude
+  exclude_tables <- unique(c(auto_exclude, exclude_tables))
 
   if (interactive()) {
     message("\n", strrep("=", 60))
@@ -93,7 +101,7 @@ generate_redcap_ferry <- function(
 
     # Show all tables with numbers
     remaining_tables <- setdiff(all_tables, auto_exclude)
-    message("\nTables available for ferry (excluding ss_* ss tables):\n")
+    message("\nTables available for ferry after automatic exclusions:\n")
     for (i in seq_along(remaining_tables)) {
       root_marker <- if (remaining_tables[i] == root_table) " [ROOT]" else ""
       message("  ", sprintf("%2d", i), ". ", remaining_tables[i], root_marker)
@@ -125,7 +133,7 @@ generate_redcap_ferry <- function(
       }
 
       if (length(valid_exclude) > 0) {
-        exclude_tables <- c(auto_exclude, valid_exclude)
+        exclude_tables <- unique(c(exclude_tables, valid_exclude))
         message("\nAdditional exclusions: ", paste(valid_exclude, collapse = ", "))
       }
     }
@@ -167,15 +175,29 @@ generate_redcap_ferry <- function(
     # Check if repeat instrument
     is_repeat <- !is.null(repeat_instruments) && isTRUE(repeat_instruments[table_name])
 
-    # Get order_by column
+    # Get order_by column. Prefer temporal columns, then stable row/index/key columns.
+    choose_order_by_col <- function(cols, id_cols = character(0)) {
+      date_cols <- cols[
+        grepl("date|time|instant|_dt$|_dts$|_datetime$", cols, ignore.case = TRUE)
+      ]
+      if (length(date_cols) > 0) return(date_cols[1])
+
+      stable_cols <- cols[
+        grepl("index|sequence|seq|line|row|encounter_key|department_key|visit_key|event_key|key$|_id$", cols, ignore.case = TRUE) &
+          !cols %in% id_cols
+      ]
+      if (length(stable_cols) > 0) return(stable_cols)
+
+      fallback_cols <- setdiff(cols, id_cols)
+      if (length(fallback_cols) > 0) return(fallback_cols[1])
+      cols[1]
+    }
+
     order_by_col <- if (!is.null(order_by_columns) && !is.na(order_by_columns[table_name])) {
       order_by_columns[table_name]
     } else {
-      # Try to find a date column
-      date_cols <- table_data$column_name[
-        grepl("date|time|instant|_dt$|_dts$|_datetime$", table_data$column_name, ignore.case = TRUE)
-      ]
-      if (length(date_cols) > 0) date_cols[1] else NULL
+      id_cols_for_order <- unique(c(link_column, id_columns[table_name], table_data$column_name[grepl("^mrn|_mrn|mrn_", table_data$column_name, ignore.case = TRUE)]))
+      choose_order_by_col(table_data$column_name, id_cols_for_order)
     }
 
     # --- Build SELECT clause ---
@@ -194,11 +216,12 @@ generate_redcap_ferry <- function(
     # Add repeat instrument columns if needed
     if (is_repeat) {
       if (is.null(order_by_col)) {
-        warning("  ", table_name, ": No date column for ordering! Using first column.")
-        order_by_col <- table_data$column_name[1]
+        warning("  ", table_name, ": No preferred order column found. Using first available column.")
+        order_by_col <- choose_order_by_col(table_data$column_name, c(link_column, id_columns[table_name]))
       }
+      order_by_expr <- paste0(table_alias, ".", order_by_col, collapse = ", ")
       repeat_instance <- glue::glue(
-        "row_number() over(partition by i.record_id order by {table_alias}.{order_by_col}) as redcap_repeat_instance"
+        "row_number() over(partition by i.record_id order by {order_by_expr}) as redcap_repeat_instance"
       )
       repeat_instrument <- glue::glue("'{table_name}' as redcap_repeat_instrument")
       select_clauses <- c(select_clauses, repeat_instance, repeat_instrument)
@@ -388,7 +411,9 @@ FROM mrn_to_add
     object_name <- paste0("ds_", stringr::str_replace_all(script_name, "-", "_"))
     rel_path <- file.path(output_dir, basename(sql_path))
 
-    sql_text <- paste(readLines(sql_path, warn = FALSE), collapse = "\n")
+    sql_lines <- readLines(sql_path, warn = FALSE)
+    sql_lines <- sql_lines[!grepl("^\\s*--", sql_lines)]
+    sql_text <- paste(sql_lines, collapse = "\n")
     column_names <- parse_sql_columns(sql_text)
 
     if (is.null(column_names) || length(column_names) == 0) {
@@ -560,3 +585,4 @@ FROM mrn_to_add
 
   invisible(data_objects)
 }
+
