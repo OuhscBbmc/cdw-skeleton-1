@@ -68,6 +68,7 @@ def token() -> str:
     return (
         os.environ.get("GITHUB_TOKEN", "").strip()
         or os.environ.get("GH_TOKEN", "").strip()
+        or os.environ.get("API_Key_github", "").strip()
     )
 
 
