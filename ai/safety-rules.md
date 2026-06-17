@@ -9,6 +9,8 @@ These rules apply to every session, every AI assistant, every task.
 - Do not access files outside the repo without explicit permission.
 - Do not git commit any files to the repo without explicit permission.
   (Note to human: our team's policy requires a person to review each committed file to ensure private info doesn't slip into the repo and get pushed to the GitHub server.)
+- Do not access any remote computer without explicit permission.
+  This includes protocols and processes like ssh, rdp, odbc, and sftp.
 - `ss-` files (ss_dx, ss_med, ss_clinic, etc.) require PI review and sign-off before they
   are run against live data.
 - Editing files is always safe. Running them requires explicit permission for that exact command.
