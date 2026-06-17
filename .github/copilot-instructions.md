@@ -1,82 +1,69 @@
 # CRDW Project — Copilot Instructions
 
 This is a clinical research data warehouse (CRDW) project repository (OuhscBbmc).
+For full detail on any section below, read the corresponding file in `ai/`.
 
-## Read First
+## Session Start
 
-If `documentation/github-issues.md` exists, read it before starting any work. It contains
-the research question, inclusion criteria, and current task status. If it is missing, generate
-it automatically before proceeding:
+Before starting any work:
 
-```powershell
-python utility/export-repo-issues.py
-```
+1. Read `ai/safety-rules.md`.
+2. Read `config.yml` — note `project_name` and `schema_name`.
+3. Check `ai/ai-state.md`:
+   - **Exists and < 7 days old** (check `Last updated:`) → read it; skip
+     `documentation/github-issues.md` entirely.
+   - **Missing or stale** → read `documentation/github-issues.md`. Summarize it, then write
+     `ai/ai-state.md` immediately (format in `ai/session-logging.md`). If github-issues.md is
+     missing, generate it first: `python utility/export-repo-issues.py`
+     (fallback: `py`, then the Windows App path for Python 3.11).
 
-If `python` is not on PATH, try `py`, then this Windows Python path:
+## Safety Rules (summary — full rules in `ai/safety-rules.md`)
 
-```powershell
-& "$env:LOCALAPPDATA\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe" utility\export-repo-issues.py
-```
+- Do not suggest running R scripts, `flow.R`, `scribe-factory.R`, or SQL against live databases.
+- Do not access `.csv` or Excel files without explicit user permission.
+- `ss-` files require PI review before running.
+- Editing files is safe; running them requires explicit user permission.
 
 ## Repo Layout
 
 - `config.yml` — project name and schema name for SQL staging tables
-- `manipulation/` — SQL and R extraction scripts
+- `manipulation/` — SQL extraction scripts and R transformation scripts
 - `manipulation/ss/` — study-specific lookup tables (require PI review before running)
 - `manipulation/scribe-factory.R` — pulls staging data to local CSVs
-- `documentation/` — project docs and issue mirror
+- `ai/` — machine-facing context files: style guides, safety rules, `ai-state.md` (session state)
+- `documentation/` — human-facing docs: github-issues.md, audit logs in `ai-sessions/`
 - `data-unshared/` — local data, not committed to GitHub
 
-For `ss_dx`, use the existing placeholder script in the repo as the starting point and
-name the finished script `manipulation/ss/ss-dx-create.sql`. Do not fetch or create a
-separately named diagnosis concept-set template.
+## SQL Work
 
-## SQL Templates
+When editing or generating SQL files, read `ai/sql-style.md` and `ai/sql-templates.md` first.
 
-When generating SQL scripts, fetch templates from:
-`https://raw.githubusercontent.com/OuhscBbmc/cdw-skeleton-1/main/manipulation/ss/templates/`
+Key SQL rules (abbreviated — see `ai/sql-style.md` for complete rules):
+- Keywords lower case except: `SELECT`, `FROM`, `WHERE`, `GROUP BY`, `HAVING`, `ORDER BY`,
+  `DECLARE`, `CREATE TABLE`, `DROP TABLE`, `INSERT`, `UNION`, `VALUES`, `WITH`
+- `CREATE TABLE`: nullable columns omit `null`; trailing comma on last column; pad for alignment
+- `INSERT`: no column list — `INSERT table` followed directly by `SELECT`
+- All `CREATE TABLE` before first `SELECT` in the file
+- Joins nested under `FROM`; extra space in `left  join`; 2-space indentation
+- Start staging files with `use cdw_cache_staging;`
 
-Common templates: `patient.sql`, `dx.sql`, `medication-epic.sql`, `medication-meditech.sql`,
-`encounter-harmonized.sql`, `lab-epic.sql`, `charlson-comorbidities.sql`.
+When generating SQL from templates, also read `ai/sql-templates.md`:
+- Fetch URL: `https://raw.githubusercontent.com/OuhscBbmc/cdw-skeleton-1/main/manipulation/templates/{name}.sql`
+- Substitute `{project_schema}`, `{date_start}`, `{date_stop}`
+- Name scripts descriptively: `patient.sql`, `dx.sql`, `medication-meditech.sql`, etc. Execution order is set in `flow.R`, not by filename.
+- Never add `ss-` tables to `tables_to_scribe` in `config.yml`
 
-Substitute `{project_schema}` with the `schema_name` from `config.yml`.
+For `ss_dx` and other study-specific lookups: use the existing placeholder in `manipulation/ss/`
+as the starting point. Name finished scripts `manipulation/ss/ss-{type}-create.sql`.
 
-Every generated SQL script should produce one or more permanent tables in the project
-schema. Use CTEs or `#temp` tables for intermediary data. If distinct permanent outputs
-would make one script unclear, split them into separate scripts. Only generate
-`pt-identity.sql` when the project requires a REDCap database or stable REDCap
-`record_id`; it is not needed for routine cross-system MRN lookup.
+## R Work
 
-Name SQL scripts with a two-digit sequence prefix that reflects dependency order, e.g.
-`01-patient.sql`, `02-dx.sql`, `03-medication-meditech.sql`. The patient pool script is
-always `01`. Downstream tables that join to `pt_pool` follow in execution order.
+When editing R files, read `ai/r-style.md` first.
 
-When adding SQL scripts that create delivery tables, also add them to `flow.R` in dependency
-order and add matching `config.yml` `tables_to_scribe` entries. `scribe-factory.R` needs
-`path_output_summary`, `path_output_description`, and each table entry's `name`,
-`columns_include`, `path_output`, and `row_unit`.
-Never add `ss-` tables (ss_dx, ss_med, ss_clinic, etc.) to `tables_to_scribe` — they are
-concept-set lookup inputs, not study outputs.
+Key R rules: prefix functions (`dplyr::filter()`), use `dplyr::distinct()` for deduplication,
+2-space indentation, match existing file style.
 
-## SQL Style
+## Session Logging
 
-- Keywords lower case except: `SELECT`, `FROM`, `WHERE`, `GROUP BY`, `HAVING`, `ORDER BY`, `DECLARE`
-- `CREATE TABLE`: nullable columns omit `null` — only `not null` is stated explicitly
-- `CREATE TABLE`: trailing comma on the last column definition
-- `INSERT`: no column list — `INSERT INTO table` followed directly by `SELECT`
-- All `CREATE TABLE` statements must appear before the first `SELECT` in the file
-- CTEs or `#temp` tables preferred for intermediary data; permanent project-schema tables should be final script outputs
-- Joins nested under `FROM`, extra space in `left  join`
-- 2-space indentation
-
-## R Style
-
-- Prefix functions: `dplyr::filter()`, `readr::read_csv()`
-- `dplyr::distinct()` for deduplication; no count+filter diagnostic blocks
-- 2-space indentation, spaces not tabs
-
-## Safety
-
-- Do not suggest running R scripts, `flow.R`, or SQL against live databases
-- `ss-` files require PI review before running
-- Editing files is safe; running them requires explicit user permission
+At the end of any session that does real work, read `ai/session-logging.md` and write a dated
+note to `documentation/ai-sessions/YYYY-MM-DD.md`.
