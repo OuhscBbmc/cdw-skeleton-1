@@ -4,6 +4,8 @@ This repo includes tools that let you use any AI assistant to help pull GitHub i
 scaffold SQL scripts, and understand the project context. This guide covers setup and
 day-to-day use.
 
+---
+
 ## One-Time Setup: GitHub Token
 
 To pull issues from private repos you need a GitHub personal access token. This takes
@@ -21,11 +23,8 @@ about two minutes and you only do it once per computer.
 [System.Environment]::SetEnvironmentVariable("GITHUB_TOKEN", "your-token-here", "User")
 ```
 
-After that, close and reopen VS Code or any terminal for it to take effect. You never
-need to touch it again.
-
-If you have the GitHub CLI installed (`gh`), it will use that automatically as a fallback
-and you may not need to do any of the above.
+After that, close and reopen VS Code or any terminal for it to take effect. If you have
+the GitHub CLI installed (`gh`), it will use that automatically as a fallback.
 
 ---
 
@@ -35,86 +34,68 @@ Issues are pulled into `documentation/github-issues.md` — a readable file that
 research question, inclusion criteria, meeting notes, and current task status.
 
 **In VS Code (no terminal needed):**
-
-Press `Ctrl+Shift+P`, type **Pull GitHub Issues**, press Enter. The terminal panel will
-show progress and close when done.
+Press `Ctrl+Shift+P`, type **Pull GitHub Issues**, press Enter.
 
 **In a terminal:**
 ```
 python utility/export-repo-issues.py
 ```
-
-If `python` is not on PATH, try:
-```powershell
-py utility/export-repo-issues.py
-```
-
-On this Windows workstation, this fallback path is known to work:
+Fallback: `py utility/export-repo-issues.py`
+Windows fallback:
 ```powershell
 & "$env:LOCALAPPDATA\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe" utility\export-repo-issues.py
 ```
 
-Re-run any time issues are updated on GitHub. The file overwrites cleanly each time.
+Re-run any time issues are updated on GitHub.
 
 ---
 
 ## Populating SQL Scripts
 
-This fetches the relevant SQL script templates for your project and places them in
-`manipulation/` with your project schema already substituted in.
+Fetches SQL templates for your project and places them in `manipulation/` with your
+project schema substituted in. You can also let Claude Code do this automatically with
+`/sql-generate` (see below).
 
-**In VS Code (no terminal needed):**
-
-Press `Ctrl+Shift+P`, type **Populate CRDW Scripts**, press Enter. You'll see a numbered
-menu in the terminal — type the numbers for the scripts you want and press Enter.
+**In VS Code:** `Ctrl+Shift+P` → **Populate CRDW Scripts**
 
 **In a terminal:**
 ```
 python utility/populate-scripts.py
 ```
-
-If `python` is not on PATH, use `py` or the Windows Python path shown above.
-
 For specific templates without the menu:
 ```
 python utility/populate-scripts.py --templates patient dx medication-meditech
 ```
 
-The scripts land in `manipulation/` ready to edit. Review and customize before running
-against live data — especially dates, WHERE clauses, and inclusion criteria.
-
-Each SQL script should leave behind permanent project-schema output tables only. Use CTEs
-or `#temp` tables for intermediary data, or split distinct permanent outputs into separate
-scripts. `pt-identity.sql` is only needed when the project requires a REDCap database or
-stable REDCap `record_id`.
+Review and customize each script before running — especially dates, WHERE clauses, and
+inclusion criteria.
 
 ---
 
 ## Using Your AI Tool
 
-### GitHub Copilot (VS Code)
-
-Nothing extra to do. Copilot reads `.github/copilot-instructions.md` automatically and
-already knows the repo structure, SQL style, and CRDW context. Just open a file and start
-typing or asking questions in the Copilot Chat panel.
-
-For best results, pull issues first so Copilot has the research context:
-`Ctrl+Shift+P` → **Pull GitHub Issues**
-
 ### Claude Code
 
-From a terminal in the repo root:
 ```
 claude
 ```
 
-It reads `AGENTS.md` automatically. To start a session properly, use the slash command:
-```
-/repo-work
-```
+Reads `AGENTS.md` automatically. Use the slash commands for a structured, token-efficient
+session:
 
-This runs the full session start checklist — pulls issues if needed, summarizes the study,
-checks what scripts exist, and proposes next steps before asking what you want to do.
+| Command | What it does |
+|---|---|
+| `/project-orient` | Full briefing for a new contributor or returning after a gap |
+| `/session-start` | Orient: load safety rules, check project state, summarize study |
+| `/sql-inventory` | List existing scripts with status (populated / stub) |
+| `/sql-generate` | Scaffold new scripts from templates based on study context |
+| `/sql-work` | Walk through scripts in sequence and apply style corrections |
+| `/ss-create [type]` | Build a study-specific lookup table (dx, med, lab, etc.) |
+| `/session-end` | Write machine state to `ai/ai-state.md`; append human audit log |
+
+First time / returning after a gap: `/project-orient` → `/sql-work` → `/session-end`
+Typical session: `/session-start` → `/sql-inventory` → `/sql-work` → `/session-end`
+Fresh project: `/session-start` → `/sql-generate` → `/sql-work` → `/ss-create dx` → `/session-end`
 
 ### Codex (OpenAI CLI)
 
@@ -122,7 +103,15 @@ checks what scripts exist, and proposes next steps before asking what you want t
 codex
 ```
 
-Reads `AGENTS.md` automatically, same as Claude Code.
+Reads `AGENTS.md` automatically, which tells it: when asked to run a workflow step by
+name, find the instructions in `.claude/commands/[name].md`. So you just say the step name:
+
+```
+session-start
+```
+```
+sql-work
+```
 
 ### Gemini CLI
 
@@ -130,41 +119,76 @@ Reads `AGENTS.md` automatically, same as Claude Code.
 gemini
 ```
 
-Reads `GEMINI.md` automatically (same content as `AGENTS.md`).
+Reads `GEMINI.md` automatically. Use `@`-mentions to load topic files on demand:
+- `@ai/sql-style.md` when editing SQL
+- `@ai/sql-templates.md` when generating scripts
+- `@ai/session-logging.md` when closing a session
+
+### GitHub Copilot (VS Code)
+
+Nothing extra to do. Copilot reads `.github/copilot-instructions.md` automatically.
+For best results, pull issues first so Copilot has the research context:
+`Ctrl+Shift+P` → **Pull GitHub Issues**
+
+When editing SQL, open `ai/sql-style.md` in a tab — Copilot will factor it in.
 
 ### ChatGPT (web or desktop)
 
-ChatGPT doesn't read files automatically. At the start of each session, upload
-`AGENTS.md` and `documentation/github-issues.md` using the attachment button,
-then say:
+ChatGPT doesn't read files automatically. At the start of each session, paste the
+contents of the files relevant to what you're doing:
 
-> Read these files and tell me what this project is about before we start.
+- **Always paste:** `ai/safety-rules.md`
+- **For SQL work:** also paste `ai/sql-style.md`
+- **For new scripts:** also paste `ai/sql-templates.md`
+- **For project context:** also paste `documentation/github-issues.md` or `ai/ai-state.md`
 
-If you work on the same repo frequently, paste the contents of `AGENTS.md` into
-ChatGPT's **Custom Instructions** (Settings → Personalization → Custom Instructions)
-so you don't have to upload it every time.
+If you work on the same repo frequently, paste `ai/safety-rules.md` into ChatGPT's
+**Custom Instructions** (Settings → Personalization) so you don't repeat it every session.
 
 ---
 
 ## The One Rule
 
-**Don't run any R files without explicit permission. Don't touch any csv files or spreadsheets without explicit permission.**
+**Don't run any R files without explicit permission. Don't touch any csv files or
+spreadsheets without explicit permission.**
 
-That means: don't run `flow.R`, `scribe-factory.R`, or any SQL script in SSMS or a
-query window against `cdw_cache_staging` without confirming with the project lead.
-Editing scripts is always fine. Running them against real data needs a go-ahead.
+That means: don't run `flow.R`, `scribe-factory.R`, or any SQL script against
+`cdw_cache_staging` without confirming with the project lead. Editing scripts is always
+fine. Running them against real data needs a go-ahead.
 
 `ss-` files (ss_dx, ss_med, etc.) also need PI review and sign-off before they're
 run — they define which patients and concepts are in scope for the study.
 
 ---
 
+## File Structure Reference
+
+```
+ai/                        machine-facing (do not edit manually)
+  safety-rules.md          safety constraints for all AI tools
+  ai-state.md              current project state — overwritten each session
+  sql-style.md             SQL coding conventions
+  sql-templates.md         available templates and when to use them
+  r-style.md               R coding conventions
+  session-logging.md       log format for both outputs
+
+documentation/             human-facing
+  github-issues.md         mirror of GitHub issues (run export script to refresh)
+  ai-sessions/             audit logs — one file per day, append-only
+```
+
+---
+
 ## Quick Reference
 
-| Task | VS Code | Terminal |
+| Task | VS Code | Terminal / CLI |
 |---|---|---|
 | Pull GitHub issues | `Ctrl+Shift+P` → Pull GitHub Issues | `python utility/export-repo-issues.py` |
 | Populate SQL scripts | `Ctrl+Shift+P` → Populate CRDW Scripts | `python utility/populate-scripts.py` |
 | Start Claude Code | — | `claude` (from repo root) |
+| Start Codex | — | `codex` (from repo root) |
 | Start Gemini CLI | — | `gemini` (from repo root) |
-| Start Claude Code session | — | `/repo-work` (inside Claude Code) |
+| Orient session (Claude) | — | `/session-start` |
+| Generate scripts (Claude) | — | `/sql-generate` |
+| Review scripts (Claude) | — | `/sql-work` |
+| End session (Claude) | — | `/session-end` |
