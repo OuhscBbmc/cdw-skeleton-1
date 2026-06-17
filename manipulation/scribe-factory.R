@@ -15,7 +15,7 @@ requireNamespace("purrr")
 requireNamespace("readr")
 requireNamespace("yaml")
 
-requireNamespace("OuhscMunge") # remotes::install_github(repo="OuhscBbmc/OuhscMunge")
+requireNamespace("OuhscMunge") # pak::pak("OuhscBbmc/OuhscMunge")
 
 # ---- declare-globals ---------------------------------------------------------
 # Constant values that won't change.
