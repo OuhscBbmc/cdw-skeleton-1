@@ -7,6 +7,8 @@ These rules apply to every session, every AI assistant, every task.
 - Do not run anything that might access a database or data source without explicit permission.
 - Do not access any `.csv` or Excel file without explicit permission.
 - Do not access files outside the repo without explicit permission.
+- Do not git commit any files to the repo without explicit permission.
+  (Note to human: our team's policy requires a person to review each committed file to ensure private info doesn't slip into the repo and get pushed to the GitHub server.)
 - `ss-` files (ss_dx, ss_med, ss_clinic, etc.) require PI review and sign-off before they
   are run against live data.
 - Editing files is always safe. Running them requires explicit permission for that exact command.
