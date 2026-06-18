@@ -29,9 +29,10 @@ Do these steps in order before responding to any request:
 
 ## Orient Workflow
 
-Run this when starting fresh, returning after >2 weeks, handing off, or when
-`ai/ai-state.md` feels unreliable. Claude Code users: `/cdw-orient`. All others: follow
-these steps.
+Run this any time you want a full current briefing on the project — not just at the start,
+but any time you need to re-anchor: after a meeting, when resuming complex work, or when
+you want a prompt for what to tackle next. Always reads fresh regardless of ai-state age.
+Claude Code users: `/cdw-orient`. All others: follow these steps.
 
 1. Read `ai/safety-rules.md` and `config.yml`.
 2. Read `documentation/github-issues.md` in full — always, bypassing `ai/ai-state.md`.
@@ -101,7 +102,7 @@ slash commands. All other tools: read `.claude/commands/[step].md` and follow th
 
 | Step | Claude Code | When to use |
 |---|---|---|
-| `cdw-orient` | `/cdw-orient` | New contributor, returning after a gap, or unreliable ai-state |
+| `cdw-orient` | `/cdw-orient` | Full fresh briefing: updates, pipeline status, and next-step prompt |
 | `cdw-start` | `/cdw-start` | Beginning of any normal session |
 | `cdw-plan` | `/cdw-plan` | New project — translate meeting notes into confirmed data plan |
 | `cdw-sql-scaffold` | `/cdw-sql-scaffold` | Pull script templates; creates a GitHub issue per script |

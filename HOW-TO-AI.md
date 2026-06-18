@@ -85,7 +85,7 @@ session:
 
 | Command | What it does |
 |---|---|
-| `/cdw-orient` | Full briefing for a new contributor or returning after a gap |
+| `/cdw-orient` | Full fresh briefing: reads latest issues, pipeline status, prompts next steps |
 | `/cdw-start` | Quick session open: load safety rules, check project state |
 | `/cdw-plan` | New project — translate meeting notes into a confirmed data plan |
 | `/cdw-sql-scaffold` | Pull script templates; creates a GitHub issue per script |
