@@ -1,0 +1,20 @@
+package_name,on_cran,install,github_username,description
+Achilles,TRUE,TRUE,,Data quality and characterization of OMOP CDM databases.
+Characterization,TRUE,TRUE,,End-to-end framework for descriptive studies on OMOP CDM.
+CohortDiagnostics,FALSE,TRUE,OHDSI,Diagnostics for cohort definitions against OMOP CDM.
+CohortGenerator,TRUE,TRUE,,Generate cohorts against an OMOP CDM database.
+CohortIncidence,FALSE,TRUE,OHDSI,Compute incidence rates for cohorts in OMOP CDM.
+CohortMethod,TRUE,TRUE,,New-user cohort method population-level estimation.
+Cyclops,TRUE,TRUE,,Cyclic coordinate descent for large-scale regression.
+DatabaseConnector,TRUE,TRUE,,Connect to a variety of database platforms.
+Eunomia,TRUE,FALSE,,Synthetic OMOP CDM dataset for testing and development only.
+EvidenceSynthesis,TRUE,TRUE,,Synthesize causal effect estimates across distributed sites.
+FeatureExtraction,TRUE,TRUE,,Extract features (covariates) from OMOP CDM databases.
+ParallelLogger,TRUE,TRUE,,Logging and parallel computing utilities.
+PatientLevelPrediction,TRUE,TRUE,,Build and validate patient-level prediction models.
+ResultModelManager,TRUE,TRUE,,Manage result database schemas for OHDSI study packages.
+ROhdsiWebApi,FALSE,TRUE,OHDSI,Interface with ATLAS / WebAPI.
+SelfControlledCaseSeries,TRUE,TRUE,,Self-controlled case series population-level estimation.
+SqlRender,TRUE,TRUE,,Render and translate SQL for multiple database dialects.
+Strategus,FALSE,TRUE,OHDSI,Orchestration framework for running OHDSI study modules.
+TreatmentPatterns,TRUE,TRUE,,Analyse treatment patterns in OMOP CDM databases.
