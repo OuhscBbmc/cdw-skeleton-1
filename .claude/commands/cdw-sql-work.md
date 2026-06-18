@@ -22,8 +22,8 @@ Safe to run multiple times — picks up where it left off.
    - No trailing whitespace; file ends with newline; no triple blank lines
 
 2. Read `flow.R` for script order. Read `ai/ai-state.md` for the data plan, date ranges,
-   inclusion criteria, and GitHub issue numbers. Check `manipulation/ss/` to see which
-   ss-files have been returned and built.
+   inclusion criteria, and the script→issue# map (e.g. `patient.sql — stub — #14`).
+   Check `manipulation/ss/` to see which ss-files have been returned and built.
 
 3. Partition scripts into two groups:
    - **Ready now** — no ss-dependency, or ss-file already exists in `manipulation/ss/`

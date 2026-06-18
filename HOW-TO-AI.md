@@ -85,16 +85,15 @@ session:
 
 | Command | What it does |
 |---|---|
-| `/cdw-orient` | Full fresh briefing: reads latest issues, pipeline status, prompts next steps |
-| `/cdw-start` | Quick session open: load safety rules, check project state |
+| `/cdw-orient` | Start every session — quick if state is fresh, full briefing if stale |
 | `/cdw-plan` | New project — translate meeting notes into a confirmed data plan |
 | `/cdw-sql-scaffold` | Pull script templates; creates a GitHub issue per script |
 | `/cdw-ss-build [type]` | Generate discovery query, send to PI (non-blocking) |
 | `/cdw-sql-work` | Customize scripts; starts patient.sql now, resumes others as ss-files return |
 | `/cdw-end-session` | Write machine state to `ai/ai-state.md`; append human audit log |
 
-**New project:** `/cdw-start` → `/cdw-plan` → `/cdw-sql-scaffold` → `/cdw-ss-build [type]` → `/cdw-sql-work` → `/cdw-end-session`
-**Returning session:** `/cdw-start` → `/cdw-sql-work` → `/cdw-end-session`
+**New project:** `/cdw-orient` → `/cdw-plan` → `/cdw-sql-scaffold` → `/cdw-ss-build [type]` → `/cdw-sql-work` → `/cdw-end-session`
+**Every session:** `/cdw-orient` → *(picks up where you left off)* → `/cdw-end-session`
 
 ### Codex (OpenAI CLI)
 

@@ -64,9 +64,10 @@ Inclusion criteria:
   - ...
 
 Scripts:
-  patient.sql — populated
-  dx.sql — stub
+  patient.sql — populated — #14
+  dx.sql — stub — #15
   [or "none yet"]
+  [format: filename — status — #issue]
 
 Current focus: [what was being worked on]
 Next steps:
@@ -102,19 +103,16 @@ slash commands. All other tools: read `.claude/commands/[step].md` and follow th
 
 | Step | Claude Code | When to use |
 |---|---|---|
-| `cdw-orient` | `/cdw-orient` | Full fresh briefing: updates, pipeline status, and next-step prompt |
-| `cdw-start` | `/cdw-start` | Beginning of any normal session |
+| `cdw-orient` | `/cdw-orient` | Start every session — quick if state is fresh, full briefing if stale |
 | `cdw-plan` | `/cdw-plan` | New project — translate meeting notes into confirmed data plan |
 | `cdw-sql-scaffold` | `/cdw-sql-scaffold` | Pull script templates; creates a GitHub issue per script |
 | `cdw-ss-build` | `/cdw-ss-build [type]` | Generate discovery query and send to PI (non-blocking) |
 | `cdw-sql-work` | `/cdw-sql-work` | Customize scripts; starts patient.sql immediately, resumes others as ss-files return |
 | `cdw-end-session` | `/cdw-end-session` | Write session outputs and audit log |
 
-**Typical new project sequence:**
-`/cdw-start` → `/cdw-plan` → `/cdw-sql-scaffold` → `/cdw-ss-build [type]` *(send to PI, non-blocking)* → `/cdw-sql-work` *(patient.sql now; resume others when PI returns)* → `/cdw-end-session`
+**New project:** `/cdw-orient` → `/cdw-plan` → `/cdw-sql-scaffold` → `/cdw-ss-build [type]` *(send to PI, non-blocking)* → `/cdw-sql-work` *(patient.sql now; resume others when PI returns)* → `/cdw-end-session`
 
-**Typical returning session:**
-`/cdw-start` → `/cdw-sql-work` → `/cdw-end-session`
+**Every session:** `/cdw-orient` → *(picks up where you left off)* → `/cdw-end-session`
 
 ## Lazy-Loading Rules
 
