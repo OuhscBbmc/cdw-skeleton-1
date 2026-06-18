@@ -12,7 +12,7 @@ Or from outside, passing the repo name:
   python utility/export-repo-issues.py OuhscBbmc/sidorov-stroke-1
 
 Requires GITHUB_TOKEN or GH_TOKEN environment variable for private repos.
-See HOW-TO-AI.md for setup instructions.
+See ai/README.md for setup instructions.
 
 Requirements: Python 3.8+, no third-party packages needed.
 """
@@ -310,7 +310,7 @@ def main(argv=None):
     if not get_token():
         print(
             "\n[warning] No GITHUB_TOKEN or GH_TOKEN found and GitHub CLI not available.\n"
-            "Private repos will fail. See HOW-TO-AI.md for token setup instructions.\n"
+            "Private repos will fail. See ai/README.md for token setup instructions.\n"
         )
 
     print("Fetching issues...")
@@ -318,7 +318,7 @@ def main(argv=None):
         issues = fetch_issues(repo_slug)
     except urllib.error.HTTPError as exc:
         if exc.code == 401:
-            print("Authentication failed. Check your GITHUB_TOKEN. See HOW-TO-AI.md.")
+            print("Authentication failed. Check your GITHUB_TOKEN. See ai/README.md.")
         elif exc.code == 404:
             print(f"Repo not found: {repo_slug}. Check the repo name and your token permissions.")
         else:

@@ -7,10 +7,9 @@
       "command": "powershell",
       "args": [
         "-NoProfile",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-Command",
-        "$python = (Get-Command python -ErrorAction SilentlyContinue).Source; if (-not $python) { $python = (Get-Command py -ErrorAction SilentlyContinue).Source }; if (-not $python) { $candidate = Join-Path $env:LOCALAPPDATA 'Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\python.exe'; if (Test-Path $candidate) { $python = $candidate } }; if (-not $python) { throw 'No Python interpreter found. Install Python or add it to PATH.' }; & $python 'utility/export-repo-issues.py'"
+        "-ExecutionPolicy", "Bypass",
+        "-File", "${workspaceFolder}\\utility\\run-python.ps1",
+        "${workspaceFolder}\\utility\\export-repo-issues.py"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -29,10 +28,9 @@
       "command": "powershell",
       "args": [
         "-NoProfile",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-Command",
-        "$python = (Get-Command python -ErrorAction SilentlyContinue).Source; if (-not $python) { $python = (Get-Command py -ErrorAction SilentlyContinue).Source }; if (-not $python) { $candidate = Join-Path $env:LOCALAPPDATA 'Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\python.exe'; if (Test-Path $candidate) { $python = $candidate } }; if (-not $python) { throw 'No Python interpreter found. Install Python or add it to PATH.' }; & $python 'utility/populate-scripts.py'"
+        "-ExecutionPolicy", "Bypass",
+        "-File", "${workspaceFolder}\\utility\\run-python.ps1",
+        "${workspaceFolder}\\utility\\populate-scripts.py"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
