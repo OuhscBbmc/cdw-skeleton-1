@@ -1,6 +1,9 @@
-# /ss-create
+# /cdw-ss-build
 
-Build a study-specific concept-set lookup table. Usage: `/ss-create [dx|med|lab|location|obs|cpt]`
+Build a study-specific concept-set lookup table. Usage: `/cdw-ss-build [dx|med|lab|location|obs|cpt]`
+
+Run after `/cdw-sql-scaffold`. This is non-blocking — generate the discovery query, send
+it to the PI, then immediately continue with `/cdw-sql-work` on `patient.sql` while you wait.
 
 ## Steps
 
@@ -16,13 +19,17 @@ Build a study-specific concept-set lookup table. Usage: `/ss-create [dx|med|lab|
    - Generate the keyword or pattern search query against the appropriate CDW lexis dimension
      (e.g., `cdw_outpost.lexis.dim_dx` for diagnoses).
    - Present the query to the user. Do not run it.
-   - Tell the user: "Run STEP 1, review the results, mark `desired = 'TRUE'` on rows to include,
-     and assign categories. Come back for STEP 2."
+   - Tell the user: "Send this query to your PI. Ask them to mark `desired = 'TRUE'` on
+     rows to include and assign categories. While you wait, run `/cdw-sql-work` to start
+     on `patient.sql` — it has no ss-file dependency."
 
-5. **STEP 2 — Load (when user returns with annotations)**
-   - Generate the `INSERT` statement to populate `{schema_name}.ss_{type}` from the annotated results.
+5. **STEP 2 — Load (when PI returns annotated results)**
+   - Generate the `INSERT` statement to populate `{schema_name}.ss_{type}` from the
+     annotated results.
    - Write the finished script to `manipulation/ss/ss-{type}-create.sql`.
    - Remind the user: "`ss-` files require PI sign-off before running against live data."
+   - Tell the user: "Return to `/cdw-sql-work` — scripts that depend on `ss_{type}` can
+     now be customized."
 
 ## Style Notes
 

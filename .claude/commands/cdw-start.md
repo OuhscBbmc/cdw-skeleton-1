@@ -1,4 +1,4 @@
-# /session-start
+# /cdw-start
 
 Run at the beginning of every Claude Code session in a CRDW project repo.
 
@@ -14,10 +14,12 @@ Run at the beginning of every Claude Code session in a CRDW project repo.
      study aim, current focus, next steps.
    - **Missing or stale** → read `documentation/github-issues.md`. Summarize in 3 bullets:
      research question, inclusion criteria, open tasks. Write `ai/ai-state.md` now
-     (do not wait for session-end — format in `ai/session-logging.md`).
+     (do not wait for session-end — format in `/cdw-end-session`).
 
-4. Tell the user: "Session ready. Run `/sql-inventory` to see script status, or tell me what
-   to work on."
+4. Tell the user what to run next based on project state:
+   - **New project, no scripts yet** → "Run `/cdw-plan` to confirm data asks, then `/cdw-sql-scaffold`."
+   - **Scripts scaffolded, work in progress** → "Run `/cdw-sql-work` to continue. Blocked scripts: [list any waiting on ss-files]."
+   - **Returning for ss-file work** → "Run `/cdw-ss-build [type]` then `/cdw-sql-work` to resume."
 
 ## What NOT to do here
 

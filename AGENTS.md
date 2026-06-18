@@ -9,7 +9,7 @@ across all OuhscBbmc research projects.
 **Read `ai/safety-rules.md` before doing anything else.** Load other `ai/` files only when
 the task requires them — do not load them speculatively.
 
-## Session Start Checklist
+## Session Start
 
 Do these steps in order before responding to any request:
 
@@ -17,15 +17,63 @@ Do these steps in order before responding to any request:
 2. Read `config.yml` — extract `project_name` and `schema_name`.
 3. Check `ai/ai-state.md`:
    - **Exists and < 7 days old** (check `Last updated:`) → read it; skip
-     `documentation/github-issues.md` entirely.
-   - **Missing or stale** → read `documentation/github-issues.md`. Summarize, then write
-     `ai/ai-state.md` immediately (format in `ai/session-logging.md`). If github-issues.md is
+     `documentation/github-issues.md` entirely. Report state in 3 bullets: study aim,
+     current focus, next steps.
+   - **Missing or stale** → read `documentation/github-issues.md`. Summarize in 3 bullets,
+     then write `ai/ai-state.md` immediately (format below). If github-issues.md is
      missing, run `utility/export-repo-issues.py` first. Prefer `python`; fallback `py`;
      Windows fallback:
      ```powershell
      & "$env:LOCALAPPDATA\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe" utility\export-repo-issues.py
      ```
-4. List `.sql` files already in `manipulation/` (exclude `templates/` and `sweep-and-specify/`).
+
+## Orient Workflow
+
+Run this when starting fresh, returning after >2 weeks, handing off, or when
+`ai/ai-state.md` feels unreliable. Claude Code users: `/cdw-orient`. All others: follow
+these steps.
+
+1. Read `ai/safety-rules.md` and `config.yml`.
+2. Read `documentation/github-issues.md` in full — always, bypassing `ai/ai-state.md`.
+   If missing or > 7 days old, run `utility/export-repo-issues.py` first.
+3. Read the two most recent files in `documentation/ai-sessions/`.
+4. Spawn a subagent to scan `manipulation/` (exclude `templates/`, `sweep-and-specify/`):
+   for each `.sql` file read the first 20 lines and return file name, stated purpose,
+   output table(s), and status (populated / stub / empty).
+5. Produce a structured briefing:
+   - **Study summary** — research question and aim in 2–3 sentences
+   - **Inclusion criteria** — bulleted list
+   - **Data pipeline** — scripts, their status, what they produce
+   - **Concept-set lookups** — which `ss-` tables are needed; done / pending PI review
+   - **Recent work** — what happened in the last 1–2 sessions
+   - **Open items** — blockers, decisions needed
+   - **Suggested first task** — one concrete next action
+6. Ask: "Does this match your understanding, or is anything out of date?"
+7. Overwrite `ai/ai-state.md` (format below).
+
+## ai-state.md Format
+
+```
+Last updated: YYYY-MM-DD
+project_name: ...
+schema_name: ...
+
+Study aim: [one sentence]
+Inclusion criteria:
+  - ...
+
+Scripts:
+  patient.sql — populated
+  dx.sql — stub
+  [or "none yet"]
+
+Current focus: [what was being worked on]
+Next steps:
+  - ...
+Open blockers: [or "none"]
+```
+
+Keep it under 20 lines. Terse — this is machine-read.
 
 ## Repo Structure
 
@@ -48,23 +96,24 @@ Do these steps in order before responding to any request:
 
 ## Workflow
 
-Detailed instructions for each workflow step live in `.claude/commands/`. Claude Code
-users invoke them as slash commands. Codex and other tools: read the relevant file and
-follow the steps listed there.
+Detailed step instructions live in `.claude/commands/`. Claude Code users invoke them as
+slash commands. All other tools: read `.claude/commands/[step].md` and follow the steps there.
 
-When asked to run a workflow step by name, read `.claude/commands/[name].md` and follow
-the steps there. Claude Code users invoke them as `/[name]`; all other tools just say
-the step name (e.g. `sql-work`) and read the corresponding file.
+| Step | Claude Code | When to use |
+|---|---|---|
+| `cdw-orient` | `/cdw-orient` | New contributor, returning after a gap, or unreliable ai-state |
+| `cdw-start` | `/cdw-start` | Beginning of any normal session |
+| `cdw-plan` | `/cdw-plan` | New project — translate meeting notes into confirmed data plan |
+| `cdw-sql-scaffold` | `/cdw-sql-scaffold` | Pull script templates; creates a GitHub issue per script |
+| `cdw-ss-build` | `/cdw-ss-build [type]` | Generate discovery query and send to PI (non-blocking) |
+| `cdw-sql-work` | `/cdw-sql-work` | Customize scripts; starts patient.sql immediately, resumes others as ss-files return |
+| `cdw-end-session` | `/cdw-end-session` | Write session outputs and audit log |
 
-| Step name | When to use |
-|---|---|
-| `project-orient` | New contributor or returning after a gap |
-| `session-start` | Beginning of any normal session |
-| `sql-inventory` | List existing scripts and their status |
-| `sql-generate` | Scaffold scripts for a fresh project |
-| `sql-work` | Review and style-correct scripts in sequence |
-| `ss-create [type]` | Build a concept-set lookup table (dx, med, lab, etc.) |
-| `session-end` | Write session outputs and audit log |
+**Typical new project sequence:**
+`/cdw-start` → `/cdw-plan` → `/cdw-sql-scaffold` → `/cdw-ss-build [type]` *(send to PI, non-blocking)* → `/cdw-sql-work` *(patient.sql now; resume others when PI returns)* → `/cdw-end-session`
+
+**Typical returning session:**
+`/cdw-start` → `/cdw-sql-work` → `/cdw-end-session`
 
 ## Lazy-Loading Rules
 
@@ -75,6 +124,5 @@ the step name (e.g. `sql-work`) and read the corresponding file.
 | Generating SQL from templates | `ai/sql-style.md` + `ai/sql-templates.md` |
 | Creating `ss-` lookup tables | `ai/sql-style.md` |
 | Any R editing | `ai/r-style.md` |
-| Writing session outputs | `ai/session-logging.md` |
 
 Do not load any `ai/` file unless the current task requires it.

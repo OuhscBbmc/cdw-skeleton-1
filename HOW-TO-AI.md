@@ -85,17 +85,16 @@ session:
 
 | Command | What it does |
 |---|---|
-| `/project-orient` | Full briefing for a new contributor or returning after a gap |
-| `/session-start` | Orient: load safety rules, check project state, summarize study |
-| `/sql-inventory` | List existing scripts with status (populated / stub) |
-| `/sql-generate` | Scaffold new scripts from templates based on study context |
-| `/sql-work` | Walk through scripts in sequence and apply style corrections |
-| `/ss-create [type]` | Build a study-specific lookup table (dx, med, lab, etc.) |
-| `/session-end` | Write machine state to `ai/ai-state.md`; append human audit log |
+| `/cdw-orient` | Full briefing for a new contributor or returning after a gap |
+| `/cdw-start` | Quick session open: load safety rules, check project state |
+| `/cdw-plan` | New project — translate meeting notes into a confirmed data plan |
+| `/cdw-sql-scaffold` | Pull script templates; creates a GitHub issue per script |
+| `/cdw-ss-build [type]` | Generate discovery query, send to PI (non-blocking) |
+| `/cdw-sql-work` | Customize scripts; starts patient.sql now, resumes others as ss-files return |
+| `/cdw-end-session` | Write machine state to `ai/ai-state.md`; append human audit log |
 
-First time / returning after a gap: `/project-orient` → `/sql-work` → `/session-end`
-Typical session: `/session-start` → `/sql-inventory` → `/sql-work` → `/session-end`
-Fresh project: `/session-start` → `/sql-generate` → `/sql-work` → `/ss-create dx` → `/session-end`
+**New project:** `/cdw-start` → `/cdw-plan` → `/cdw-sql-scaffold` → `/cdw-ss-build [type]` → `/cdw-sql-work` → `/cdw-end-session`
+**Returning session:** `/cdw-start` → `/cdw-sql-work` → `/cdw-end-session`
 
 ### Codex (OpenAI CLI)
 
@@ -112,38 +111,6 @@ session-start
 ```
 sql-work
 ```
-
-### Gemini CLI
-
-```
-gemini
-```
-
-Reads `GEMINI.md` automatically. Use `@`-mentions to load topic files on demand:
-- `@ai/sql-style.md` when editing SQL
-- `@ai/sql-templates.md` when generating scripts
-- `@ai/session-logging.md` when closing a session
-
-### GitHub Copilot (VS Code)
-
-Nothing extra to do. Copilot reads `.github/copilot-instructions.md` automatically.
-For best results, pull issues first so Copilot has the research context:
-`Ctrl+Shift+P` → **Pull GitHub Issues**
-
-When editing SQL, open `ai/sql-style.md` in a tab — Copilot will factor it in.
-
-### ChatGPT (web or desktop)
-
-ChatGPT doesn't read files automatically. At the start of each session, paste the
-contents of the files relevant to what you're doing:
-
-- **Always paste:** `ai/safety-rules.md`
-- **For SQL work:** also paste `ai/sql-style.md`
-- **For new scripts:** also paste `ai/sql-templates.md`
-- **For project context:** also paste `documentation/github-issues.md` or `ai/ai-state.md`
-
-If you work on the same repo frequently, paste `ai/safety-rules.md` into ChatGPT's
-**Custom Instructions** (Settings → Personalization) so you don't repeat it every session.
 
 ---
 
@@ -170,7 +137,7 @@ ai/                        machine-facing (do not edit manually)
   sql-style.md             SQL coding conventions
   sql-templates.md         available templates and when to use them
   r-style.md               R coding conventions
-  session-logging.md       log format for both outputs
+  (log format is in .claude/commands/cdw-end-session.md)
 
 documentation/             human-facing
   github-issues.md         mirror of GitHub issues (run export script to refresh)
@@ -187,8 +154,8 @@ documentation/             human-facing
 | Populate SQL scripts | `Ctrl+Shift+P` → Populate CRDW Scripts | `python utility/populate-scripts.py` |
 | Start Claude Code | — | `claude` (from repo root) |
 | Start Codex | — | `codex` (from repo root) |
-| Start Gemini CLI | — | `gemini` (from repo root) |
-| Orient session (Claude) | — | `/session-start` |
-| Generate scripts (Claude) | — | `/sql-generate` |
-| Review scripts (Claude) | — | `/sql-work` |
-| End session (Claude) | — | `/session-end` |
+| Orient session | — | `/cdw-orient` |
+| Build concept-set tables | — | `/cdw-ss-build [type]` |
+| Scaffold scripts | — | `/cdw-sql-scaffold` |
+| Customize scripts | — | `/cdw-sql-work` |
+| End session | — | `/cdw-end-session` |
