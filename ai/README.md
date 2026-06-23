@@ -68,11 +68,16 @@ That's the full normal session. Orient handles the rest.
 | Command | What it does |
 |---|---|
 | `/cdw-orient` | **Start every session.** Quick mode (3-bullet summary + next step) if project state is fresh. Full mode (reads issues, scans scripts, structured briefing) if state is stale or missing. Say "full orient" to force the full version anytime. |
+| `/cdw-doctor` | **Maintenance — run on demand, not part of the regular session sequence.** Checks that `gh`, Python, and required utility scripts are present and working. Run once per machine setup, or any time a command fails with an auth/network/python-not-found error. |
 | `/cdw-plan` | Reads the initial meeting issue and maps data asks to a concrete list of scripts and ss-files needed. Confirms with you before anything is generated. Run once at project start. |
 | `/cdw-sql-scaffold` | Pulls SQL script templates for all confirmed data asks. Adds each to `flow.R` commented out. Opens a GitHub tracking issue per script (checks for duplicates first). Commit these templates before customizing. |
 | `/cdw-ss-build [type]` | Builds a study-specific concept-set lookup table. Step 1 generates a discovery query to send to the PI. Step 2 (run when PI returns annotated results) writes the finished script. Types: `dx`, `med`, `lab`, `location`, `obs`, `cpt`. |
 | `/cdw-sql-work` | Works through scripts in `flow.R` order, filling in study-specific values and activating each in `flow.R` when done. Starts with scripts that have no ss-file dependency. Pauses on blocked scripts and tells you what's waiting. Safe to re-run as ss-files come in. |
 | `/cdw-end-session` | Writes current project state to `ai-state.md` and appends a human audit log to `documentation/ai-sessions/`. Run at the end of any session that did real work. |
+
+`/cdw-doctor` is distinct from the other commands: it does not read or write project
+state, does not touch `ai-state.md`, and is not part of either the "New project"
+or "Existing project, returning" sequences shown above.
 
 These are Claude Code slash commands. Codex users: say the step name (e.g. `cdw-orient`)
 and it will find the instructions in `.claude/commands/`.
