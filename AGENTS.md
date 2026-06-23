@@ -26,6 +26,7 @@ Do these steps in order before responding to any request:
      ```powershell
      & "$env:LOCALAPPDATA\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe" utility\export-repo-issues.py
      ```
+Maintenance note: run `/cdw-doctor` once per machine setup, or any time a command fails with an auth, network, or python-not-found error; this is a maintenance/diagnostic command, not part of the every-session or new-project sequence.
 
 ## Orient Workflow
 
