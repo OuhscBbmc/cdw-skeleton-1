@@ -23,7 +23,59 @@ it to the PI, then immediately continue with `/cdw-sql-work` on `patient.sql` wh
      rows to include and assign categories. While you wait, run `/cdw-sql-work` to start
      on `patient.sql` — it has no ss-file dependency."
 
-5. **STEP 2 — Load (when PI returns annotated results)**
+5. **STEP 2 — Craft eamil to PI**
+  Aks the user if they would like to craft an email to the study team use this as a template 
+  
+ - For diangosis codes use this below
+  Dear Dr. [Last Name],
+    We are moving forward with the data extraction for the [Study Name] and need your input before we can proceed.
+    We have generated a list of diagnosis codes (ICD-9 and ICD-10) that may be relevant to your study. Please review the attached spreadsheet and confirm which codes should be included in the data extraction.
+    What we need from you
+
+    Open the attached spreadsheet.
+    Review the diagnosis codes listed.
+    In the Desired column, change any code from TRUE to FALSE if it should be excluded from the study.
+
+    All codes are currently marked TRUE.
+    You only need to update the codes that should not be included.
+
+
+    (Optional) Update the Category column if a code is incorrectly categorized.
+    Reply to this email with the updated spreadsheet attached.
+
+    Notes
+
+    If all listed codes are appropriate for the study, no changes are necessary.
+    Please feel free to add comments or notes in the spreadsheet if any codes require clarification.
+
+    Thank you for your assistance. Once we receive the reviewed file, we will proceed with the data extraction.
+
+- For CPT codes use this 
+    Dear Dr. [Last Name],
+    We are moving forward with the data extraction for [Study Name] and need your input before we can proceed.
+    We have generated a list of CPT codes that may be relevant to your study. Please review the attached spreadsheet and confirm which codes should be included in the data extraction.
+    What we need from you
+
+    Open the attached spreadsheet.
+    Review the CPT codes listed.
+    In the Desired column, change any code from TRUE to FALSE if it should be excluded from the study.
+
+    All codes are currently marked TRUE.
+    You only need to update the codes that should not be included.
+
+
+    (Optional) Update the Category column if a code is incorrectly categorized (e.g., office visit, laboratory, pathology, surgery, imaging, infusion, chemotherapy, radiation oncology, etc.).
+    Reply to this email with the updated spreadsheet attached.
+
+    Notes
+
+    If all listed CPT codes are appropriate for the study, no changes are necessary.
+    If there are CPT codes that should be added but are not currently listed, please include them in the spreadsheet or note them in your reply.
+    Feel free to add comments or notes for any codes that may require clarification.
+
+    Thank you for your assistance. Once we receive the reviewed file, we will proceed with the data extraction.
+
+6. **STEP 3 — Load (when PI returns annotated results)**
    - Generate the `INSERT` statement to populate `{schema_name}.ss_{type}` from the
      annotated results.
    - Write the finished script to `manipulation/ss/ss-{type}-create.sql`.
