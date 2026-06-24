@@ -17,8 +17,8 @@ report only.
    | Check | Command / test | Success condition | Failure fix |
    |---|---|---|---|
    | GitHub CLI auth | `gh auth status` | exits 0 | Install GitHub CLI from https://cli.github.com/ if missing, then run `gh auth login`. |
-   | Python | `python --version`; if that fails, `py --version`; if that fails, `& "$env:LOCALAPPDATA\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe" --version` | one command exits 0 and reports Python 3 | Install Python from https://www.python.org/downloads/windows/ or make it available on PATH. |
-   | Git repo health | `git status` | exits 0 | Run `cd C:\Users\gcruz\Documents\GitHub\cdw-skeleton-1`; if `git status` still fails, reclone from the project GitHub URL. |
+   | Python | `python --version`; if that fails, `py --version` | one command exits 0 and reports Python 3 | Install Python from https://www.python.org/downloads/windows/ or make it available on PATH. |
+   | Git repo health | `git status` | exits 0 | Verify your terminal is in the repo root; if `git status` still fails, reclone from the project GitHub URL. |
    | Issue exporter script | test that `utility/export-repo-issues.py` exists | file exists | Restore the file with `git restore -- utility/export-repo-issues.py` or copy it from the current skeleton. |
    | Script populator | test that `utility/populate-scripts.py` exists | file exists | Restore the file with `git restore -- utility/populate-scripts.py` or copy it from the current skeleton. |
 

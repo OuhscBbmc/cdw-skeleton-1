@@ -21,11 +21,8 @@ Do these steps in order before responding to any request:
      current focus, next steps.
    - **Missing or stale** → read `documentation/github-issues.md`. Summarize in 3 bullets,
      then write `ai/ai-state.md` immediately (format below). If github-issues.md is
-     missing, run `utility/export-repo-issues.py` first. Prefer `python`; fallback `py`;
-     Windows fallback:
-     ```powershell
-     & "$env:LOCALAPPDATA\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe" utility\export-repo-issues.py
-     ```
+     missing, run `utility/export-repo-issues.py` first (`python`, fallback `py`). If
+     Python isn't found, run `/cdw-doctor` to diagnose.
 Maintenance note: run `/cdw-doctor` once per machine setup, or any time a command fails with an auth, network, or python-not-found error; this is a maintenance/diagnostic command, not part of the every-session or new-project sequence.
 
 ## Orient Workflow
