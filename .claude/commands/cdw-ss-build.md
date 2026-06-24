@@ -33,6 +33,16 @@ it to the PI, then immediately continue with `/cdw-sql-work` on `patient.sql` wh
    - Generate the `INSERT` statement to populate `{schema_name}.ss_{type}` from the
      annotated results.
    - Write the finished script to `manipulation/ss/ss-{type}-create.sql`.
+   - Update `ai/ai-state.md`: read the current file, remove the `pending: ss_{type}` tag
+     from any scripts that were waiting on this ss-file. Preserve all other fields. Rewrite
+     the whole file.
+   - Append an incremental log entry to `documentation/ai-sessions/YYYY-MM-DD-{user}.md`:
+     ```
+     ## /cdw-ss-build {type} — YYYY-MM-DD HH:MM
+     ss-file written: manipulation/ss/ss-{type}-create.sql
+     Unblocked scripts: [list]
+     Files changed: manipulation/ss/ss-{type}-create.sql, ai/ai-state.md
+     ```
    - Remind the user: "`ss-` files require PI sign-off before running against live data."
    - Tell the user: "Return to `/cdw-sql-work` — scripts that depend on `ss_{type}` can
      now be customized."

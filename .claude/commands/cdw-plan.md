@@ -5,9 +5,10 @@ ss-files to build. Run after `/cdw-start` on a new project, before `/cdw-sql-sca
 
 ## Steps
 
-1. Read `documentation/github-issues.md`. Find the initial meeting issue (look for
-   "initial meeting", "kickoff", or the earliest open issue with meeting notes).
-   Note the issue number — it will be written to `ai-state.md` as `planning_issue`.
+1. Find the initial meeting issue in `documentation/github-issues.md`. The title always
+   contains "initial meeting" — scan headers only to locate it, then read just that
+   issue's section. If `github-issues.md` is missing, run `utility/export-repo-issues.py`
+   first. Note the issue number — it will be written to `ai-state.md` as `planning_issue`.
 
 2. Extract and structure the study's data asks:
    - **Patient population** — inclusion/exclusion criteria, date range
@@ -30,13 +31,21 @@ ss-files to build. Run after `/cdw-start` on a new project, before `/cdw-sql-sca
 4. Present the plan. Ask: "Does this capture everything, or are there asks I missed?"
    Wait for confirmation or corrections before proceeding.
 
-5. Write confirmed plan to `ai/ai-state.md` under `Data asks:` (add field if not present).
-   Also write `planning_issue: #N` so downstream commands can find the source clinical
-   detail without reloading the full `github-issues.md`.
+5. Update `ai/ai-state.md`: read the current file if it exists, add or overwrite
+   `planning_issue` and `Data asks:`, preserve all other fields, rewrite the whole file.
 
-6. Tell the user: "Plan confirmed. Run `/cdw-sql-scaffold` to pull script templates and
+6. Append an incremental log entry to `documentation/ai-sessions/YYYY-MM-DD-{user}.md`
+   (create file and folder if missing):
+   ```
+   ## /cdw-plan — YYYY-MM-DD HH:MM
+   planning_issue: #N
+   Data asks confirmed: [one-line list]
+   Files changed: ai/ai-state.md
+   ```
+
+7. Tell the user: "Plan confirmed. Run `/cdw-sql-scaffold` to pull script templates and
    open a GitHub tracking issue for each, then `/cdw-ss-build [type]` for each ss-file
-   needed while you work `patient.sql`."
+   needed while you work on scripts with no ss-dependency."
 
 ## Notes
 

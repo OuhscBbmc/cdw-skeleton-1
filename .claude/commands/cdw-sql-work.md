@@ -5,18 +5,7 @@ Safe to run multiple times — picks up where it left off.
 
 ## Steps
 
-1. Read `ai/sql-style.md` once. Distill into a compact checklist — 12–15 bullets:
-   - SELECT/FROM/WHERE/GROUP BY/HAVING/INSERT/DECLARE/CREATE TABLE/DROP TABLE uppercase; all other keywords lower
-   - Each SELECT column on its own line with leading comma
-   - Joins indented under FROM; extra space in `left  join`
-   - Multi-condition joins: each condition and operator on its own line
-   - CREATE TABLE: pad column names and types for alignment; trailing comma on last column
-   - DECLARE: pad names, types, values, and comments for alignment
-   - No column list in INSERT — `INSERT table` then `SELECT` directly
-   - All CREATE TABLE before first SELECT in file
-   - `use cdw_cache_staging;` at top of staging files
-   - 2-space indentation; no tabs
-   - No trailing whitespace; file ends with newline; no triple blank lines
+1. Read `ai/sql-style.md`. Use it directly in subagent prompts.
 
 2. Read `flow.R` and `ai/ai-state.md`. Collect: data plan, date ranges, inclusion criteria,
    script→issue# map. Check `manipulation/ss/` for which ss-files exist.
@@ -83,7 +72,18 @@ Safe to run multiple times — picks up where it left off.
       ```
       If it already exists, skip silently.
 
-   g. Confirm: "`[script]` done." Move to next ready script.
+   g. Update `ai/ai-state.md`: read the current file, change this script's status from
+      `stub` to `populated` and remove its `pending:` tag if present. Preserve all other
+      fields. Rewrite the whole file.
+
+   h. Append an incremental log entry to `documentation/ai-sessions/YYYY-MM-DD-{user}.md`:
+      ```
+      ## /cdw-sql-work — YYYY-MM-DD HH:MM
+      Script activated: [filename] (#N)
+      Files changed: manipulation/[filename], flow.R, ai/ai-state.md
+      ```
+
+   i. Confirm: "`[script]` done." Move to next ready script.
 
 6. After all ready scripts, report blocked scripts:
    "Waiting on PI for: `ss_dx` (blocks `dx.sql`), `ss_med` (blocks `medication.sql`).

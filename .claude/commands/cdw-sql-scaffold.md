@@ -17,7 +17,16 @@ Run after `/cdw-plan`.
 
 3. Identify which planned scripts are missing. If none: "All scripts already present." Stop.
 
-4. Ask: "Scaffold [list of missing scripts]?" Wait for confirmation.
+4. Show the proposed script→template mapping before asking for confirmation:
+
+   | Script | Template |
+   |---|---|
+   | dx.sql | dx |
+   | medication.sql | medication-epic |
+   | ... | ... |
+
+   Ask: "Scaffold these? Let me know if any template mapping looks wrong." Wait for
+   confirmation or corrections before proceeding.
 
 5. Read `ai/sql-templates.md`. Run:
    ```
@@ -50,14 +59,20 @@ Run after `/cdw-plan`.
        - `[ ]` Uncommented in `flow.R`
        - `[ ]` Validated against staging
 
-9. Update `ai/ai-state.md` — add each script with its issue number and blocker if applicable:
-   ```
-   Scripts:
-     patient.sql — stub — #14
-     dx.sql — stub — #15 — pending: ss_dx
-   ```
+9. Update `ai/ai-state.md`: read the current file, add or replace the `Scripts:` section
+   with each script, its issue number, and `pending:` tag if applicable. Preserve all
+   other fields. Rewrite the whole file.
 
-10. Tell the user:
+10. Append an incremental log entry to `documentation/ai-sessions/YYYY-MM-DD-{user}.md`
+    (create file and folder if missing):
+    ```
+    ## /cdw-sql-scaffold — YYYY-MM-DD HH:MM
+    Scripts created: [list]
+    GitHub issues: [script → #N list]
+    Files changed: flow.R, config.yml, ai/ai-state.md, [script paths]
+    ```
+
+11. Tell the user:
     "Scripts scaffolded. Issues: [script → #N list].
     Review the stub files, then commit when ready.
     Next: run `/cdw-ss-build [type]` for each ss-file needed, then `/cdw-sql-work` to

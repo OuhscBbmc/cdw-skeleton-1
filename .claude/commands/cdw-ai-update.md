@@ -46,10 +46,18 @@ project repo current.
 3. Update the `skeleton_synced` line in `ai/ai-state.md` to today's date. If `ai-state.md`
    doesn't exist yet, skip this step. Edit only that one line — do not touch anything else.
 
-4. If any files changed, say:
+4. Append an incremental log entry to `documentation/ai-sessions/YYYY-MM-DD-{user}.md`
+   (create file and folder if missing):
+   ```
+   ## /cdw-ai-update — YYYY-MM-DD HH:MM
+   Files updated from skeleton: [list, or "none — already up to date"]
+   skeleton_synced: YYYY-MM-DD
+   ```
+
+5. If any files changed, say:
    "Updated: [list]. Run `/cdw-orient` to confirm everything looks right before continuing."
 
-5. If nothing changed, say:
+6. If nothing changed, say:
    "All AI files are already up to date." Still update `skeleton_synced`.
 
 ## Notes

@@ -1,11 +1,12 @@
 # /cdw-orient
 
-Orient to the current project state. Runs in quick or full mode depending on how fresh
-the cached state is. Replaces the need for a separate session-start command.
+Use this when you want a full re-briefing on the project — after a gap, after a meeting,
+or when state feels off. The session start in AGENTS.md already ran a lightweight orient
+when you opened the repo; only run this command when you need the full picture.
 
 ## Steps
 
-1. Read `ai/safety-rules.md` and `config.yml` (always).
+1. Read `config.yml`.
 
 2. Check two freshness conditions:
    - **ai-state fresh?** — read `ai/ai-state.md`, check `Last updated:` < 7 days old
@@ -27,13 +28,15 @@ the cached state is. Replaces the need for a separate session-start command.
       ```
       python utility/export-repo-issues.py
       ```
-      Use the Python fallback from AGENTS.md if `python` is not on PATH.
+      Use `py` as fallback if `python` is not on PATH. If neither works, run `/cdw-doctor`.
 
    b. Read `documentation/github-issues.md` in full.
 
    c. Read the two most recent files in `documentation/ai-sessions/`.
 
-   d. Spawn an Explore subagent:
+   d. For the script inventory: if `ai/ai-state.md` exists and has a `Scripts:` section,
+      use it directly. Only spawn the Explore subagent below if state is missing or has no
+      script entries:
       > "List all `.sql` files in `manipulation/` (exclude `templates/`, `sweep-and-specify/`).
       > For each, read the first 20 lines. Return: file name, stated purpose, output table(s),
       > status (populated / stub / empty)."
