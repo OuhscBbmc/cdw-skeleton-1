@@ -102,21 +102,27 @@ grace-cruz on 2026-06-23." The user can decide whether to trust it or run a full
 
 ## Workflow
 
-Detailed step instructions live in `.claude/commands/`. Claude Code users invoke them as
-slash commands. All other tools: read `.claude/commands/[step].md` and follow the steps there.
+Detailed step instructions live in `.claude/commands/`. The files are plain markdown — no
+Claude-specific syntax — so any agent can read and follow them directly.
 
-| Step | Claude Code | When to use |
-|---|---|---|
-| `cdw-orient` | `/cdw-orient` | Start every session — quick if state is fresh, full briefing if stale |
-| `cdw-plan` | `/cdw-plan` | New project — translate meeting notes into confirmed data plan |
-| `cdw-sql-scaffold` | `/cdw-sql-scaffold` | Pull script templates; creates a GitHub issue per script |
-| `cdw-ss-build` | `/cdw-ss-build [type]` | Generate discovery query and send to PI (non-blocking) |
-| `cdw-sql-work` | `/cdw-sql-work` | Customize scripts; starts patient.sql immediately, resumes others as ss-files return |
-| `cdw-end-session` | `/cdw-end-session` | Write session outputs and audit log |
+- **Claude Code:** invoke as slash commands (e.g., `/cdw-orient`)
+- **Codex and all other agents:** at the start of each session, read
+  `.claude/commands/cdw-orient.md` and follow the steps there. For subsequent steps, read
+  the matching file listed below. Do not skip orient — it sets the state context everything
+  else depends on.
 
-**New project:** `/cdw-orient` → `/cdw-plan` → `/cdw-sql-scaffold` → `/cdw-ss-build [type]` *(send to PI, non-blocking)* → `/cdw-sql-work` *(patient.sql now; resume others when PI returns)* → `/cdw-end-session`
+| Step | File | Claude Code | When to use |
+|---|---|---|---|
+| Orient | `cdw-orient.md` | `/cdw-orient` | Start every session — quick if state is fresh, full briefing if stale |
+| Plan | `cdw-plan.md` | `/cdw-plan` | New project — translate meeting notes into confirmed data plan |
+| Scaffold | `cdw-sql-scaffold.md` | `/cdw-sql-scaffold` | Pull script templates; creates a GitHub issue per script |
+| Concept sets | `cdw-ss-build.md` | `/cdw-ss-build [type]` | Generate discovery query and send to PI (non-blocking) |
+| SQL work | `cdw-sql-work.md` | `/cdw-sql-work` | Customize scripts; starts patient.sql immediately, resumes others as ss-files return |
+| End session | `cdw-end-session.md` | `/cdw-end-session` | Write session outputs and audit log |
 
-**Every session:** `/cdw-orient` → *(picks up where you left off)* → `/cdw-end-session`
+**New project:** orient → plan → scaffold → concept sets *(send to PI, non-blocking)* → SQL work *(patient.sql now; resume others when PI returns)* → end session
+
+**Every session:** orient → *(picks up where you left off)* → end session
 
 ## Lazy-Loading Rules
 
