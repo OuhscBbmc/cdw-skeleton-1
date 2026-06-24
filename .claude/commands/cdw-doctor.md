@@ -9,9 +9,7 @@ report only.
 
 ## Steps
 
-1. Read `ai/safety-rules.md`.
-
-2. Run these checks from the repo root. Each check must be reported as success
+1. Run these checks from the repo root. Each check must be reported as success
    or failure in the output table.
 
    | Check | Command / test | Success condition | Failure fix |

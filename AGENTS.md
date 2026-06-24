@@ -6,15 +6,28 @@ This is a clinical research data warehouse (CRDW) project repository, spawned fr
 `cdw-skeleton-1` via the `pluripotent` R package. It follows a standard structure used
 across all OuhscBbmc research projects.
 
-**Read `ai/safety-rules.md` before doing anything else.** Load other `ai/` files only when
-the task requires them — do not load them speculatively.
+Load `ai/` files only when the task requires them — do not load them speculatively.
+
+## Safety Rules
+
+These apply to every session. No exceptions.
+
+- Never run any R script, `flow.R`, knitr, or renv without explicit permission naming that exact command.
+- Never access data files (`.csv`, `.rds`, `.RData`, `.parquet`, databases, etc.) without explicit permission.
+- Never access `data-private/`, `data-unshared/`, local extracts, or derived-data folders without explicit permission.
+- Never include PHI, PII, row-level records, secrets, or connection strings in code, docs, prompts, commits, issues, or comments. Use synthetic placeholders instead.
+- Never commit files without explicit permission. Our policy requires human review of each committed file before it reaches GitHub.
+- Editing code, SQL, config, and documentation is safe. Running files or opening data outputs requires explicit permission for that exact command.
+- Never construct, execute, or test a database connection (ODBC, SQL Server, or otherwise) without explicit permission, even to verify connectivity.
+- A granted permission covers only the exact action named. It does not extend to related files, folders, schemas, or commands.
+
+If a session involves running scripts, accessing data, or committing, read `ai/safety-rules.md` for the full ruleset before proceeding.
 
 ## Session Start
 
 Do these steps in order before responding to any request:
 
-1. Read `ai/safety-rules.md`.
-2. Read `config.yml` — extract `project_name` and `schema_name`.
+1. Read `config.yml` — extract `project_name` and `schema_name`.
 3. Check `ai/ai-state.md`:
    - **Exists and < 7 days old** (check `Last updated:`) → read it; skip
      `documentation/github-issues.md` entirely. Report state in 3 bullets: study aim,
@@ -128,10 +141,12 @@ Claude-specific syntax — so any agent can read and follow them directly.
 
 | Task | Load |
 |---|---|
-| Session start | `ai/safety-rules.md` + `ai/ai-state.md` (or github-issues.md if stale) |
+| Session start | `ai/ai-state.md` (or `documentation/github-issues.md` if stale) |
+| Running scripts, accessing data, or committing | `ai/safety-rules.md` (full ruleset) |
 | Any SQL editing | `ai/sql-style.md` |
 | Generating SQL from templates | `ai/sql-style.md` + `ai/sql-templates.md` |
 | Creating `ss-` lookup tables | `ai/sql-style.md` |
 | Any R editing | `ai/r-style.md` |
+| Drafting PI email | `ai/pi-email-templates.md` |
 
 Do not load any `ai/` file unless the current task requires it.

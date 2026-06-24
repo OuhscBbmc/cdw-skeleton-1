@@ -27,6 +27,13 @@ These rules apply to every session, every AI assistant, every task.
   (Note to human: our team's policy requires a person to review each committed file to ensure private info doesn't slip into the repo and get pushed to the GitHub server.)
 - Do not access any remote computer without explicit permission.
   This includes protocols and processes like ssh, rdp, odbc, and sftp.
+- Do not construct, execute, or test a database connection — including ODBC DSNs, SQL Server
+  connections, or any connection string — without explicit permission for that exact connection,
+  even to verify connectivity or test credentials. The CDW contains EHR data for the entire
+  OU Health patient population; an unintended connection is a serious compliance event.
+- A granted permission covers only the exact action named. It does not extend to related files,
+  folders, schemas, commands, or sessions. Permission to access one file is not permission to
+  access the folder. Permission for one command is not permission for the next logical step.
 - If you are granted specific permission to access a data file,
   first read on the column headers, and determine if they likely contain any of the 18 PII elements.
   If so, stop and ask the user to verify the file does not contain PII or PHI.

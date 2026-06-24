@@ -7,9 +7,7 @@ it to the PI, then immediately continue with `/cdw-sql-work` on `patient.sql` wh
 
 ## Steps
 
-1. Read `ai/sql-style.md`.
-
-2. Read the existing placeholder in `manipulation/ss/` for the requested type.
+1. Read `ai/sql-style.md` and the existing placeholder in `manipulation/ss/` for the requested type.
    (If no placeholder exists, note it and proceed from scratch.)
 
 3. Read `documentation/github-issues.md` for concept context — which diagnoses, medications,
