@@ -57,6 +57,7 @@ Claude Code users: `/cdw-orient`. All others: follow these steps.
 
 ```
 Last updated: YYYY-MM-DD
+last_updated_by: username
 project_name: ...
 schema_name: ...
 
@@ -77,6 +78,11 @@ Open blockers: [or "none"]
 ```
 
 Keep it under 20 lines. Terse — this is machine-read.
+
+`last_updated_by` comes from `git config user.name`, normalized to lowercase-hyphenated.
+At session start, if the state is fresh (< 7 days) but `last_updated_by` differs from the
+current user, include that fact in the 3-bullet summary — e.g., "State last written by
+grace-cruz on 2026-06-23." The user can decide whether to trust it or run a full orient.
 
 ## Repo Structure
 

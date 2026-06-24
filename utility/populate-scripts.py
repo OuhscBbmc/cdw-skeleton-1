@@ -2,14 +2,14 @@
 populate-scripts.py
 -------------------
 Fetches relevant SQL templates from cdw-skeleton-1 and places them in
-manipulation/ss/ for this project, with project variables substituted in.
+manipulation/ for this project, with project variables substituted in.
 
 Usage:
   python utility/populate-scripts.py                  # interactive mode
   python utility/populate-scripts.py --templates dx medication-meditech patient
 
 Templates are fetched from:
-  https://raw.githubusercontent.com/OuhscBbmc/cdw-skeleton-1/main/manipulation/ss/templates/
+  https://raw.githubusercontent.com/OuhscBbmc/cdw-skeleton-1/main/manipulation/templates/
 
 Requirements: Python 3.8+, no third-party packages needed.
 """
@@ -236,7 +236,7 @@ def main():
         if write_script(dest, content, overwrite=args.overwrite):
             written += 1
 
-    print(f"\nDone. {written} file(s) written to manipulation/ss/")
+    print(f"\nDone. {written} file(s) written to manipulation/")
     if written:
         print(
             "\nNext steps:\n"
