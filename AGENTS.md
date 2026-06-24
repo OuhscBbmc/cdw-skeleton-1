@@ -80,9 +80,9 @@ Inclusion criteria:
 Scripts:
   patient.sql — populated — #14
   dx.sql — stub — #15
-  encounter.sql — stub — #16 — blocked: ss_enc
+  encounter.sql — stub — #16 — pending: ss_enc
   [or "none yet"]
-  [format: filename — status — #issue — blocked: reason (omit if not blocked)]
+  [format: filename — status — #issue — pending: ss_xxx (omit if ready to work)]
 
 Current focus: [what was being worked on]
 Next steps:

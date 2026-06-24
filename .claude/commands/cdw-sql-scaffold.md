@@ -23,9 +23,11 @@ Run after `/cdw-plan`.
    ```
    python utility/populate-scripts.py --templates [list]
    ```
-   Use the Python fallback from AGENTS.md if `python` is not on PATH.
+   Use `py` as fallback if `python` is not on PATH. If neither works, run `/cdw-doctor`.
 
-6. Add each generated script to `flow.R` in dependency order, **commented out**.
+6. Add each generated script to `flow.R` in dependency order, **commented out**. Use the
+   same dependency reasoning as `/cdw-sql-work` step 3 — scripts whose output feeds another
+   script's filter go first. Do not default to `patient.sql` first without checking.
 
 7. Add each delivery table to `config.yml` under `tables_to_scribe` with `name`,
    `columns_include`, `path_output`, `row_unit`. Never add ss- tables.
@@ -48,21 +50,20 @@ Run after `/cdw-plan`.
        - `[ ]` Uncommented in `flow.R`
        - `[ ]` Validated against staging
 
-9. Update `ai/ai-state.md` — add each script with its issue number:
+9. Update `ai/ai-state.md` — add each script with its issue number and blocker if applicable:
    ```
    Scripts:
      patient.sql — stub — #14
-     dx.sql — stub — #15
+     dx.sql — stub — #15 — pending: ss_dx
    ```
 
 10. Tell the user:
     "Scripts scaffolded. Issues: [script → #N list].
-    Commit these templates now.
+    Review the stub files, then commit when ready.
     Next: run `/cdw-ss-build [type]` for each ss-file needed, then `/cdw-sql-work` to
-    start on `patient.sql` while you wait for PI to return the ss-files."
+    begin customization on scripts with no ss-dependency while you wait for the PI."
 
 ## Notes
 
-- `patient.sql` is always first in `flow.R` — it builds `pt_pool`.
 - Do not fill in any study-specific values here. That happens in `/cdw-sql-work`.
 - One issue check/create per script — do not batch.
