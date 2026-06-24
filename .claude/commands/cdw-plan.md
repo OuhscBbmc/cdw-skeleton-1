@@ -7,6 +7,7 @@ ss-files to build. Run after `/cdw-start` on a new project, before `/cdw-sql-sca
 
 1. Read `documentation/github-issues.md`. Find the initial meeting issue (look for
    "initial meeting", "kickoff", or the earliest open issue with meeting notes).
+   Note the issue number — it will be written to `ai-state.md` as `planning_issue`.
 
 2. Extract and structure the study's data asks:
    - **Patient population** — inclusion/exclusion criteria, date range
@@ -30,6 +31,8 @@ ss-files to build. Run after `/cdw-start` on a new project, before `/cdw-sql-sca
    Wait for confirmation or corrections before proceeding.
 
 5. Write confirmed plan to `ai/ai-state.md` under `Data asks:` (add field if not present).
+   Also write `planning_issue: #N` so downstream commands can find the source clinical
+   detail without reloading the full `github-issues.md`.
 
 6. Tell the user: "Plan confirmed. Run `/cdw-sql-scaffold` to pull script templates and
    open a GitHub tracking issue for each, then `/cdw-ss-build [type]` for each ss-file

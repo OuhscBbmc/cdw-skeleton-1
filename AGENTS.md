@@ -68,8 +68,10 @@ Claude Code users: `/cdw-orient`. All others: follow these steps.
 ```
 Last updated: YYYY-MM-DD
 last_updated_by: username
+skeleton_synced: YYYY-MM-DD
 project_name: ...
 schema_name: ...
+planning_issue: #N
 
 Study aim: [one sentence]
 Inclusion criteria:
@@ -78,8 +80,9 @@ Inclusion criteria:
 Scripts:
   patient.sql — populated — #14
   dx.sql — stub — #15
+  encounter.sql — stub — #16 — blocked: ss_enc
   [or "none yet"]
-  [format: filename — status — #issue]
+  [format: filename — status — #issue — blocked: reason (omit if not blocked)]
 
 Current focus: [what was being worked on]
 Next steps:
@@ -87,7 +90,7 @@ Next steps:
 Open blockers: [or "none"]
 ```
 
-Keep it under 20 lines. Terse — this is machine-read.
+Keep it under 25 lines. Terse — this is machine-read.
 
 `last_updated_by` comes from `git config user.name`, normalized to lowercase-hyphenated.
 At session start, if the state is fresh (< 7 days) but `last_updated_by` differs from the

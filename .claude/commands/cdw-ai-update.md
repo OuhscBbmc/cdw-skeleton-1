@@ -16,6 +16,7 @@ project repo current.
 | `ai/sql-style.md` | cdw-skeleton-1/main |
 | `ai/sql-templates.md` | cdw-skeleton-1/main |
 | `ai/r-style.md` | cdw-skeleton-1/main |
+| `ai/pi-email-templates.md` | cdw-skeleton-1/main |
 | `.claude/commands/cdw-orient.md` | cdw-skeleton-1/main |
 | `.claude/commands/cdw-plan.md` | cdw-skeleton-1/main |
 | `.claude/commands/cdw-sql-scaffold.md` | cdw-skeleton-1/main |
@@ -42,11 +43,14 @@ project repo current.
    ```
    and report which files actually changed (i.e., had different content from what was on disk).
 
-3. If any files changed, say:
+3. Update the `skeleton_synced` line in `ai/ai-state.md` to today's date. If `ai-state.md`
+   doesn't exist yet, skip this step. Edit only that one line — do not touch anything else.
+
+4. If any files changed, say:
    "Updated: [list]. Run `/cdw-orient` to confirm everything looks right before continuing."
 
-4. If nothing changed, say:
-   "All AI files are already up to date."
+5. If nothing changed, say:
+   "All AI files are already up to date." Still update `skeleton_synced`.
 
 ## Notes
 

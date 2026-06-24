@@ -60,10 +60,13 @@ Safe to run multiple times — picks up where it left off.
       > 2. Style violations against this checklist: [paste checklist]
       > Return two bulleted lists with line numbers. Do not rewrite the file."
 
-   b. Present findings. Propose specific values for each placeholder based on the data
-      plan and issues.
+   b. Present findings. For each placeholder, either propose a specific value drawn
+      directly from the data plan or issues, or — if the right value isn't clear from
+      the available context — ask explicitly. Do not guess at clinical values (date
+      ranges, encounter types, inclusion criteria, code categories) without including a comment to remind user to verify clinical values with a SME. A wrong assumption
+      here propagates silently into results.
 
-   c. Wait for user confirmation or corrections.
+   c. Wait for user confirmation or corrections before making any edits.
 
    d. Apply all edits with the Edit tool.
 

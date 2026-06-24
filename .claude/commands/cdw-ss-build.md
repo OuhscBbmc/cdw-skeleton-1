@@ -10,10 +10,13 @@ it to the PI, then immediately continue with `/cdw-sql-work` on `patient.sql` wh
 1. Read `ai/sql-style.md` and the existing placeholder in `manipulation/ss/` for the requested type.
    (If no placeholder exists, note it and proceed from scratch.)
 
-3. Read `documentation/github-issues.md` for concept context — which diagnoses, medications,
-   labs, or other concepts are described in the study scope.
+2. Read `ai/ai-state.md` for study aim and inclusion criteria. Then find `planning_issue`
+   in state and read only that issue's section from `documentation/github-issues.md` for
+   the clinical concept detail needed to write a good discovery query (drug classes,
+   diagnosis groupings, lab names, etc.). If `planning_issue` is missing, ask the user
+   which issue has the original meeting notes rather than loading the full file.
 
-4. **STEP 1 — Discovery query**
+3. **STEP 1 — Discovery query**
    - Generate the keyword or pattern search query against the appropriate CDW lexis dimension
      (e.g., `cdw_outpost.lexis.dim_dx` for diagnoses).
    - Present the query to the user. Do not run it.
@@ -21,12 +24,12 @@ it to the PI, then immediately continue with `/cdw-sql-work` on `patient.sql` wh
      rows to include and assign categories. While you wait, run `/cdw-sql-work` to start
      on `patient.sql` — it has no ss-file dependency."
 
-5. **STEP 2 — Email to PI (optional)**
+4. **STEP 2 — Email to PI (optional)**
    Ask the user: "Would you like me to draft an email to the PI with the query attached?"
    If yes, read `ai/pi-email-templates.md` and use the template matching the concept type.
    Fill in `[Last Name]` and `[Study Name]` from the project context.
 
-6. **STEP 3 — Load (when PI returns annotated results)**
+5. **STEP 3 — Load (when PI returns annotated results)**
    - Generate the `INSERT` statement to populate `{schema_name}.ss_{type}` from the
      annotated results.
    - Write the finished script to `manipulation/ss/ss-{type}-create.sql`.

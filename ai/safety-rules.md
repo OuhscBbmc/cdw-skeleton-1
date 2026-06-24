@@ -35,7 +35,7 @@ These rules apply to every session, every AI assistant, every task.
   folders, schemas, commands, or sessions. Permission to access one file is not permission to
   access the folder. Permission for one command is not permission for the next logical step.
 - If you are granted specific permission to access a data file,
-  first read on the column headers, and determine if they likely contain any of the 18 PII elements.
+  first read only the column headers, and determine if they likely contain any of the 18 PII elements.
   If so, stop and ask the user to verify the file does not contain PII or PHI.
   If they are contained, do not continue.
 - Do not transmit, upload, paste, sync, attach, screenshot, or otherwise disclose
