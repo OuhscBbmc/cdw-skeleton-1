@@ -41,11 +41,11 @@ CREATE TABLE {project_schema}.patient (
   gender_male            bit,
   race                   varchar(50),
   ethnicity              varchar(50),
-  zipcode                varchar(10),
+  zipcode                char(5),
   -- Cross-system MRN externals (pipe-delimited)
-  mrn_meditech_externals varchar(150),
-  mrn_gecbs              varchar(120),
-  mrn_epic_externals     varchar(150),
+  mrn_meditech_externals varchar(400),
+  mrn_gecbs              varchar(400),
+  mrn_epic_externals     varchar(400),
 );
 
 INSERT {project_schema}.pt_pool
