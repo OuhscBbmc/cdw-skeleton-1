@@ -106,7 +106,7 @@
 - Every SQL script should produce one or more permanent project-schema tables as its final outputs.
   Intermediary tables should be CTEs or `#temp` tables.
 - `ss-` files are an exception: study-specific lookup tables (ss_dx, ss_med, etc.) remain as separate staged tables when PI review is required.
-- Avoid declaring obvious defaults (e.g., `identity` not `identity(1, 1)`; `primary key` not `not null primary key`).
+- Avoid declaring obvious defaults (e.g., write `identity` instead of `identity(1, 1)`; write `primary key` instead of `not null primary key`).
 - Trim trailing whitespace from every line.
 - End every file with a newline character.
 - Avoid three consecutive newline characters. If a blank line is needed, use only one.
