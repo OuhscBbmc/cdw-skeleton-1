@@ -81,6 +81,28 @@
 ### General
 
 - Use CTEs for readability; use `#temp` tables when intermediary logic is reused enough that a CTE becomes unreadable.
+- For the second and subsequent CTE in a file, start the line with a comma.
+
+  Preferred Style:
+  
+  ```sql
+  ...
+  )
+  ,cte_2 as (
+    ...
+  )
+  ```
+  
+  Unfavorable Style:
+  
+  ```sql
+  ...
+  ),
+  cte_2 as (
+    ...
+  )
+  ```
+
 - Every SQL script should produce one or more permanent project-schema tables as its final outputs.
   Intermediary tables should be CTEs or `#temp` tables.
 - `ss-` files are an exception: study-specific lookup tables (ss_dx, ss_med, etc.) remain as separate staged tables when PI review is required.
