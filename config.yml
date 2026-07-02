@@ -6,7 +6,7 @@ default:
   # dsn_outpost                                         : "cdw_outpost"
   # dsn_omop                                            : "cdw_omop_2"
   # dsn_transaction                                     : "cdw_transaction"
-  # dsn_registry                                        : "registry_qqq_1"
+  # dsn_registry                                        : "reg_qqq_1"
   # dsn_security                                        : "BbmcSecurity"
   # redcap_pid                                          : 1
   # redcap_instance                                     : "bbmc"
