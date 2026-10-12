@@ -19,13 +19,15 @@ These rules apply to every session, every AI assistant, every task.
 - Do not access `data-private/`, `data-unshared/`, local extracts, logs, caches,
   temporary output folders, or derived-data folders without explicit permission.
 - Do not access files outside the repo without explicit permission.
+- Do not save anything outside this repo without explicit permission.
+  This includes code, datasets, screenshots, files, or any other artifacts.
 - Do not include PHI, PII, row-level records, secrets, tokens, connection strings,
   or private file paths in source code, documentation, examples, tests, mock data,
   prompts, responses, logs, commit messages, pull requests, issues, or comments.
   Use synthetic values and placeholders instead.
 - Do not git commit any files to the repo without explicit permission.
   (Note to human: our team's policy requires a person to review each committed file to ensure private info doesn't slip into the repo and get pushed to the GitHub server.)
-- Do not access any remote computer without explicit permission.
+- Do not access any remote computer or website without explicit permission.
   This includes protocols and processes like ssh, rdp, odbc, and sftp.
 - Do not construct, execute, or test a database connection — including ODBC DSNs, SQL Server
   connections, or any connection string — without explicit permission for that exact connection,
